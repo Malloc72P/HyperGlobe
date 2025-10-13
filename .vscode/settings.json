@@ -1,0 +1,22 @@
+{
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.exclude": {},
+  "cssVariables.languages": ["css"],
+  "cssVariables.lookupFiles": [
+    "**/*.module.css",
+    "**/*.css",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.less",
+    "apps/frontend/node_modules/@mantine/core/styles.css"
+  ],
+  "files.associations": {
+    "*.css": "postcss"
+  }
+}

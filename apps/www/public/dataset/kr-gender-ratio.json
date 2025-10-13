@@ -1,0 +1,376 @@
+{
+  "id": "krGenderRatio",
+  "title": "대한민국 시도별 한국 성비",
+  "description": "대한민국의 시도별 성비 데이터입니다. 각 시도별 총 인구, 가구 수, 가구원 수, 남성 및 여성 인구 수, 성비 등을 포함합니다.",
+  "data": [
+    {
+      "sido": "서울특별시",
+      "code": "1100000000",
+      "total": 9334828,
+      "houseHold": 4492425,
+      "houseHoldSize": 2.08,
+      "malePopulation": 4505412,
+      "femalePopulation": 4829416,
+      "genderRatio": 0.93,
+      "coord": [
+        126.9877,
+        37.8582
+      ],
+      "value": [
+        4505412,
+        4829416
+      ],
+      "name": "서울특별시"
+    },
+    {
+      "sido": "부산광역시",
+      "code": "2600000000",
+      "total": 3262337,
+      "houseHold": 1573020,
+      "houseHoldSize": 2.07,
+      "malePopulation": 1587357,
+      "femalePopulation": 1674980,
+      "genderRatio": 0.95,
+      "coord": [
+        129.0097,
+        35.1486
+      ],
+      "value": [
+        1587357,
+        1674980
+      ],
+      "name": "부산광역시"
+    },
+    {
+      "sido": "대구광역시",
+      "code": "2700000000",
+      "total": 2362578,
+      "houseHold": 1107127,
+      "houseHoldSize": 2.13,
+      "malePopulation": 1158607,
+      "femalePopulation": 1203971,
+      "genderRatio": 0.96,
+      "coord": [
+        128.5955,
+        35.9939
+      ],
+      "value": [
+        1158607,
+        1203971
+      ],
+      "name": "대구광역시"
+    },
+    {
+      "sido": "인천광역시",
+      "code": "2800000000",
+      "total": 3027854,
+      "houseHold": 1380110,
+      "houseHoldSize": 2.19,
+      "malePopulation": 1512651,
+      "femalePopulation": 1515203,
+      "genderRatio": 1,
+      "coord": [
+        126.1944,
+        37.4961
+      ],
+      "value": [
+        1512651,
+        1515203
+      ],
+      "name": "인천광역시"
+    },
+    {
+      "sido": "광주광역시",
+      "code": "2900000000",
+      "total": 1405226,
+      "houseHold": 658792,
+      "houseHoldSize": 2.13,
+      "malePopulation": 693552,
+      "femalePopulation": 711674,
+      "genderRatio": 0.97,
+      "coord": [
+        126.8219,
+        35.155
+      ],
+      "value": [
+        693552,
+        711674
+      ],
+      "name": "광주광역시"
+    },
+    {
+      "sido": "대전광역시",
+      "code": "3000000000",
+      "total": 1439809,
+      "houseHold": 690964,
+      "houseHoldSize": 2.08,
+      "malePopulation": 717573,
+      "femalePopulation": 722236,
+      "genderRatio": 0.99,
+      "coord": [
+        127.55,
+        36.2353
+      ],
+      "value": [
+        717573,
+        722236
+      ],
+      "name": "대전광역시"
+    },
+    {
+      "sido": "울산광역시",
+      "code": "3100000000",
+      "total": 1095778,
+      "houseHold": 496077,
+      "houseHoldSize": 2.21,
+      "malePopulation": 563999,
+      "femalePopulation": 531779,
+      "genderRatio": 1.06,
+      "coord": [
+        129.4604,
+        35.5374
+      ],
+      "value": [
+        563999,
+        531779
+      ],
+      "name": "울산광역시"
+    },
+    {
+      "sido": "세종특별자치시",
+      "code": "3611000000",
+      "total": 391669,
+      "houseHold": 164111,
+      "houseHoldSize": 2.39,
+      "malePopulation": 194967,
+      "femalePopulation": 196702,
+      "genderRatio": 0.99,
+      "coord": [
+        127.1867,
+        36.7068
+      ],
+      "value": [
+        194967,
+        196702
+      ],
+      "name": "세종특별자치시"
+    },
+    {
+      "sido": "경기도",
+      "code": "4100000000",
+      "total": 13698657,
+      "houseHold": 6072106,
+      "houseHoldSize": 2.26,
+      "malePopulation": 6883368,
+      "femalePopulation": 6815289,
+      "genderRatio": 1.01,
+      "coord": [
+        127.5152,
+        37.4264
+      ],
+      "value": [
+        6883368,
+        6815289
+      ],
+      "name": "경기도"
+    },
+    {
+      "sido": "강원특별자치도",
+      "code": "5100000000",
+      "total": 1513735,
+      "houseHold": 765316,
+      "houseHoldSize": 1.98,
+      "malePopulation": 761064,
+      "femalePopulation": 752671,
+      "genderRatio": 1.01,
+      "coord": [
+        128.347,
+        37.7185
+      ],
+      "value": [
+        761064,
+        752671
+      ],
+      "name": "강원특별자치도"
+    },
+    {
+      "sido": "충청북도",
+      "code": "4300000000",
+      "total": 1590107,
+      "houseHold": 789271,
+      "houseHoldSize": 2.01,
+      "malePopulation": 809548,
+      "femalePopulation": 780559,
+      "genderRatio": 1.04,
+      "coord": [
+        127.9639,
+        36.9066
+      ],
+      "value": [
+        809548,
+        780559
+      ],
+      "name": "충청북도"
+    },
+    {
+      "sido": "충청남도",
+      "code": "4400000000",
+      "total": 2135340,
+      "houseHold": 1055137,
+      "houseHoldSize": 2.02,
+      "malePopulation": 1095862,
+      "femalePopulation": 1039478,
+      "genderRatio": 1.05,
+      "coord": [
+        126.6909,
+        36.5312
+      ],
+      "value": [
+        1095862,
+        1039478
+      ],
+      "name": "충청남도"
+    },
+    {
+      "sido": "전북특별자치도",
+      "code": "5200000000",
+      "total": 1735008,
+      "houseHold": 865541,
+      "houseHoldSize": 2,
+      "malePopulation": 864313,
+      "femalePopulation": 870695,
+      "genderRatio": 0.99,
+      "coord": [
+        126.9741,
+        35.819
+      ],
+      "value": [
+        864313,
+        870695
+      ],
+      "name": "전북특별자치도"
+    },
+    {
+      "sido": "전라남도",
+      "code": "4600000000",
+      "total": 1785487,
+      "houseHold": 913114,
+      "houseHoldSize": 1.96,
+      "malePopulation": 901141,
+      "femalePopulation": 884346,
+      "genderRatio": 1.02,
+      "coord": [
+        127.2716,
+        34.9715
+      ],
+      "value": [
+        901141,
+        884346
+      ],
+      "name": "전라남도"
+    },
+    {
+      "sido": "경상북도",
+      "code": "4700000000",
+      "total": 2524067,
+      "houseHold": 1292811,
+      "houseHoldSize": 1.95,
+      "malePopulation": 1277157,
+      "femalePopulation": 1246910,
+      "genderRatio": 1.02,
+      "coord": [
+        129.0499,
+        36.6869
+      ],
+      "value": [
+        1277157,
+        1246910
+      ],
+      "name": "경상북도"
+    },
+    {
+      "sido": "경상남도",
+      "code": "4800000000",
+      "total": 3221132,
+      "houseHold": 1539748,
+      "houseHoldSize": 2.09,
+      "malePopulation": 1623866,
+      "femalePopulation": 1597266,
+      "genderRatio": 1.02,
+      "coord": [
+        127.953,
+        35.3317
+      ],
+      "value": [
+        1623866,
+        1597266
+      ],
+      "name": "경상남도"
+    },
+    {
+      "sido": "제주특별자치도",
+      "code": "5000000000",
+      "total": 668205,
+      "houseHold": 314861,
+      "houseHoldSize": 2.12,
+      "malePopulation": 334061,
+      "femalePopulation": 334144,
+      "genderRatio": 1,
+      "coord": [
+        126.5425,
+        33.4471
+      ],
+      "value": [
+        334061,
+        334144
+      ],
+      "name": "제주특별자치도"
+    }
+  ],
+  "schema": [
+    {
+      "key": "sido",
+      "type": "string"
+    },
+    {
+      "key": "code",
+      "type": "string"
+    },
+    {
+      "key": "total",
+      "type": "number"
+    },
+    {
+      "key": "houseHold",
+      "type": "number"
+    },
+    {
+      "key": "houseHoldSize",
+      "type": "number"
+    },
+    {
+      "key": "malePopulation",
+      "type": "number"
+    },
+    {
+      "key": "femalePopulation",
+      "type": "number"
+    },
+    {
+      "key": "genderRatio",
+      "type": "number"
+    },
+    {
+      "key": "coord",
+      "type": "array"
+    },
+    {
+      "key": "value",
+      "type": "array"
+    },
+    {
+      "key": "name",
+      "type": "string"
+    }
+  ]
+}

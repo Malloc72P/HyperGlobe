@@ -1,0 +1,21 @@
+#nprogress .bar {
+  @mixin light {
+    background: var(--mantine-color-blue-7);
+  }
+
+  @mixin dark {
+    background: var(--mantine-color-orange-5);
+  }
+}
+
+#nprogress .spinner-icon {
+  @mixin light {
+    border-top-color: var(--mantine-color-blue-7);
+    border-left-color: var(--mantine-color-blue-7);
+  }
+
+  @mixin dark {
+    border-top-color: var(--mantine-color-orange-5);
+    border-left-color: var(--mantine-color-orange-5);
+  }
+}

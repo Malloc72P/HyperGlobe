@@ -1,0 +1,603 @@
+{
+  "id": "krElections",
+  "title": "대한민국 20대 대통령 선거(시/도별)",
+  "description": "2022년 3월 9일에 실시된 대한민국 제20대 대통령 선거에 대한 데이터입니다. 이 데이터는 선거 결과, 후보자 정보, 투표율 등을 포함하고 있습니다. 대한민국 시도별 대통령 선거 결과를 시각화하고 분석하는 데 사용됩니다.",
+  "data": [
+    {
+      "id": "11",
+      "name": "서울특별시",
+      "voters": 8346647,
+      "votes": 6501831,
+      "lee": 2944981,
+      "yoon": 3255747,
+      "sim": 180324,
+      "totalBallots": 6439139,
+      "invalidVotes": 62692,
+      "abstentions": 1844816,
+      "callout": [
+        [
+          null,
+          39
+        ],
+        [
+          128,
+          null
+        ]
+      ],
+      "coord": [
+        127,
+        37.58
+      ],
+      "value": [
+        2944981,
+        3255747,
+        180324
+      ],
+      "etc": 120779,
+      "percents": [
+        45,
+        50
+      ]
+    },
+    {
+      "id": "21",
+      "name": "부산광역시",
+      "voters": 2921510,
+      "votes": 2200224,
+      "lee": 831896,
+      "yoon": 1270072,
+      "sim": 47541,
+      "totalBallots": 2180178,
+      "invalidVotes": 20046,
+      "abstentions": 721286,
+      "callout": [
+        130.1,
+        34.2
+      ],
+      "coord": [
+        129.0756416,
+        35.1795543
+      ],
+      "value": [
+        831896,
+        1270072,
+        47541
+      ],
+      "etc": 50715,
+      "percents": [
+        38,
+        58
+      ]
+    },
+    {
+      "id": "22",
+      "name": "대구광역시",
+      "voters": 2046714,
+      "votes": 1611512,
+      "lee": 345045,
+      "yoon": 1199888,
+      "sim": 31131,
+      "totalBallots": 1596806,
+      "invalidVotes": 14706,
+      "abstentions": 435202,
+      "callout": [
+        131,
+        35.8
+      ],
+      "coord": [
+        128.601445,
+        35.8714354
+      ],
+      "value": [
+        345045,
+        1199888,
+        31131
+      ],
+      "etc": 35448,
+      "percents": [
+        21,
+        74
+      ]
+    },
+    {
+      "id": "23",
+      "name": "인천광역시",
+      "voters": 2519225,
+      "votes": 1883504,
+      "lee": 913320,
+      "yoon": 878560,
+      "sim": 51852,
+      "totalBallots": 1867054,
+      "invalidVotes": 16450,
+      "abstentions": 635721,
+      "callout": [
+        125.5,
+        null
+      ],
+      "coord": [
+        126.65,
+        37.4562557
+      ],
+      "value": [
+        913320,
+        878560,
+        51852
+      ],
+      "etc": 39772,
+      "percents": [
+        48,
+        47
+      ]
+    },
+    {
+      "id": "24",
+      "name": "광주광역시",
+      "voters": 1209206,
+      "votes": 985492,
+      "lee": 830058,
+      "yoon": 124511,
+      "sim": 14865,
+      "totalBallots": 978601,
+      "invalidVotes": 6891,
+      "abstentions": 223714,
+      "callout": [
+        123.7,
+        34.1
+      ],
+      "coord": [
+        126.8526012,
+        35.1595454
+      ],
+      "value": [
+        830058,
+        124511,
+        14865
+      ],
+      "etc": 16058,
+      "percents": [
+        84,
+        13
+      ]
+    },
+    {
+      "id": "25",
+      "name": "대전광역시",
+      "voters": 1233177,
+      "votes": 945308,
+      "lee": 434950,
+      "yoon": 464060,
+      "sim": 25445,
+      "totalBallots": 936401,
+      "invalidVotes": 8907,
+      "abstentions": 287869,
+      "callout": [
+        125.6,
+        35.9
+      ],
+      "coord": [
+        127.3845475,
+        36.3504119
+      ],
+      "value": [
+        434950,
+        464060,
+        25445
+      ],
+      "etc": 20853,
+      "percents": [
+        46,
+        49
+      ]
+    },
+    {
+      "id": "26",
+      "name": "울산광역시",
+      "voters": 942210,
+      "votes": 735461,
+      "lee": 297134,
+      "yoon": 396321,
+      "sim": 21292,
+      "totalBallots": 728390,
+      "invalidVotes": 7071,
+      "abstentions": 206749,
+      "callout": [
+        130.3,
+        35.1
+      ],
+      "coord": [
+        129.3123,
+        35.546
+      ],
+      "value": [
+        297134,
+        396321,
+        21292
+      ],
+      "etc": 20714,
+      "percents": [
+        40,
+        54
+      ]
+    },
+    {
+      "id": "29",
+      "name": "세종특별자치시",
+      "voters": 288895,
+      "votes": 231832,
+      "lee": 119349,
+      "yoon": 101491,
+      "sim": 6780,
+      "totalBallots": 229891,
+      "invalidVotes": 1941,
+      "abstentions": 57063,
+      "callout": [
+        124.2,
+        35.8
+      ],
+      "coord": [
+        127.2494855,
+        36.5040736
+      ],
+      "value": [
+        119349,
+        101491,
+        6780
+      ],
+      "etc": 4212,
+      "percents": [
+        51,
+        44
+      ]
+    },
+    {
+      "id": "34",
+      "name": "충청남도",
+      "voters": 1796474,
+      "votes": 1324660,
+      "lee": 589991,
+      "yoon": 670283,
+      "sim": 31789,
+      "totalBallots": 1312113,
+      "invalidVotes": 12547,
+      "abstentions": 471814,
+      "callout": [
+        123.5,
+        36.6
+      ],
+      "coord": [
+        126.6,
+        36.6
+      ],
+      "value": [
+        589991,
+        670283,
+        31789
+      ],
+      "etc": 32597,
+      "percents": [
+        45,
+        51
+      ]
+    },
+    {
+      "id": "31",
+      "name": "경기도",
+      "voters": 11433288,
+      "votes": 8763727,
+      "lee": 4428151,
+      "yoon": 3965341,
+      "sim": 205709,
+      "totalBallots": 8691376,
+      "invalidVotes": 72351,
+      "abstentions": 2669561,
+      "callout": [
+        125.8,
+        38.3
+      ],
+      "coord": [
+        126.8,
+        37.75
+      ],
+      "value": [
+        4428151,
+        3965341,
+        205709
+      ],
+      "etc": 164526,
+      "percents": [
+        51,
+        45
+      ]
+    },
+    {
+      "id": "32",
+      "name": "강원특별자치도",
+      "voters": 1333621,
+      "votes": 1015458,
+      "lee": 419644,
+      "yoon": 544980,
+      "sim": 25031,
+      "totalBallots": 1005840,
+      "invalidVotes": 9618,
+      "abstentions": 318163,
+      "callout": [
+        [
+          null,
+          38.2
+        ],
+        [
+          131,
+          null
+        ]
+      ],
+      "coord": [
+        128.2,
+        37.88
+      ],
+      "value": [
+        419644,
+        544980,
+        25031
+      ],
+      "etc": 25803,
+      "percents": [
+        41,
+        54
+      ]
+    },
+    {
+      "id": "33",
+      "name": "충청북도",
+      "voters": 1365033,
+      "votes": 1020649,
+      "lee": 455853,
+      "yoon": 511921,
+      "sim": 26557,
+      "totalBallots": 1010209,
+      "invalidVotes": 10440,
+      "abstentions": 344384,
+      "callout": [
+        124.5,
+        37
+      ],
+      "coord": [
+        127.4890319,
+        36.6424341
+      ],
+      "value": [
+        455853,
+        511921,
+        26557
+      ],
+      "etc": 26318,
+      "percents": [
+        45,
+        50
+      ]
+    },
+    {
+      "id": "35",
+      "name": "전북특별자치도",
+      "voters": 1533125,
+      "votes": 1235212,
+      "lee": 1016863,
+      "yoon": 176809,
+      "sim": 19451,
+      "totalBallots": 1225419,
+      "invalidVotes": 9793,
+      "abstentions": 297913,
+      "callout": [
+        124.5,
+        34.8
+      ],
+      "coord": [
+        127.1479532,
+        35.8242238
+      ],
+      "value": [
+        1016863,
+        176809,
+        19451
+      ],
+      "etc": 22089,
+      "percents": [
+        82,
+        14
+      ]
+    },
+    {
+      "id": "36",
+      "name": "전라남도",
+      "voters": 1581278,
+      "votes": 1282168,
+      "lee": 1094872,
+      "yoon": 145549,
+      "sim": 16279,
+      "totalBallots": 1271616,
+      "invalidVotes": 10552,
+      "abstentions": 299110,
+      "callout": [
+        [
+          null,
+          33.8
+        ],
+        [
+          125.9,
+          33.8
+        ]
+      ],
+      "coord": [
+        126.7,
+        34.8
+      ],
+      "value": [
+        1094872,
+        145549,
+        16279
+      ],
+      "etc": 25468,
+      "percents": [
+        85,
+        11
+      ]
+    },
+    {
+      "id": "37",
+      "name": "경상북도",
+      "voters": 2273028,
+      "votes": 1774284,
+      "lee": 418371,
+      "yoon": 1278922,
+      "sim": 33123,
+      "totalBallots": 1757696,
+      "invalidVotes": 16588,
+      "abstentions": 498744,
+      "callout": [
+        [
+          null,
+          36.7
+        ],
+        [
+          131,
+          null
+        ]
+      ],
+      "coord": [
+        128.72,
+        36.56
+      ],
+      "value": [
+        418371,
+        1278922,
+        33123
+      ],
+      "etc": 43868,
+      "percents": [
+        24,
+        72
+      ]
+    },
+    {
+      "id": "38",
+      "name": "경상남도",
+      "voters": 2809907,
+      "votes": 2146882,
+      "lee": 794130,
+      "yoon": 1237346,
+      "sim": 52591,
+      "totalBallots": 2124344,
+      "invalidVotes": 22538,
+      "abstentions": 663025,
+      "callout": [
+        128.3,
+        33.8
+      ],
+      "coord": [
+        128.6402609,
+        35.2538433
+      ],
+      "value": [
+        794130,
+        1237346,
+        52591
+      ],
+      "etc": 62815,
+      "percents": [
+        37,
+        58
+      ]
+    },
+    {
+      "id": "39",
+      "name": "제주특별자치도",
+      "voters": 564354,
+      "votes": 409649,
+      "lee": 213130,
+      "yoon": 173014,
+      "sim": 13598,
+      "totalBallots": 405238,
+      "invalidVotes": 4411,
+      "abstentions": 154705,
+      "callout": [
+        124.8,
+        33.38
+      ],
+      "coord": [
+        126.52,
+        33.38
+      ],
+      "value": [
+        213130,
+        173014,
+        13598
+      ],
+      "etc": 9907,
+      "percents": [
+        52,
+        42
+      ]
+    }
+  ],
+  "schema": [
+    {
+      "key": "id",
+      "type": "string"
+    },
+    {
+      "key": "name",
+      "type": "string"
+    },
+    {
+      "key": "voters",
+      "type": "number"
+    },
+    {
+      "key": "votes",
+      "type": "number"
+    },
+    {
+      "key": "lee",
+      "type": "number"
+    },
+    {
+      "key": "yoon",
+      "type": "number"
+    },
+    {
+      "key": "sim",
+      "type": "number"
+    },
+    {
+      "key": "totalBallots",
+      "type": "number"
+    },
+    {
+      "key": "invalidVotes",
+      "type": "number"
+    },
+    {
+      "key": "abstentions",
+      "type": "number"
+    },
+    {
+      "key": "callout",
+      "type": "array"
+    },
+    {
+      "key": "coord",
+      "type": "array"
+    },
+    {
+      "key": "value",
+      "type": "array"
+    },
+    {
+      "key": "etc",
+      "type": "number"
+    },
+    {
+      "key": "percents",
+      "type": "array"
+    }
+  ]
+}

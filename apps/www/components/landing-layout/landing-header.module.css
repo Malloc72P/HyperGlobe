@@ -1,0 +1,6 @@
+.header {
+  height: 100%;
+  padding: 0 var(--mantine-spacing-md);
+  display: flex;
+  align-items: center;
+}
