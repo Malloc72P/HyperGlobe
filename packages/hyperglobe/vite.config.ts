@@ -5,7 +5,17 @@ import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), dts()],
+  plugins: [
+    react(),
+    dts({
+      rollupTypes: true,
+      entryRoot: 'src',
+      outDir: 'dist',
+      insertTypesEntry: true,
+      tsconfigPath: './tsconfig.app.json',
+      exclude: ['**/*.spec.*', 'example/**/*'],
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

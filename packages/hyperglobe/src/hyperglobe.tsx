@@ -1,3 +1,7 @@
-export function HyperGlobe() {
-  return <div>Hello Multiverse</div>;
+export interface HyperGlobeProps {
+  width?: number;
+}
+
+export function HyperGlobe(props: HyperGlobeProps) {
+  return <div style={{ width: props.width }}>Hello Multiverse</div>;
 }
