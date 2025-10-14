@@ -1,5 +1,5 @@
 {
-  "name": "@myapp/eslint-config",
+  "name": "@hyperglobe/eslint-config",
   "version": "0.0.0",
   "type": "module",
   "private": true,

@@ -1,5 +1,5 @@
 {
-  "name": "myapp-actual",
+  "name": "HyperGlobe-actual",
   "private": true,
   "scripts": {
     "build": "turbo build",

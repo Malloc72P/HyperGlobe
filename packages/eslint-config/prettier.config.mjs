@@ -1,3 +1,3 @@
-import prettierBaseConfig from '@myapp/prettier-config';
+import prettierBaseConfig from '@HyperGlobe/prettier-config';
 
 export default prettierBaseConfig;

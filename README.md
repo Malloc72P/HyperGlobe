@@ -1,3 +1,3 @@
-# MyApp
+# HyperGlobe
 
-- NextJS, PrismaORM, Mantine UI를 사용하는 프로젝트 템플릿입니다.
+- React 기반 3D 지리 데이터 시각화 라이브러리

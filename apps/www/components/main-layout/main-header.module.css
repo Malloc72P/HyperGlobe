@@ -1,8 +1,0 @@
-.header {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  background-color: white;
-  padding: 0 var(--mantine-spacing-md);
-  border-bottom: 1px solid var(--mantine-color-gray-2);
-}
