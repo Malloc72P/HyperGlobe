@@ -15,7 +15,7 @@ function App() {
             <Nav />
           </div>
           <div className="col-span-9  min-h-[calc(100vh-60px)] p-3">
-            <main className="h-[30vh]">
+            <main className="h-[50vh]">
               <Routes>
                 <Route path="/" element={<div className="p-5">Home</div>}></Route>
 
