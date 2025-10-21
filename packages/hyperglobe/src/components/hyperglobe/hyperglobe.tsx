@@ -1,16 +1,22 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe } from './components';
-import { CoordinateSystem } from './debug';
+import { Globe } from './globe';
+import { CoordinateSystem } from '../coordinate-system';
 
 export interface HyperGlobeProps {
-  style?: React.CSSProperties;
+  /**
+   * 지구본의 크기
+   */
+  size?: number;
+  /**
+   * 좌표축 시각화 여부
+   */
   coordinateSystemVisible?: boolean;
 }
 
-export function HyperGlobe({ style, coordinateSystemVisible }: HyperGlobeProps) {
+export function HyperGlobe({ size = 600, coordinateSystemVisible }: HyperGlobeProps) {
   return (
-    <Canvas style={style} camera={{ position: [0, 0, 3] }}>
+    <Canvas style={{ height: size }} camera={{ position: [0, 0, 3] }}>
       {/* 기본 조명 설정 */}
       <ambientLight intensity={1.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />

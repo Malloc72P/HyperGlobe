@@ -1,1 +1,1 @@
-export * from './hyperglobe';
+export * from './components';
