@@ -39,7 +39,7 @@ export interface GlobeProps {
  * @param param0 GlobeProps
  * @returns JSX.Element
  */
-export function Globe({ position = [0, 0, 0], segments = [32, 16], label }: GlobeProps) {
+export function Globe({ position = [0, 0, 0], segments = [64, 32], label }: GlobeProps) {
   /**
    * 지구 텍스처 로드
    */

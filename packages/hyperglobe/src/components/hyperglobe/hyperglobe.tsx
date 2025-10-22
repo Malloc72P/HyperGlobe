@@ -3,6 +3,9 @@ import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 
+/**
+ * HyperGlobe 컴포넌트의 Props
+ */
 export interface HyperGlobeProps {
   /**
    * 지구본의 크기
@@ -14,20 +17,34 @@ export interface HyperGlobeProps {
   coordinateSystemVisible?: boolean;
 }
 
+/**
+ * **WEBGL 기반 지구본 컴포넌트.**
+ *
+ * 마우스 드래그를 통해 지구본을 회전시키고, 휠 스크롤로 확대/축소할 수 있습니다.
+ */
 export function HyperGlobe({ size = 600, coordinateSystemVisible }: HyperGlobeProps) {
   return (
-    <Canvas style={{ height: size }} camera={{ position: [0, 0, 3] }}>
+    <Canvas
+      style={{ height: size }}
+      // 초기 카메라 위치
+      camera={{ position: [0, 0, 1.8] }}
+    >
       {/* 기본 조명 설정 */}
       <ambientLight intensity={1.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
 
       {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
       <OrbitControls
-        enablePan={true}
         enableZoom={true}
         enableRotate={true}
-        minDistance={2}
-        maxDistance={20}
+        /**
+         * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
+         */
+        minDistance={1.8}
+        /**
+         * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
+         */
+        maxDistance={10}
       />
 
       <Globe />
