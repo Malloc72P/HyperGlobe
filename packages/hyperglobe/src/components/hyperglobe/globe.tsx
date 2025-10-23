@@ -59,10 +59,10 @@ export function Globe({ position = [0, 0, 0], segments = [64, 32], label }: Glob
    *
    * 결과: 경도 0°(아프리카 서해안)이 카메라 정면에 위치하게 된다.
    */
-  //   earthTexture.offset.x = 0.25;
+  earthTexture.offset.x = 0.25;
 
   // 텍스처 래핑 모드: 경계에서 반복되도록 설정 (UV 좌표가 0-1 범위를 벗어날 때)
-  //   earthTexture.wrapS = earthTexture.wrapT = RepeatWrapping;
+  earthTexture.wrapS = earthTexture.wrapT = RepeatWrapping;
 
   return (
     <mesh position={position}>
