@@ -1,4 +1,5 @@
 import { useLoader } from '@react-three/fiber';
+import { useState } from 'react';
 import { TextureLoader, RepeatWrapping } from 'three';
 
 export interface GlobeProps {
@@ -12,10 +13,8 @@ export interface GlobeProps {
    * @default [32, 16]
    */
   segments?: [number, number];
-  /**
-   * 구체의 라벨 (디버깅용)
-   */
-  label?: string;
+  isRendered: boolean;
+  setIsRendered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -39,7 +38,12 @@ export interface GlobeProps {
  * @param param0 GlobeProps
  * @returns JSX.Element
  */
-export function Globe({ position = [0, 0, 0], segments = [64, 32], label }: GlobeProps) {
+export function Globe({
+  position = [0, 0, 0],
+  segments = [64, 32],
+  isRendered,
+  setIsRendered,
+}: GlobeProps) {
   /**
    * 지구 텍스처 로드
    */
@@ -65,7 +69,14 @@ export function Globe({ position = [0, 0, 0], segments = [64, 32], label }: Glob
   earthTexture.wrapS = earthTexture.wrapT = RepeatWrapping;
 
   return (
-    <mesh position={position}>
+    <mesh
+      position={position}
+      onAfterRender={() => {
+        if (!isRendered) {
+          setIsRendered(true);
+        }
+      }}
+    >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}

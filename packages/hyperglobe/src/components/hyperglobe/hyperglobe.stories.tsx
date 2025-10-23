@@ -13,6 +13,7 @@ export const GettingStarted: Story = {
   name: 'API',
   tags: ['autodocs'],
   args: {
+    id: 'hyperglobe-canvas',
     size: 500,
   },
 };

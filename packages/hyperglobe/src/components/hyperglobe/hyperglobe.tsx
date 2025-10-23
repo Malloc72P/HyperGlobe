@@ -2,11 +2,16 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
+import { useState } from 'react';
 
 /**
  * HyperGlobe 컴포넌트의 Props
  */
 export interface HyperGlobeProps {
+  /**
+   * Canvas 요소의 id 속성
+   */
+  id?: string;
   /**
    * 지구본의 크기
    */
@@ -22,12 +27,16 @@ export interface HyperGlobeProps {
  *
  * 마우스 드래그를 통해 지구본을 회전시키고, 휠 스크롤로 확대/축소할 수 있습니다.
  */
-export function HyperGlobe({ size = 600, coordinateSystemVisible }: HyperGlobeProps) {
+export function HyperGlobe({ id, size = 600, coordinateSystemVisible }: HyperGlobeProps) {
+  const [isRendered, setIsRendered] = useState<boolean>(false);
+
   return (
     <Canvas
+      id={id}
       style={{ height: size }}
       // 초기 카메라 위치
       camera={{ position: [0, 0, 1.8] }}
+      data-is-rendered={isRendered ? 'true' : 'false'}
     >
       {/* 기본 조명 설정 */}
       <ambientLight intensity={1.5} />
@@ -47,7 +56,7 @@ export function HyperGlobe({ size = 600, coordinateSystemVisible }: HyperGlobePr
         maxDistance={10}
       />
 
-      <Globe />
+      <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
 
       {/* 좌표축 시각화 헬퍼들 */}
       {coordinateSystemVisible && <CoordinateSystem />}
