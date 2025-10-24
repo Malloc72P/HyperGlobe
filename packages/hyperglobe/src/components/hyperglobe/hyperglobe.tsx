@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState } from 'react';
+import { Feature } from '../feature/feature';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -56,7 +57,11 @@ export function HyperGlobe({ id, size = 600, coordinateSystemVisible }: HyperGlo
         maxDistance={10}
       />
 
-      <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
+      {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
+      <group rotation={[0, -Math.PI / 2, 0]}>
+        <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
+        <Feature />
+      </group>
 
       {/* 좌표축 시각화 헬퍼들 */}
       {coordinateSystemVisible && <CoordinateSystem />}

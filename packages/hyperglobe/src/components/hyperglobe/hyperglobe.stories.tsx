@@ -10,8 +10,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const GettingStarted: Story = {
-  name: 'API',
-  tags: ['autodocs'],
+  name: 'Getting Started',
+  args: {
+    id: 'hyperglobe-canvas',
+    size: 500,
+  },
+};
+
+export const FeatureStory: Story = {
+  name: 'Feature',
   args: {
     id: 'hyperglobe-canvas',
     size: 500,

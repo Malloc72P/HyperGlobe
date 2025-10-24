@@ -48,23 +48,6 @@ export function Globe({
    * 지구 텍스처 로드
    */
   const earthTexture = useLoader(TextureLoader, '/earth-texture.jpg');
-
-  /**
-   * 텍스처 UV 매핑 조정
-   *
-   * 사용하는 텍스처 이미지의 맨 왼쪽은 태평양(경도 -180°, 러시아-알래스카 경계)이다.
-   * Three.js SphereGeometry는 기본적으로 텍스처의 왼쪽 끝을 구체의 -X축 방향에 매핑한다.
-   *
-   * 기본 상태에서는 카메라 정면(+Z축에서 바라본 -Z 방향)에 경도 -90°가 보인다.
-   * 우리가 원하는 것은 경도 0°(그리니치 자오선)가 정면에 오는 것이다.
-   *
-   * 따라서 텍스처를 90° 동쪽으로 이동시켜야 한다.
-   * offset.x = 0.25는 텍스처를 25% = 90° 이동시킨다. (90° / 360° = 0.25)
-   *
-   * 결과: 경도 0°(아프리카 서해안)이 카메라 정면에 위치하게 된다.
-   */
-  earthTexture.offset.x = 0.25;
-
   // 텍스처 래핑 모드: 경계에서 반복되도록 설정 (UV 좌표가 0-1 범위를 벗어날 때)
   earthTexture.wrapS = earthTexture.wrapT = RepeatWrapping;
 
