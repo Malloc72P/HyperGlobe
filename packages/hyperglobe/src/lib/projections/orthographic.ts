@@ -20,7 +20,8 @@ import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
  * ```
  */
 function project(coordinate: Coordinate, radius = 1): VectorCoordinate {
-  const [longitude, latitude] = coordinate;
+  const longitude = -1 * coordinate[0];
+  const latitude = coordinate[1];
 
   // 도(degree)를 라디안(radian)으로 변환
   const phi = (longitude * Math.PI) / 180;

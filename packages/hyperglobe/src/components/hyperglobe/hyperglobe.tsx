@@ -4,6 +4,7 @@ import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState } from 'react';
 import { Feature } from '../feature/feature';
+import { RectangleFeature } from '../rectangle-feature/rectangle-feature';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -60,7 +61,17 @@ export function HyperGlobe({ id, size = 600, coordinateSystemVisible }: HyperGlo
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
       <group rotation={[0, -Math.PI / 2, 0]}>
         <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
-        <Feature />
+        {/* <Feature /> */}
+        <RectangleFeature
+          coordinates={[
+            [-10, 10],
+            [10, 10],
+            [10, -10],
+            [-10, -10],
+          ]}
+          color="blue"
+          lineWidth={5}
+        />
       </group>
 
       {/* 좌표축 시각화 헬퍼들 */}
