@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HyperGlobe } from './hyperglobe';
+import { StorybookConstant } from '../../constants/storybook-constant';
 
 const meta = {
   title: 'HyperGlobe',
+  tags: ['autodocs'],
   component: HyperGlobe,
 } satisfies Meta<typeof HyperGlobe>;
 
@@ -12,15 +14,6 @@ type Story = StoryObj<typeof meta>;
 export const GettingStarted: Story = {
   name: 'Getting Started',
   args: {
-    id: 'hyperglobe-canvas',
-    size: 500,
-  },
-};
-
-export const FeatureStory: Story = {
-  name: 'Feature',
-  args: {
-    id: 'hyperglobe-canvas',
-    size: 500,
+    ...StorybookConstant.props.HyperGlobe,
   },
 };

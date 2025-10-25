@@ -2,14 +2,13 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
-import { useState } from 'react';
-import { Feature } from '../feature/feature';
+import { useState, type PropsWithChildren } from 'react';
 import { RectangleFeature } from '../rectangle-feature/rectangle-feature';
 
 /**
  * HyperGlobe 컴포넌트의 Props
  */
-export interface HyperGlobeProps {
+export interface HyperGlobeProps extends PropsWithChildren {
   /**
    * Canvas 요소의 id 속성
    */
@@ -29,7 +28,7 @@ export interface HyperGlobeProps {
  *
  * 마우스 드래그를 통해 지구본을 회전시키고, 휠 스크롤로 확대/축소할 수 있습니다.
  */
-export function HyperGlobe({ id, size = 600, coordinateSystemVisible }: HyperGlobeProps) {
+export function HyperGlobe({ id, size = 600, coordinateSystemVisible, children }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
   return (
@@ -61,17 +60,9 @@ export function HyperGlobe({ id, size = 600, coordinateSystemVisible }: HyperGlo
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
       <group rotation={[0, -Math.PI / 2, 0]}>
         <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
-        {/* <Feature /> */}
-        <RectangleFeature
-          coordinates={[
-            [-10, 10],
-            [10, 10],
-            [10, -10],
-            [-10, -10],
-          ]}
-          color="blue"
-          lineWidth={5}
-        />
+
+        {/* Children */}
+        {children}
       </group>
 
       {/* 좌표축 시각화 헬퍼들 */}

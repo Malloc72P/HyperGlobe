@@ -24,6 +24,12 @@ export interface RectangleFeatureProps {
   lineWidth?: number;
 }
 
+/**
+ * 사각형 피쳐 컴포넌트.
+ *
+ * - 네 개의 좌표를 받아 사각형을 그립니다.
+ * - 순서대로 좌상단, 우상단, 우하단, 좌하단 좌표를 입력합니다.
+ */
 export function RectangleFeature({
   coordinates,
   color = 'red',
