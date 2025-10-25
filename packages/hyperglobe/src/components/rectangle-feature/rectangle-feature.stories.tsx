@@ -8,7 +8,14 @@ const meta = {
   component: RectangleFeature,
   tags: ['autodocs'],
   decorators: [
-    (Story) => <HyperGlobe {...StorybookConstant.props.HyperGlobe}>{Story()}</HyperGlobe>,
+    (Story) => (
+      <HyperGlobe
+        {...StorybookConstant.props.HyperGlobe}
+        //   wireframe
+      >
+        {Story()}
+      </HyperGlobe>
+    ),
   ],
 } satisfies Meta<typeof RectangleFeature>;
 
@@ -25,6 +32,9 @@ export const FeatureStory: Story = {
       [-10, -10],
     ],
     color: 'blue',
+    fill: true,
+    fillColor: 'blue',
+    fillOpacity: 0.3,
     lineWidth: 5,
   },
 };
@@ -58,6 +68,7 @@ export const HighSubdivision: Story = {
     ],
     color: 'red',
     lineWidth: 2,
+    wireframe: true,
     fill: true,
     fillColor: 'red',
     fillOpacity: 0.5,

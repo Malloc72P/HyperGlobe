@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { OrthographicProj } from '../../lib/projections/orthographic';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature/line-feature';
+import { createGridVectors } from '../../lib/rectangle/create-grid-vectors';
+import { tessellateGrid } from '../../lib/rectangle/tessellate-grid';
 
 export interface RectangleFeatureProps {
   /**
@@ -66,60 +68,37 @@ export function RectangleFeature({
   subdivisions = 10,
   wireframe = false,
 }: RectangleFeatureProps) {
-  // BufferGeometry를 사용한 면 렌더링
+  // 면 렌더링을 위한 geometry 생성 (그리드 방식)
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
 
-    // 1. 네 꼭지점을 3D 좌표로 변환 (면은 1.005 반지름에 배치)
-    const fillRadius = 1.005;
-    const corners = coordinates.map((coord) => OrthographicProj.project(coord, fillRadius));
+    const fillRadius = 1.005; // 외곽선(1.01)보다 낮게 설정하여 Z-fighting 방지
 
-    // 2. 네 변을 보간하여 그리드 생성
-    const topEdge = OrthographicProj.interpolate(corners[0], corners[1], subdivisions, fillRadius);
-    const bottomEdge = OrthographicProj.interpolate(
-      corners[3],
-      corners[2],
+    // 1. 네 꼭지점을 3D 좌표로 변환
+    const corners = OrthographicProj.projects(coordinates, fillRadius);
+
+    const leftTop = corners[0];
+    const rightTop = corners[1];
+    const rightBottom = corners[2];
+    const leftBottom = corners[3];
+
+    // 2. 사각형을 구성하는 그리드 포인트 생성
+    const gridPoints: VectorCoordinate[] = createGridVectors({
+      leftTop,
+      rightTop,
+      rightBottom,
+      leftBottom,
       subdivisions,
-      fillRadius
-    );
-
-    // 3. 그리드 포인트 생성 (각 행을 보간)
-    const gridPoints: VectorCoordinate[] = [];
-    for (let i = 0; i <= subdivisions; i++) {
-      const rowPoints = OrthographicProj.interpolate(
-        topEdge[i],
-        bottomEdge[i],
-        subdivisions,
-        fillRadius
-      );
-      gridPoints.push(...rowPoints);
-    }
-
-    // 4. Vertices 배열 생성
-    const vertices: number[] = [];
-    gridPoints.forEach((point) => {
-      vertices.push(point[0], point[1], point[2]);
+      fillRadius,
     });
 
-    // 5. 삼각형 인덱스 생성
-    const indices: number[] = [];
-    const rowSize = subdivisions + 1;
-    for (let row = 0; row < subdivisions; row++) {
-      for (let col = 0; col < subdivisions; col++) {
-        const topLeft = row * rowSize + col;
-        const topRight = topLeft + 1;
-        const bottomLeft = (row + 1) * rowSize + col;
-        const bottomRight = bottomLeft + 1;
+    // 3. Vertices 배열 생성
+    const vertices = gridPoints.flatMap((point) => [point[0], point[1], point[2]]);
 
-        // 첫 번째 삼각형 (topLeft, bottomLeft, topRight)
-        indices.push(topLeft, bottomLeft, topRight);
+    // 4. 테셀레이션(삼각형 인덱스) 생성
+    const indices: number[] = tessellateGrid({ gridPoints, subdivisions });
 
-        // 두 번째 삼각형 (topRight, bottomLeft, bottomRight)
-        indices.push(topRight, bottomLeft, bottomRight);
-      }
-    }
-
-    // 6. BufferGeometry 생성
+    // 5. BufferGeometry 생성
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);

@@ -38,6 +38,10 @@ function project(coordinate: Coordinate, radius = 1): VectorCoordinate {
   return [x, y, z];
 }
 
+function projects(coordinates: Coordinate[], radius = 1): VectorCoordinate[] {
+  return coordinates.map((coord) => OrthographicProj.project(coord, radius));
+}
+
 /**
  * 두 3D 벡터 사이를 구면을 따라 보간합니다.
  *
@@ -87,7 +91,19 @@ function interpolate(
   return result;
 }
 
+function interpolates(
+  coordinatePairs: [VectorCoordinate, VectorCoordinate][],
+  segments = 10,
+  radius = 1
+) {
+  return coordinatePairs.map(([start, end]) =>
+    OrthographicProj.interpolate(start, end, segments, radius)
+  );
+}
+
 export const OrthographicProj = {
   project,
+  projects,
+  interpolates,
   interpolate,
 };
