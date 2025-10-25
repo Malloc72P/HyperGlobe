@@ -21,17 +21,9 @@
       "dependsOn": ["build", "^build"],
       "cache": true
     },
-    "seed": {
-      "dependsOn": ["^seed"],
-      "cache": false
-    },
-    "sync": {
-      "dependsOn": ["^sync"],
-      "cache": false
-    },
-    "meta": {
-      "dependsOn": ["^meta"],
-      "cache": false
+    "test": {
+      "dependsOn": [],
+      "inputs": []
     }
   }
 }

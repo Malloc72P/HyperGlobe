@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "build:docs": "storybook build",
     "lint": "eslint .",
+    "test": "pnpm test:unit",
     "test:unit": "vitest"
   },
   "dependencies": {

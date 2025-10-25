@@ -7,10 +7,8 @@
     "start": "turbo start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "seed": "turbo seed",
-    "sync": "turbo sync",
     "check-types": "turbo check-types",
-    "meta": "turbo meta"
+    "test": "turbo test"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
