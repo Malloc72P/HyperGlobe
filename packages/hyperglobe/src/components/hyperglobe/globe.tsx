@@ -15,6 +15,7 @@ export interface GlobeProps {
   segments?: [number, number];
   isRendered: boolean;
   setIsRendered: React.Dispatch<React.SetStateAction<boolean>>;
+  wireframe?: boolean;
 }
 
 /**
@@ -43,6 +44,7 @@ export function Globe({
   segments = [64, 32],
   isRendered,
   setIsRendered,
+  wireframe,
 }: GlobeProps) {
   /**
    * 지구 텍스처 로드
@@ -63,7 +65,7 @@ export function Globe({
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}
-      <meshStandardMaterial map={earthTexture} wireframe={false} />
+      <meshStandardMaterial map={earthTexture} wireframe={wireframe} />
     </mesh>
   );
 }

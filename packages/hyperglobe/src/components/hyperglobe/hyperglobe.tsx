@@ -21,6 +21,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 좌표축 시각화 여부
    */
   coordinateSystemVisible?: boolean;
+  /**
+   * wireframe
+   */
+  wireframe?: boolean;
 }
 
 /**
@@ -28,7 +32,13 @@ export interface HyperGlobeProps extends PropsWithChildren {
  *
  * 마우스 드래그를 통해 지구본을 회전시키고, 휠 스크롤로 확대/축소할 수 있습니다.
  */
-export function HyperGlobe({ id, size = 600, coordinateSystemVisible, children }: HyperGlobeProps) {
+export function HyperGlobe({
+  id,
+  size = 600,
+  coordinateSystemVisible,
+  wireframe,
+  children,
+}: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
   return (
@@ -59,7 +69,7 @@ export function HyperGlobe({ id, size = 600, coordinateSystemVisible, children }
 
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
       <group rotation={[0, -Math.PI / 2, 0]}>
-        <Globe isRendered={isRendered} setIsRendered={setIsRendered} />
+        <Globe isRendered={isRendered} setIsRendered={setIsRendered} wireframe={wireframe} />
 
         {/* Children */}
         {children}
