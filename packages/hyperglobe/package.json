@@ -20,6 +20,7 @@
     "three": "^0.180.0"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.8",
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@storybook/addon-docs": "^9.1.13",

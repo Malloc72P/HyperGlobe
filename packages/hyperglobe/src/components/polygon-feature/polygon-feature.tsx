@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import type { Coordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature/line-feature';
 import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
+import type { FeaturePolygons } from '../../types/polygon';
 
 export interface PolygonFeatureProps {
   /**
@@ -10,7 +11,7 @@ export interface PolygonFeatureProps {
    *
    * - 피쳐를 구성하는 경위도 좌표를 순서대로 지정해야 합니다.
    */
-  polygons: Coordinate[];
+  polygons: FeaturePolygons;
 
   /**
    * 선 색상
