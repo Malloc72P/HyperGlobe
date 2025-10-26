@@ -1,19 +1,19 @@
+import { Line } from '@react-three/drei';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { OrthographicProj } from '../../lib/projections/orthographic';
-import { createGridVectors } from '../../lib/rectangle/create-grid-vectors';
-import { tessellateGrid } from '../../lib/rectangle/tessellate-grid';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature/line-feature';
+import { createGridVectors } from '../../lib/rectangle/create-grid-vectors';
+import { tessellateGrid } from '../../lib/rectangle/tessellate-grid';
 
-export interface RectangleFeatureProps {
+export interface PolygonFeatureProps {
   /**
-   * 사각형 좌표 배열.
+   * 폴리곤 좌표 배열
    *
-   * - 네 개의 경위도 좌표를 순서대로 지정해야 합니다.
-   * - 순서대로 좌상단, 우상단, 우하단, 좌하단 좌표를 입력합니다.
+   * - 피쳐를 구성하는 경위도 좌표를 순서대로 지정해야 합니다.
    */
-  coordinates: [Coordinate, Coordinate, Coordinate, Coordinate];
+  polygons: Coordinate[];
 
   /**
    * 선 색상
@@ -52,13 +52,12 @@ export interface RectangleFeatureProps {
 }
 
 /**
- * 사각형 피쳐 컴포넌트.
+ * 폴리곤 피쳐 컴포넌트.
  *
- * - 네 개의 좌표를 받아 사각형을 그립니다.
- * - 순서대로 좌상단, 우상단, 우하단, 좌하단 좌표를 입력합니다.
+ * - 폴리곤 좌표 배열을 받아 다각형을 그립니다.
  */
-export function RectangleFeature({
-  coordinates,
+export function PolygonFeature({
+  polygons,
   color = 'red',
   lineWidth = 2,
   fill = false,
@@ -66,7 +65,7 @@ export function RectangleFeature({
   fillOpacity = 0.3,
   subdivisions = 10,
   wireframe = false,
-}: RectangleFeatureProps) {
+}: PolygonFeatureProps) {
   // 면 렌더링을 위한 geometry 생성 (그리드 방식)
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
@@ -74,7 +73,7 @@ export function RectangleFeature({
     const fillRadius = 1.005; // 외곽선(1.01)보다 낮게 설정하여 Z-fighting 방지
 
     // 1. 네 꼭지점을 3D 좌표로 변환
-    const corners = OrthographicProj.projects(coordinates, fillRadius);
+    const corners = OrthographicProj.projects(polygons, fillRadius);
 
     const leftTop = corners[0];
     const rightTop = corners[1];
@@ -104,7 +103,7 @@ export function RectangleFeature({
     geometry.computeVertexNormals();
 
     return geometry;
-  }, [coordinates, fill, subdivisions]);
+  }, [polygons, fill, subdivisions]);
 
   return (
     <group>
@@ -122,26 +121,10 @@ export function RectangleFeature({
       )}
 
       {/* 외곽선 렌더링 */}
-      <LineFeature
-        coordinates={[coordinates[0], coordinates[1]]}
-        color={color}
-        lineWidth={lineWidth}
-      />
-      <LineFeature
-        coordinates={[coordinates[1], coordinates[2]]}
-        color={color}
-        lineWidth={lineWidth}
-      />
-      <LineFeature
-        coordinates={[coordinates[2], coordinates[3]]}
-        color={color}
-        lineWidth={lineWidth}
-      />
-      <LineFeature
-        coordinates={[coordinates[3], coordinates[0]]}
-        color={color}
-        lineWidth={lineWidth}
-      />
+      <LineFeature coordinates={[polygons[0], polygons[1]]} color={color} lineWidth={lineWidth} />
+      <LineFeature coordinates={[polygons[1], polygons[2]]} color={color} lineWidth={lineWidth} />
+      <LineFeature coordinates={[polygons[2], polygons[3]]} color={color} lineWidth={lineWidth} />
+      <LineFeature coordinates={[polygons[3], polygons[0]]} color={color} lineWidth={lineWidth} />
     </group>
   );
 }

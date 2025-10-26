@@ -3,7 +3,6 @@ import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
-import { RectangleFeature } from '../rectangle-feature/rectangle-feature';
 
 /**
  * HyperGlobe 컴포넌트의 Props
