@@ -12,6 +12,7 @@ const meta = {
     (Story) => (
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
+        rotation={[-Math.PI * 0.03, Math.PI * 0.84, 0]}
         //   wireframe
       >
         {Story()}
@@ -27,10 +28,10 @@ export const FeatureStory: Story = {
   name: 'RegionFeature',
   args: {
     feature: world.features[0] as any,
-    color: 'blue',
+    color: 'white',
     fill: true,
-    fillColor: 'blue',
-    fillOpacity: 0.3,
-    lineWidth: 5,
+    fillColor: 'black',
+    fillOpacity: 0.8,
+    lineWidth: 7,
   },
 };

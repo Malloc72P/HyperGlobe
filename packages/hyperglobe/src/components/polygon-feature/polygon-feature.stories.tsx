@@ -13,6 +13,8 @@ const meta = {
     (Story) => (
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
+        rotation={[-Math.PI / 10, -Math.PI / 6, 0]}
+        // coordinateSystemVisible
         //   wireframe
       >
         {Story()}
@@ -28,10 +30,10 @@ export const PolygonFeatureStory: Story = {
   name: 'PolygonFeature',
   args: {
     polygons: TestFeature.geometry.coordinates[0] as Coordinate[],
-    color: 'blue',
+    color: '#6d6d6d',
     fill: true,
-    fillColor: 'blue',
-    fillOpacity: 0.3,
-    lineWidth: 3,
+    fillColor: 'white',
+    fillOpacity: 0.7,
+    lineWidth: 5,
   },
 };

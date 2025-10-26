@@ -16,6 +16,7 @@ export interface GlobeProps {
   isRendered: boolean;
   setIsRendered: React.Dispatch<React.SetStateAction<boolean>>;
   wireframe?: boolean;
+  rotation?: [number, number, number];
 }
 
 /**

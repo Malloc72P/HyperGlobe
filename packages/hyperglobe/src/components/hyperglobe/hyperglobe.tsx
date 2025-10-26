@@ -24,6 +24,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * wireframe
    */
   wireframe?: boolean;
+  /**
+   * 지구본의 초기 회전 각도 (라디안 단위)
+   */
+  rotation?: [number, number, number];
 }
 
 /**
@@ -37,6 +41,7 @@ export function HyperGlobe({
   coordinateSystemVisible,
   wireframe,
   children,
+  rotation = [0, -Math.PI / 2, 0],
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
@@ -67,7 +72,7 @@ export function HyperGlobe({
       />
 
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
-      <group rotation={[0, -Math.PI / 2, 0]}>
+      <group rotation={rotation}>
         <Globe isRendered={isRendered} setIsRendered={setIsRendered} wireframe={wireframe} />
 
         {/* Children */}
