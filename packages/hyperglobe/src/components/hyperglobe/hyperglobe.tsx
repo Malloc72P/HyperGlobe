@@ -1,6 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe } from './globe';
+import { Globe, type GlobeProps } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
 
@@ -28,6 +28,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 지구본의 초기 회전 각도 (라디안 단위)
    */
   rotation?: [number, number, number];
+  /**
+   * 텍스처 사용 여부
+   */
+  textureEnabled?: boolean;
 }
 
 /**
@@ -42,6 +46,7 @@ export function HyperGlobe({
   wireframe,
   children,
   rotation = [0, -Math.PI / 2, 0],
+  textureEnabled = true,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
@@ -73,7 +78,12 @@ export function HyperGlobe({
 
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
       <group rotation={rotation}>
-        <Globe isRendered={isRendered} setIsRendered={setIsRendered} wireframe={wireframe} />
+        <Globe
+          isRendered={isRendered}
+          setIsRendered={setIsRendered}
+          wireframe={wireframe}
+          textureEnabled={textureEnabled}
+        />
 
         {/* Children */}
         {children}

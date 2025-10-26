@@ -1,6 +1,6 @@
 import { useLoader } from '@react-three/fiber';
-import { useState } from 'react';
-import { TextureLoader, RepeatWrapping } from 'three';
+import { useEffect, useRef, useState } from 'react';
+import { MeshStandardMaterial, TextureLoader } from 'three';
 
 export interface GlobeProps {
   /**
@@ -13,10 +13,22 @@ export interface GlobeProps {
    * @default [32, 16]
    */
   segments?: [number, number];
+  /**
+   * 렌더링 상태
+   */
   isRendered: boolean;
+  /**
+   * 렌더링 상태 설정 함수
+   */
   setIsRendered: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * wireframe 여부
+   */
   wireframe?: boolean;
-  rotation?: [number, number, number];
+  /**
+   * 텍스처 사용 여부
+   */
+  textureEnabled?: boolean;
 }
 
 /**
@@ -46,13 +58,28 @@ export function Globe({
   isRendered,
   setIsRendered,
   wireframe,
+  textureEnabled = true,
 }: GlobeProps) {
   /**
    * 지구 텍스처 로드
    */
   const earthTexture = useLoader(TextureLoader, '/earth-texture.jpg');
-  // 텍스처 래핑 모드: 경계에서 반복되도록 설정 (UV 좌표가 0-1 범위를 벗어날 때)
-  earthTexture.wrapS = earthTexture.wrapT = RepeatWrapping;
+  /**
+   * 메쉬 마테리얼 참조 객체
+   */
+  const materialRef = useRef<MeshStandardMaterial>(null);
+
+  /**
+   * 텍스쳐 활성화 여부 props 변경시 마테리얼 업데이트
+   */
+  useEffect(() => {
+    const material = materialRef.current;
+
+    if (!material || !isRendered) return;
+
+    material.map = textureEnabled ? earthTexture : null;
+    material.needsUpdate = true;
+  }, [textureEnabled]);
 
   return (
     <mesh
@@ -66,7 +93,11 @@ export function Globe({
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}
-      <meshStandardMaterial map={earthTexture} wireframe={wireframe} />
+      <meshStandardMaterial
+        ref={materialRef}
+        map={textureEnabled ? earthTexture : null}
+        wireframe={wireframe}
+      />
     </mesh>
   );
 }
