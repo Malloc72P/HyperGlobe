@@ -3,7 +3,7 @@ import { HyperGlobe } from './hyperglobe';
 import { StorybookConstant } from '../../constants/storybook-constant';
 
 const meta = {
-  title: 'HyperGlobe',
+  title: 'Components/HyperGlobe(지구본)',
   tags: ['autodocs'],
   component: HyperGlobe,
 } satisfies Meta<typeof HyperGlobe>;

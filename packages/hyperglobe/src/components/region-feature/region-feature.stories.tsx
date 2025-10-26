@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { RegionFeature } from './region-feature';
 import { HyperGlobe } from '../..';
 import { StorybookConstant } from '../../constants/storybook-constant';
-import world from './world-low.geo.json';
+import world from '../../data/world-low.geo.json';
 
 const meta = {
-  title: 'RegionFeature',
+  title: 'Components/RegionFeature(지역)',
   component: RegionFeature,
   tags: ['autodocs'],
   decorators: [

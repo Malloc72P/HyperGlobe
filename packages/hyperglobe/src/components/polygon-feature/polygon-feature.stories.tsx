@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { PolygonFeature } from './polygon-feature';
 import { HyperGlobe } from '../..';
 import { StorybookConstant } from '../../constants/storybook-constant';
-import TestFeature from './test-polygon.json';
+import TestFeature from '../../data/test-polygon.json';
 import type { Coordinate } from '../../types/coordinate';
 
 const meta = {
-  title: 'PolygonFeature',
+  title: 'Components/PolygonFeature',
   component: PolygonFeature,
   tags: ['autodocs'],
   decorators: [

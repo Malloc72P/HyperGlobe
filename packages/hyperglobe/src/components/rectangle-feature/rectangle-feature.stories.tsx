@@ -4,7 +4,7 @@ import { HyperGlobe } from '../..';
 import { StorybookConstant } from '../../constants/storybook-constant';
 
 const meta = {
-  title: 'RectangleFeature',
+  title: 'Components/RectangleFeature',
   component: RectangleFeature,
   tags: ['autodocs'],
   decorators: [
