@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { OrthographicProj } from '../projections/orthographic';
 import type { Coordinate } from '../../types/coordinate';
-import { createGridVectors } from './create-grid-vectors';
+import { createGridPoints } from './create-grid-points';
 
-describe('createGridVectors', () => {
+describe('createGridPoints', () => {
   it('subdivisions=1일 때 4개의 그리드 포인트를 생성해야 함', () => {
     // Given: 경위도 좌표 (작은 사각형 영역)
     const coords: [Coordinate, Coordinate, Coordinate, Coordinate] = [
@@ -16,7 +16,7 @@ describe('createGridVectors', () => {
     const corners = OrthographicProj.projects(coords, fillRadius);
 
     // When
-    const result = createGridVectors({
+    const result = createGridPoints({
       leftTop: corners[0],
       rightTop: corners[1],
       rightBottom: corners[2],
@@ -41,7 +41,7 @@ describe('createGridVectors', () => {
     const corners = OrthographicProj.projects(coords, fillRadius);
 
     // When
-    const result = createGridVectors({
+    const result = createGridPoints({
       leftTop: corners[0],
       rightTop: corners[1],
       rightBottom: corners[2],
@@ -66,7 +66,7 @@ describe('createGridVectors', () => {
     const corners = OrthographicProj.projects(coords, fillRadius);
 
     // When
-    const result = createGridVectors({
+    const result = createGridPoints({
       leftTop: corners[0],
       rightTop: corners[1],
       rightBottom: corners[2],
@@ -100,7 +100,7 @@ describe('createGridVectors', () => {
     const corners = OrthographicProj.projects(coords, fillRadius);
 
     // When
-    const result = createGridVectors({
+    const result = createGridPoints({
       leftTop: corners[0],
       rightTop: corners[1],
       rightBottom: corners[2],
@@ -125,7 +125,7 @@ describe('createGridVectors', () => {
     const corners = OrthographicProj.projects(coords, fillRadius);
 
     // When
-    const result = createGridVectors({
+    const result = createGridPoints({
       leftTop: corners[0],
       rightTop: corners[1],
       rightBottom: corners[2],

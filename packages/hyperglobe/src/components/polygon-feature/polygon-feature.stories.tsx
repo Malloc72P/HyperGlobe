@@ -32,6 +32,6 @@ export const PolygonFeatureStory: Story = {
     fill: true,
     fillColor: 'blue',
     fillOpacity: 0.3,
-    lineWidth: 5,
+    lineWidth: 3,
   },
 };

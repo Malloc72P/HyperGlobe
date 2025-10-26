@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { VectorCoordinate } from '../../types/coordinate';
-import { tessellateGrid } from './tessellate-grid';
+import { triangulateRectangle } from './triangulate-rectangle';
 
-describe('tessellateGrid', () => {
+describe('triangulateRectangle', () => {
   it('subdivisions=1일 때 6개의 인덱스를 생성해야 함 (삼각형 2개)', () => {
     // Given: 4개의 그리드 포인트 (2x2)
     const gridPoints: VectorCoordinate[] = [
@@ -13,7 +13,7 @@ describe('tessellateGrid', () => {
     ];
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 1,
     });
@@ -31,7 +31,7 @@ describe('tessellateGrid', () => {
     ]);
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 2,
     });
@@ -49,7 +49,7 @@ describe('tessellateGrid', () => {
     ]);
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 2,
     });
@@ -72,7 +72,7 @@ describe('tessellateGrid', () => {
     ];
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions,
     });
@@ -96,7 +96,7 @@ describe('tessellateGrid', () => {
     ]);
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 2,
     });
@@ -114,7 +114,7 @@ describe('tessellateGrid', () => {
     ]);
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 10,
     });
@@ -133,7 +133,7 @@ describe('tessellateGrid', () => {
     ];
 
     // When
-    const indices = tessellateGrid({
+    const indices = triangulateRectangle({
       gridPoints,
       subdivisions: 1,
     });

@@ -1,2 +1,2 @@
-export * from './create-grid-vectors';
-export * from './tessellate-grid';
+export * from './create-grid-points';
+export * from './triangulate-rectangle';

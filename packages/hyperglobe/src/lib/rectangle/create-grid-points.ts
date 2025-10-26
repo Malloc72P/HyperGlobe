@@ -1,5 +1,5 @@
+import type { VectorCoordinate } from '../../types/coordinate';
 import { OrthographicProj } from '../projections/orthographic';
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 
 export interface CreateGridVectorsParam {
   /**
@@ -33,7 +33,7 @@ export interface CreateGridVectorsParam {
  *
  * - 좌표는 3D 직교좌표계의 좌표입니다.
  */
-export function createGridVectors({
+export function createGridPoints({
   leftTop,
   rightTop,
   rightBottom,

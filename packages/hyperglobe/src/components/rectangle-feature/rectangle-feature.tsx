@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { OrthographicProj } from '../../lib/projections/orthographic';
-import { createGridVectors } from '../../lib/rectangle/create-grid-vectors';
-import { tessellateGrid } from '../../lib/rectangle/tessellate-grid';
+import { createGridPoints } from '../../lib/rectangle/create-grid-points';
+import { triangulateRectangle } from '../../lib/rectangle/triangulate-rectangle';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature/line-feature';
 
@@ -82,7 +82,7 @@ export function RectangleFeature({
     const leftBottom = corners[3];
 
     // 2. 사각형을 구성하는 그리드 포인트 생성
-    const gridPoints: VectorCoordinate[] = createGridVectors({
+    const gridPoints: VectorCoordinate[] = createGridPoints({
       leftTop,
       rightTop,
       rightBottom,
@@ -95,7 +95,7 @@ export function RectangleFeature({
     const vertices = gridPoints.flatMap((point) => [point[0], point[1], point[2]]);
 
     // 4. 테셀레이션(삼각형 인덱스) 생성
-    const indices: number[] = tessellateGrid({ gridPoints, subdivisions });
+    const indices: number[] = triangulateRectangle({ gridPoints, subdivisions });
 
     // 5. BufferGeometry 생성
     const geometry = new THREE.BufferGeometry();
