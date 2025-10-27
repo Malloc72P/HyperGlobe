@@ -1,6 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe, type GlobeProps } from './globe';
+import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
 
