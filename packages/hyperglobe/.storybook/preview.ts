@@ -5,7 +5,7 @@ const preview: Preview = {
   parameters: {
     options: {
       storySort: {
-        order: ['Guide', 'Components', ['HyperGlobe(지구본)', 'RegionFeature(지역)']],
+        order: ['Guide', 'Components', ['HyperGlobe', 'RegionFeature']],
       },
     },
   },

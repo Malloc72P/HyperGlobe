@@ -3,7 +3,7 @@ import { HyperGlobe } from './hyperglobe';
 import { StorybookConstant } from '../../constants/storybook-constant';
 
 const meta = {
-  title: 'Components/HyperGlobe(지구본)',
+  title: 'Components/HyperGlobe',
   tags: ['autodocs'],
   component: HyperGlobe,
 } satisfies Meta<typeof HyperGlobe>;
@@ -15,5 +15,13 @@ export const GettingStarted: Story = {
   name: 'Getting Started',
   args: {
     ...StorybookConstant.props.HyperGlobe,
+  },
+};
+
+export const LoadingData: Story = {
+  name: 'Loading Data',
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    loading: true,
   },
 };

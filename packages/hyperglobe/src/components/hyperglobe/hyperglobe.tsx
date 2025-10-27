@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
+import { LoadingUI } from '../loading-ui';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -12,6 +13,11 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * Canvas 요소의 id 속성
    */
   id?: string;
+  /**
+   * 로딩 상태 표시 여부. <br />
+   * true일 경우 로딩 UI가 캔버스 위에 표시됩니다.
+   */
+  loading?: boolean;
   /**
    * 지구본의 크기
    */
@@ -41,10 +47,20 @@ export interface HyperGlobeProps extends PropsWithChildren {
 /**
  * **WEBGL 기반 지구본 컴포넌트.**
  *
- * 마우스 드래그를 통해 지구본을 회전시키고, 휠 스크롤로 확대/축소할 수 있습니다.
+ * - HyperGlobe 컴포넌트의 루트 컴포넌트입니다.
+ * - 해당 컴포넌트를 통해 지구본을 랜더링하고 다양한 3D 피쳐들을 자식 컴포넌트로 추가할 수 있습니다.
+ * - 피쳐를 추가하려면 RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가하면 됩니다
+ * ```
+ * <HyperGlobe>
+ *     <Graticule />
+ *     {features.map((feature) => <RegionFeature feature={feature} />)}
+ * </HyperGlobe>
+ * ```
+ *
  */
 export function HyperGlobe({
   id,
+  loading = false,
   size = 600,
   coordinateSystemVisible,
   wireframe,
@@ -56,47 +72,50 @@ export function HyperGlobe({
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
   return (
-    <Canvas
-      id={id}
-      style={{ height: size }}
-      // 초기 카메라 위치
-      camera={{ position: [0, 0, 5], fov: 25 }}
-      data-is-rendered={isRendered ? 'true' : 'false'}
-    >
-      {/* 기본 조명 설정 */}
-      <ambientLight intensity={1.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} />
+    <div style={{ position: 'relative' }}>
+      <LoadingUI loading={loading} />
+      <Canvas
+        id={id}
+        style={{ height: size }}
+        // 초기 카메라 위치
+        camera={{ position: [0, 0, 5], fov: 25 }}
+        data-is-rendered={isRendered ? 'true' : 'false'}
+      >
+        {/* 기본 조명 설정 */}
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
 
-      {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
-      <OrbitControls
-        enableZoom={true}
-        enableRotate={true}
-        /**
-         * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
-         */
-        minDistance={3}
-        /**
-         * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
-         */
-        maxDistance={10}
-      />
-
-      {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
-      <group rotation={rotation}>
-        <Globe
-          visible={globeVisible}
-          isRendered={isRendered}
-          setIsRendered={setIsRendered}
-          wireframe={wireframe}
-          textureEnabled={textureEnabled}
+        {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
+        <OrbitControls
+          enableZoom={true}
+          enableRotate={true}
+          /**
+           * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
+           */
+          minDistance={3}
+          /**
+           * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
+           */
+          maxDistance={10}
         />
 
-        {/* Children */}
-        {children}
-      </group>
+        {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
+        <group rotation={rotation}>
+          <Globe
+            visible={globeVisible}
+            isRendered={isRendered}
+            setIsRendered={setIsRendered}
+            wireframe={wireframe}
+            textureEnabled={textureEnabled}
+          />
 
-      {/* 좌표축 시각화 헬퍼들 */}
-      {coordinateSystemVisible && <CoordinateSystem />}
-    </Canvas>
+          {/* Children */}
+          {children}
+        </group>
+
+        {/* 좌표축 시각화 헬퍼들 */}
+        {coordinateSystemVisible && <CoordinateSystem />}
+      </Canvas>
+    </div>
   );
 }

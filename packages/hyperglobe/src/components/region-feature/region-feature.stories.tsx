@@ -5,7 +5,7 @@ import { StorybookConstant } from '../../constants/storybook-constant';
 import world from '../../data/world-low.geo.json';
 
 const meta = {
-  title: 'Components/RegionFeature(지역)',
+  title: 'Components/RegionFeature',
   component: RegionFeature,
   tags: ['autodocs'],
   decorators: [
