@@ -4,6 +4,10 @@ import { MeshStandardMaterial, TextureLoader } from 'three';
 
 export interface GlobeProps {
   /**
+   * visible 여부
+   */
+  visible?: boolean;
+  /**
    * 구체의 위치 (x, y, z)
    */
   position?: [number, number, number];
@@ -59,6 +63,7 @@ export function Globe({
   setIsRendered,
   wireframe,
   textureEnabled = true,
+  visible = true,
 }: GlobeProps) {
   /**
    * 지구 텍스처 로드
@@ -83,6 +88,7 @@ export function Globe({
 
   return (
     <mesh
+      visible={visible}
       position={position}
       onAfterRender={() => {
         if (!isRendered) {

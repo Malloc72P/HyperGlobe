@@ -56,7 +56,7 @@ function projects(coordinates: Coordinate[], radius = 1): VectorCoordinate[] {
  * const start: VectorCoordinate = [1, 0, 0];
  * const end: VectorCoordinate = [0, 1, 0];
  * const interpolated = interpolate(start, end, 5);
- * // 두 점 사이를 5개 세그먼트로 나눈 점들 반환
+ * // 두 점 사이를 세그먼트로 나눈 점들 반환
  * ```
  */
 function interpolate(

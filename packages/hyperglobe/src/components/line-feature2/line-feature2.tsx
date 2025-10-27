@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { OrthographicProj } from '../../lib/projections/orthographic';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 
-export interface LineFeatureProps {
+export interface LineFeature2Props {
   /**
    * 시작점과 끝점의 경위도 좌표 배열
    */
-  coordinates: [Coordinate, Coordinate];
+  coordinates: Coordinate[];
   /**
    * 선 색상
    */
@@ -32,25 +32,18 @@ export interface LineFeatureProps {
   z?: number;
 }
 
-export function LineFeature({
+export function LineFeature2({
   coordinates,
   color = 'red',
   lineWidth = 2,
   interpolation = 10,
   z = 1.0001,
-}: LineFeatureProps) {
+}: LineFeature2Props) {
   const vectors = useMemo<VectorCoordinate[]>(() => {
     // 1. 경위도 좌표를 3D 벡터로 변환
     const projectedVectors = coordinates.map((c) => OrthographicProj.project(c, z));
-    const interpolatedVectors: VectorCoordinate[] = [];
 
-    // 2. 3D 벡터를 선형 보간하여 부드러운 곡선 생성
-    const start = projectedVectors[0];
-    const end = projectedVectors[1];
-    const interpolated = OrthographicProj.interpolate(start, end, interpolation, z);
-    interpolatedVectors.push(...interpolated);
-
-    return interpolatedVectors;
+    return projectedVectors;
   }, [coordinates]);
 
   return <Line points={vectors} color={color} lineWidth={lineWidth} />;

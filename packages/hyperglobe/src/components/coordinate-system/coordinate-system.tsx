@@ -19,40 +19,34 @@ export interface CoordinateSystemProps {
  * @param param0
  * @returns
  */
-export function CoordinateSystem({ length = 1.02, radius = 0.008 }: CoordinateSystemProps) {
+export function CoordinateSystem({ length = 1.5, radius = 0.008 }: CoordinateSystemProps) {
   return (
     <>
       {/* X축: 빨간색 선 (오른쪽 방향) */}
-      <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
-        <cylinderGeometry args={[radius, radius, length * 0.5]} />
+      <mesh position={[length * 0.5, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+        <cylinderGeometry args={[radius, radius, length]} />
         <meshBasicMaterial color="red" />
       </mesh>
 
       {/* Y축: 초록색 선 (위쪽 방향) */}
-      <mesh position={[0, 1, 0]}>
-        <cylinderGeometry args={[radius, radius, length * 0.5]} />
+      <mesh position={[0, length * 0.5, 0]}>
+        <cylinderGeometry args={[radius, radius, length]} />
         <meshBasicMaterial color="green" />
       </mesh>
 
       {/* Z축: 파란색 선 (앞쪽 방향, 카메라 쪽) */}
-      <mesh position={[0, 0, 1]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[radius, radius, length * 0.5]} />
+      <mesh position={[0, 0, length * 0.5]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[radius, radius, length]} />
         <meshBasicMaterial color="blue" />
       </mesh>
 
       {/* 각 축의 라벨 텍스트 (항상 카메라를 향함) */}
-      <Text
-        position={[length + 0.3, 0, 0]}
-        fontSize={0.12}
-        color="red"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[length, 0, 0]} fontSize={0.12} color="red" anchorX="center" anchorY="middle">
         +X
       </Text>
 
       <Text
-        position={[0, length + 0.3, 0]}
+        position={[0, length, 0]}
         fontSize={0.12}
         color="green"
         anchorX="center"
@@ -62,7 +56,7 @@ export function CoordinateSystem({ length = 1.02, radius = 0.008 }: CoordinateSy
       </Text>
 
       <Text
-        position={[0, 0, length + 0.3]}
+        position={[0, 0, length]}
         fontSize={0.12}
         color="blue"
         anchorX="center"
