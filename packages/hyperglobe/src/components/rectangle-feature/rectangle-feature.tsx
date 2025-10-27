@@ -4,7 +4,7 @@ import { OrthographicProj } from '../../lib/projections/orthographic';
 import { createGridPoints } from '../../lib/rectangle/create-grid-points';
 import { triangulateRectangle } from '../../lib/rectangle/triangulate-rectangle';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
-import { LineFeature } from '../line-feature/line-feature';
+import { StraightLineFeature } from '../straight-line-feature/straight-line-feature';
 
 export interface RectangleFeatureProps {
   /**
@@ -122,22 +122,22 @@ export function RectangleFeature({
       )}
 
       {/* 외곽선 렌더링 */}
-      <LineFeature
+      <StraightLineFeature
         coordinates={[coordinates[0], coordinates[1]]}
         color={color}
         lineWidth={lineWidth}
       />
-      <LineFeature
+      <StraightLineFeature
         coordinates={[coordinates[1], coordinates[2]]}
         color={color}
         lineWidth={lineWidth}
       />
-      <LineFeature
+      <StraightLineFeature
         coordinates={[coordinates[2], coordinates[3]]}
         color={color}
         lineWidth={lineWidth}
       />
-      <LineFeature
+      <StraightLineFeature
         coordinates={[coordinates[3], coordinates[0]]}
         color={color}
         lineWidth={lineWidth}

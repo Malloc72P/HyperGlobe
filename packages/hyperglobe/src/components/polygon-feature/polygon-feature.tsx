@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { Coordinate } from '../../types/coordinate';
-import { LineFeature } from '../line-feature/line-feature';
+import { LineFeature } from '../line-feature';
 import { triangulatePolygon, type SubdivisionOptions } from '../../lib/polygon/triangulate-polygon';
 import type { FeaturePolygons } from '../../types/polygon';
 
@@ -122,14 +122,10 @@ export function PolygonFeature({
       {/* {polygons.map((coord, index) => {
         const nextIndex = (index + 1) % polygons.length;
         return (
-          <LineFeature
-            key={`line-${index}`}
-            coordinates={[coord, polygons[nextIndex]]}
-            color={color}
-            lineWidth={lineWidth}
-          />
+          
         );
       })} */}
+      <LineFeature coordinates={polygons} color={color} lineWidth={lineWidth} />
     </group>
   );
 }
