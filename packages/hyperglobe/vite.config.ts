@@ -13,7 +13,7 @@ export default defineConfig({
       outDir: 'dist',
       insertTypesEntry: true,
       tsconfigPath: './tsconfig.app.json',
-      exclude: ['**/*.spec.*', 'example/**/*'],
+      exclude: ['**/*.spec.*', 'example/**/*', '**/*.stories.tsx', 'storybook/**/*'],
     }),
   ],
   build: {
