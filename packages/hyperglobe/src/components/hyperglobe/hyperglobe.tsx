@@ -1,6 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe, type GlobeProps } from './globe';
+import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
 
@@ -32,6 +32,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 텍스처 사용 여부
    */
   textureEnabled?: boolean;
+  /**
+   * 지구 보이기 여부
+   */
+  globeVisible?: boolean;
 }
 
 /**
@@ -47,6 +51,7 @@ export function HyperGlobe({
   children,
   rotation = [0, -Math.PI / 2, 0],
   textureEnabled = true,
+  globeVisible = true,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
@@ -55,7 +60,7 @@ export function HyperGlobe({
       id={id}
       style={{ height: size }}
       // 초기 카메라 위치
-      camera={{ position: [0, 0, 1.8] }}
+      camera={{ position: [0, 0, 5], fov: 25 }}
       data-is-rendered={isRendered ? 'true' : 'false'}
     >
       {/* 기본 조명 설정 */}
@@ -69,7 +74,7 @@ export function HyperGlobe({
         /**
          * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
          */
-        minDistance={1.8}
+        minDistance={3}
         /**
          * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
          */
@@ -79,6 +84,7 @@ export function HyperGlobe({
       {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
       <group rotation={rotation}>
         <Globe
+          visible={globeVisible}
           isRendered={isRendered}
           setIsRendered={setIsRendered}
           wireframe={wireframe}
