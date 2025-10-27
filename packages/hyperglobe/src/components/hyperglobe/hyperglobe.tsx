@@ -4,6 +4,8 @@ import { Globe } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
 import { LoadingUI } from '../loading-ui';
+import type { GeoJSON, Feature, MultiPolygon, Polygon, FeatureCollection } from 'geojson';
+import { RegionFeature, type RegionFeatureProps } from '../region-feature';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -42,6 +44,18 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 지구 보이기 여부
    */
   globeVisible?: boolean;
+  /**
+   * 지도 데이터 (GeoJSON 형식)
+   *
+   * - 해당 데이터를 통해 지구본에 리젼 피쳐를 렌더링할 수 있습니다.
+   * - ex: 국가별 경계 정보를 담은 GeoJSON 데이터를 전달하여 국가 경계선을 리젼 피쳐로 표현.
+   * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
+   */
+  mapData?: FeatureCollection<MultiPolygon, Polygon>;
+  regionStyle?: Pick<
+    RegionFeatureProps,
+    'color' | 'lineWidth' | 'fill' | 'fillColor' | 'fillOpacity' | 'wireframe'
+  >;
 }
 
 /**
@@ -65,9 +79,11 @@ export function HyperGlobe({
   coordinateSystemVisible,
   wireframe,
   children,
+  mapData,
   rotation = [0, -Math.PI / 2, 0],
   textureEnabled = true,
   globeVisible = true,
+  regionStyle,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
@@ -111,6 +127,12 @@ export function HyperGlobe({
 
           {/* Children */}
           {children}
+
+          {/* Region Features by MapData */}
+          {mapData &&
+            mapData.features.map((feature) => (
+              <RegionFeature key={feature.id} feature={feature} {...regionStyle} />
+            ))}
         </group>
 
         {/* 좌표축 시각화 헬퍼들 */}

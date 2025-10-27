@@ -6,6 +6,8 @@ import { PolygonFeature } from '../polygon-feature/polygon-feature';
 export interface RegionFeatureProps {
   /**
    * 지역의 피쳐 정보(GeoJson 형식).
+   *
+   * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
   feature: Feature<Polygon | MultiPolygon>;
 
@@ -99,10 +101,3 @@ export function RegionFeature({
     </group>
   );
 }
-
-// type: "Polygon";
-// coordinates: Position[][];
-// number[][][]
-// Position = number[]
-// Coordinate = [number, number]
-// Polygon.coordinates = Coordinate[][]

@@ -5,7 +5,6 @@ export const StorybookConstant = {
     HyperGlobe: {
       id: 'hyperglobe-canvas',
       size: 700,
-      textureEnabled: true,
     },
   },
 };

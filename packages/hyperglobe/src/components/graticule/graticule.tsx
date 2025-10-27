@@ -36,14 +36,21 @@ export interface GraticuleProps {
   primeMeridianColor?: string;
 }
 
+/**
+ * 격자무늬(Graticule) 컴포넌트
+ *
+ * - 경선과 위선으로 이루어진 격자무늬를 지구본에 추가합니다.
+ * - 본초자오선(Prime Meridian)과 적도(Equator)는 별도의 색상과 두께로 설정할 수 있습니다.
+ * - 경선과 위선의 간격은 longitudeStep과 latitudeStep 속성으로 조절할 수 있습니다.
+ */
 export function Graticule({
   longitudeStep = 10,
   latitudeStep = 10,
-  lineColor = '#ffda46',
-  equatorColor = 'yellow',
-  primeMeridianColor = 'yellow',
-  equatorLineWidth = 5,
-  primeMeridianLineWidth = 5,
+  lineColor = '#808080',
+  equatorColor = '#808080',
+  primeMeridianColor = '#808080',
+  equatorLineWidth = 3,
+  primeMeridianLineWidth = 3,
   lineWidth = 2,
 }: GraticuleProps) {
   return (

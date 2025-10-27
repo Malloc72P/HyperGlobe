@@ -28,9 +28,9 @@ export const FeatureStory: Story = {
   name: 'RegionFeature',
   args: {
     feature: world.features[0] as any,
-    color: 'white',
+    color: '#3a5dbb',
     fill: true,
-    fillColor: 'black',
+    fillColor: '#78a9e2',
     fillOpacity: 0.8,
     lineWidth: 7,
   },

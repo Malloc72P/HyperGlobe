@@ -98,7 +98,7 @@ export function PolygonFeature({
       )}
 
       {/* 외곽선 렌더링 */}
-      {polygons.map((coord, index) => {
+      {/* {polygons.map((coord, index) => {
         const nextIndex = (index + 1) % polygons.length;
         return (
           <LineFeature
@@ -108,7 +108,7 @@ export function PolygonFeature({
             lineWidth={lineWidth}
           />
         );
-      })}
+      })} */}
     </group>
   );
 }
