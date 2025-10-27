@@ -1,30 +1,39 @@
 import { Line } from '@react-three/drei';
-import { LineFeature } from '../line-feature';
-import { LineFeature2 } from '../line-feature2';
-import type { Vector3 } from 'three';
-import { toRadian } from '../../lib';
 
 export interface GraticuleLineProps {
   rotateY?: number;
   rotateX?: number;
   y?: number;
+  color?: string;
+  lineWidth?: number;
 }
 
-export function GraticuleLine({ y = 0, rotateX = 0, rotateY = 0 }: GraticuleLineProps) {
+export function GraticuleLine({
+  y = 0,
+  rotateX = 0,
+  rotateY = 0,
+  color = 'yellow',
+  lineWidth = 3,
+}: GraticuleLineProps) {
   const points = Array.from({ length: 65 }, (_, i) => {
     const angle = (i / 64) * Math.PI * 2;
-    const radius = Math.sqrt(1 - y * y);
+    const radius = Math.sqrt(1 - y * y) + 0.001;
 
     return [Math.cos(angle) * radius, Math.sin(angle) * radius, 0] as const;
   });
 
+  // 위도 y가 1 또는 -1인 경우(극점)에는 그리드 라인을 그리지 않음
+  if (Math.abs(y) === 1) {
+    return null;
+  }
+
   return (
     <Line
       position={[0, y, 0]}
-      rotation={[toRadian(rotateX), toRadian(rotateY), 0]}
+      rotation={[rotateX, rotateY, 0]}
       points={points}
-      color="yellow"
-      lineWidth={3}
+      color={color}
+      lineWidth={lineWidth}
     />
   );
 }

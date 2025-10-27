@@ -60,7 +60,7 @@ export function HyperGlobe({
       id={id}
       style={{ height: size }}
       // 초기 카메라 위치
-      camera={{ position: [0, 0, 1.8] }}
+      camera={{ position: [0, 0, 5], fov: 25 }}
       data-is-rendered={isRendered ? 'true' : 'false'}
     >
       {/* 기본 조명 설정 */}
@@ -74,7 +74,7 @@ export function HyperGlobe({
         /**
          * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
          */
-        minDistance={1.8}
+        minDistance={3}
         /**
          * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
          */

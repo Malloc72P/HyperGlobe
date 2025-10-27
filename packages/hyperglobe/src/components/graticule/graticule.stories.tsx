@@ -11,9 +11,10 @@ const meta = {
     (Story) => (
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        coordinateSystemVisible
+        // coordinateSystemVisible
         // wireframe
         // globeVisible={false}
+        // textureEnabled={false}
       >
         {Story()}
       </HyperGlobe>
