@@ -1,6 +1,10 @@
 import earcut from 'earcut';
 import { OrthographicProj } from '../projections/orthographic';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import { subdivideTriangles, type SubdivisionOptions } from './subdivide-triangles';
+
+// Re-export for convenience
+export type { SubdivisionOptions };
 
 export interface TriangulatePolygonOptions {
   /**
@@ -12,6 +16,12 @@ export interface TriangulatePolygonOptions {
    * 구의 반지름
    */
   radius: number;
+
+  /**
+   * 삼각형 세분화 옵션
+   * 큰 폴리곤에서 더 부드러운 곡면을 위해 사용
+   */
+  subdivision?: SubdivisionOptions;
 }
 
 export interface TriangulatePolygonResult {
@@ -46,6 +56,7 @@ export interface TriangulatePolygonResult {
 export function triangulatePolygon({
   coordinates,
   radius,
+  subdivision,
 }: TriangulatePolygonOptions): TriangulatePolygonResult {
   // 1. Earcut은 flat array를 요구: [x1, y1, x2, y2, ...]
   const flatCoords = coordinates.flatMap((coord) => [coord[0], coord[1]]);
@@ -56,6 +67,15 @@ export function triangulatePolygon({
 
   // 3. 경위도 좌표를 3D 구면 좌표로 변환
   const vertices = OrthographicProj.projects(coordinates, radius);
+
+  // 4. 세분화 옵션이 있으면 삼각형을 세분화
+  if (subdivision) {
+    const subdivisionResult = subdivideTriangles(vertices, indices, radius, subdivision);
+    return {
+      vertices: subdivisionResult.vertices,
+      indices: subdivisionResult.indices,
+    };
+  }
 
   return {
     vertices,

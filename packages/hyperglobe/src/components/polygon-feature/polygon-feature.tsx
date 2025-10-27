@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { Coordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature/line-feature';
-import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
+import { triangulatePolygon, type SubdivisionOptions } from '../../lib/polygon/triangulate-polygon';
 import type { FeaturePolygons } from '../../types/polygon';
 
 export interface PolygonFeatureProps {
@@ -42,6 +42,25 @@ export interface PolygonFeatureProps {
    * wireframe 모드 여부
    */
   wireframe?: boolean;
+
+  /**
+   * 삼각형 세분화 옵션
+   * 큰 폴리곤에서 더 부드러운 곡면을 위해 사용
+   *
+   * @example
+   * ```tsx
+   * // 기본 세분화 (적당한 품질)
+   * <PolygonFeature subdivision={{}} />
+   *
+   * // 높은 품질 세분화
+   * <PolygonFeature subdivision={{
+   *   maxDepth: 4,
+   *   maxTriangleArea: 0.005,
+   *   maxEdgeLength: 0.1
+   * }} />
+   * ```
+   */
+  subdivision?: SubdivisionOptions;
 }
 
 /**
@@ -57,17 +76,19 @@ export function PolygonFeature({
   fillColor = 'red',
   fillOpacity = 0.3,
   wireframe = false,
+  subdivision,
 }: PolygonFeatureProps) {
-  // 면 렌더링을 위한 geometry 생성 (Earcut 삼각분할)
+  // 면 렌더링을 위한 geometry 생성 (Earcut 삼각분할 + 선택적 세분화)
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
 
     const fillRadius = 1.005; // 외곽선(1.01)보다 낮게 설정하여 Z-fighting 방지
 
-    // Earcut을 사용하여 폴리곤 삼각분할
+    // 삼각분할 (세분화 옵션 포함)
     const { vertices, indices } = triangulatePolygon({
       coordinates: polygons,
       radius: fillRadius,
+      subdivision, // 세분화 옵션 전달
     });
 
     // BufferGeometry 생성
@@ -80,7 +101,7 @@ export function PolygonFeature({
     geometry.computeVertexNormals();
 
     return geometry;
-  }, [polygons, fill]);
+  }, [polygons, fill, subdivision]);
 
   return (
     <group>

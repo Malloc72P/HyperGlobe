@@ -24,15 +24,15 @@ export const MapData: Story = {
   args: {
     ...StorybookConstant.props.HyperGlobe,
     mapData: GeoJson as any,
-    textureEnabled: false,
-    globeVisible: false,
+    // textureEnabled: false,
+    // globeVisible: false,
     // coordinateSystemVisible: true,
     regionStyle: {
       fill: true,
       fillColor: '#354c98',
       fillOpacity: 0.7,
       color: '#354c98',
-      wireframe: true,
+      //   wireframe: true,
     },
   },
 };
