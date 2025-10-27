@@ -56,10 +56,7 @@ export function Graticule({
         lineWidth={equatorLineWidth}
       />
 
-      {/* 본초자오선 */}
-      <GraticuleLine y={0} color={primeMeridianColor} lineWidth={primeMeridianLineWidth} />
-
-      {/* 경선 */}
+      {/* 위선 */}
       {Array.from({ length: 90 / latitudeStep }).map((_, i) => {
         const currentLat = Math.floor((i + 1) * latitudeStep);
         const y = Math.sin(toRadian(currentLat));
@@ -72,9 +69,17 @@ export function Graticule({
         );
       })}
 
-      {/* 위선 */}
+      {/* 본초자오선 */}
+      <GraticuleLine y={0} color={primeMeridianColor} lineWidth={primeMeridianLineWidth} />
+
+      {/* 경선 */}
       {Array.from({ length: 180 / longitudeStep }).map((_, i) => {
         const currentLongitude = Math.floor((i + 1) * longitudeStep);
+
+        if (currentLongitude === 180) {
+          // 이미 본초자오선을 따로 그리기 떄문에 해당 경선은 그리지 않는다.
+          return null;
+        }
 
         return (
           <group key={`graticule-lon-${i}`}>
