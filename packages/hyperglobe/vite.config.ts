@@ -24,7 +24,7 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'three', '@react-three/fiber', '@react-three/drei'],
       output: {
         globals: {
           react: 'React',
