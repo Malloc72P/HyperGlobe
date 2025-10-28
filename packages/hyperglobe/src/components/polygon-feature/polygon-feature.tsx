@@ -4,6 +4,7 @@ import type { Coordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature';
 import { triangulatePolygon, type SubdivisionOptions } from '../../lib/polygon/triangulate-polygon';
 import type { FeaturePolygons } from '../../types/polygon';
+import { UiConstant } from '../../constants';
 
 export interface PolygonFeatureProps {
   /**
@@ -82,7 +83,7 @@ export function PolygonFeature({
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
 
-    const fillRadius = 1.005; // 외곽선(1.01)보다 낮게 설정하여 Z-fighting 방지
+    const fillRadius = UiConstant.feature.fillRadius;
 
     // 삼각분할 (세분화 옵션 포함)
     const { vertices, indices } = triangulatePolygon({
@@ -105,6 +106,9 @@ export function PolygonFeature({
 
   return (
     <group>
+      {/* 외곽선 렌더링 */}
+      <LineFeature coordinates={polygons} color={color} lineWidth={lineWidth} />
+
       {/* 면 렌더링 */}
       {fill && fillGeometry && (
         <mesh geometry={fillGeometry}>
@@ -117,15 +121,6 @@ export function PolygonFeature({
           />
         </mesh>
       )}
-
-      {/* 외곽선 렌더링 */}
-      {/* {polygons.map((coord, index) => {
-        const nextIndex = (index + 1) % polygons.length;
-        return (
-          
-        );
-      })} */}
-      <LineFeature coordinates={polygons} color={color} lineWidth={lineWidth} />
     </group>
   );
 }

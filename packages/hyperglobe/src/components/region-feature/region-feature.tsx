@@ -50,11 +50,11 @@ export interface RegionFeatureProps {
  */
 export function RegionFeature({
   feature,
-  color = 'red',
   lineWidth = 2,
+  color = '#3a5dbb',
   fill = false,
-  fillColor = 'red',
-  fillOpacity = 0.3,
+  fillColor = '#78a9e2',
+  fillOpacity = 1,
   wireframe = false,
 }: RegionFeatureProps) {
   const memorized = useMemo(() => {
