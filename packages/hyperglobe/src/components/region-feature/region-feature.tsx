@@ -96,10 +96,11 @@ export function RegionFeature({
           fillColor={fillColor}
           fillOpacity={fillOpacity}
           wireframe={wireframe}
+          //   wireframe={true}
           subdivision={{
             maxDepth: 3,
-            maxTriangleArea: 0.001,
-            maxEdgeLength: 0.2,
+            maxTriangleArea: 0.01,
+            maxEdgeLength: 0.09,
           }}
         />
       ))}

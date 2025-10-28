@@ -28,10 +28,10 @@ export const MapData: Story = {
     // globeVisible: false,
     // coordinateSystemVisible: true,
     regionStyle: {
-      //   fill: true,
-      //   fillColor: '#354c98',
+      fill: true,
+      fillColor: '#78a9e2',
       fillOpacity: 0.7,
-      color: '#354c98',
+      color: '#3a5dbb',
       //   wireframe: true,
     },
   },
