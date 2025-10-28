@@ -33,6 +33,10 @@ export interface GlobeProps {
    * 텍스처 사용 여부
    */
   textureEnabled?: boolean;
+  /**
+   * 구체 색상
+   */
+  color?: string;
 }
 
 /**
@@ -64,6 +68,7 @@ export function Globe({
   wireframe,
   textureEnabled = true,
   visible = true,
+  color = '#0077be',
 }: GlobeProps) {
   /**
    * 지구 텍스처 로드
@@ -103,6 +108,9 @@ export function Globe({
         ref={materialRef}
         map={textureEnabled ? earthTexture : null}
         wireframe={wireframe}
+        color={color}
+        roughness={0.3} // 매끄러운 표면
+        metalness={0.4} // 약간의 금속성으로 반사효과
       />
     </mesh>
   );

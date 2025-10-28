@@ -112,12 +112,14 @@ export function PolygonFeature({
       {/* 면 렌더링 */}
       {fill && fillGeometry && (
         <mesh geometry={fillGeometry}>
-          <meshBasicMaterial
+          <meshStandardMaterial
             color={fillColor}
             transparent
             opacity={fillOpacity}
             side={THREE.DoubleSide}
             wireframe={wireframe}
+            roughness={0.3}
+            metalness={0.4}
           />
         </mesh>
       )}

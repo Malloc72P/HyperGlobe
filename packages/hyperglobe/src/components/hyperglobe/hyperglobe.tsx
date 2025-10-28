@@ -52,6 +52,13 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
   mapData?: FeatureCollection<MultiPolygon, Polygon>;
+  /**
+   * 지구 배경색
+   */
+  globeColor?: string;
+  /**
+   * 리젼 피쳐의 공통 스타일 설정
+   */
   regionStyle?: Pick<
     RegionFeatureProps,
     'color' | 'lineWidth' | 'fill' | 'fillColor' | 'fillOpacity' | 'wireframe'
@@ -82,7 +89,8 @@ export function HyperGlobe({
   mapData,
   rotation = [0, -Math.PI / 2, 0],
   textureEnabled = true,
-  globeVisible = true,
+  globeColor,
+  globeVisible,
   regionStyle,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
@@ -119,6 +127,7 @@ export function HyperGlobe({
         <group rotation={rotation}>
           <Globe
             visible={globeVisible}
+            color={globeColor}
             isRendered={isRendered}
             setIsRendered={setIsRendered}
             wireframe={wireframe}
