@@ -28,6 +28,7 @@ export const MapData: Story = {
     regionStyle: {
       fill: true,
       fillColor: '#78a9e2',
+      lineWidth: 1,
       //   fillOpacity: 0.9,
       color: '#3a5dbb',
       //   wireframe: true,

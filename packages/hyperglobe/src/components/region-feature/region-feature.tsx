@@ -48,15 +48,7 @@ export interface RegionFeatureProps {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature({
-  feature,
-  lineWidth = 2,
-  color = '#3a5dbb',
-  fill = false,
-  fillColor = '#78a9e2',
-  fillOpacity = 1,
-  wireframe = false,
-}: RegionFeatureProps) {
+export function RegionFeature({ feature, ...polygonFeatureProps }: RegionFeatureProps) {
   const memorized = useMemo(() => {
     // 멀티, 싱글 폴리곤 전부 처리할 수 있어야 함.
     const featurePolygons: FeaturePolygons[] = [];
@@ -90,18 +82,12 @@ export function RegionFeature({
         <PolygonFeature
           key={i}
           polygons={polygon}
-          color={color}
-          lineWidth={lineWidth}
-          fill={fill}
-          fillColor={fillColor}
-          fillOpacity={fillOpacity}
-          wireframe={wireframe}
-          //   wireframe={true}
           subdivision={{
             maxDepth: 3,
             maxTriangleArea: 0.01,
             maxEdgeLength: 0.09,
           }}
+          {...polygonFeatureProps}
         />
       ))}
     </group>
