@@ -40,6 +40,24 @@ export interface PolygonFeatureProps {
   fillOpacity?: number;
 
   /**
+   * 재질의 거칠기
+   *
+   * - 값이 클수록 표면이 거칠어집니다.
+   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  roughness?: number;
+
+  /**
+   * 재질의 금속성
+   *
+   * - 값이 클수록 금속성 효과가 강해집니다.
+   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  metalness?: number;
+
+  /**
    * wireframe 모드 여부
    */
   wireframe?: boolean;
@@ -97,6 +115,8 @@ export function PolygonFeature({
   wireframe = false,
   gridSpacing = 3,
   densifyBoundary = true,
+  roughness,
+  metalness,
 }: PolygonFeatureProps) {
   // 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
   const fillGeometry = useMemo(() => {
@@ -138,8 +158,8 @@ export function PolygonFeature({
             opacity={fillOpacity}
             side={THREE.DoubleSide}
             wireframe={wireframe}
-            // roughness={0.7}
-            // metalness={0.5}
+            roughness={roughness}
+            metalness={metalness}
           />
         </mesh>
       )}

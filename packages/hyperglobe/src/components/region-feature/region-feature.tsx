@@ -40,6 +40,24 @@ export interface RegionFeatureProps {
    * wireframe 모드 여부
    */
   wireframe?: boolean;
+
+  /**
+   * 재질의 거칠기
+   *
+   * - 값이 클수록 표면이 거칠어집니다.
+   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  roughness?: number;
+
+  /**
+   * 재질의 금속성
+   *
+   * - 값이 클수록 금속성 효과가 강해집니다.
+   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  metalness?: number;
 }
 
 /**
@@ -79,16 +97,7 @@ export function RegionFeature({ feature, ...polygonFeatureProps }: RegionFeature
   return (
     <group>
       {memorized.featurePolygons.map((polygon, i) => (
-        <PolygonFeature
-          key={i}
-          polygons={polygon}
-          subdivision={{
-            maxDepth: 3,
-            maxTriangleArea: 0.01,
-            maxEdgeLength: 0.09,
-          }}
-          {...polygonFeatureProps}
-        />
+        <PolygonFeature key={i} polygons={polygon} {...polygonFeatureProps} />
       ))}
     </group>
   );

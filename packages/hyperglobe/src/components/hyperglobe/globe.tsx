@@ -37,6 +37,22 @@ export interface GlobeProps {
    * 구체 색상
    */
   color?: string;
+  /**
+   * 재질의 거칠기
+   *
+   * - 값이 클수록 표면이 거칠어집니다.
+   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  roughness?: number;
+  /**
+   * 재질의 금속성
+   *
+   * - 값이 클수록 금속성 효과가 강해집니다.
+   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  metalness?: number;
 }
 
 /**
@@ -69,6 +85,8 @@ export function Globe({
   textureEnabled = true,
   visible = true,
   color = '#0077be',
+  roughness,
+  metalness,
 }: GlobeProps) {
   /**
    * 지구 텍스처 로드
@@ -109,8 +127,8 @@ export function Globe({
         map={textureEnabled ? earthTexture : null}
         wireframe={wireframe}
         color={textureEnabled ? undefined : color}
-        // roughness={0.3} // 매끄러운 표면
-        // metalness={0.4} // 약간의 금속성으로 반사효과
+        roughness={roughness} // 매끄러운 표면
+        metalness={metalness} // 약간의 금속성으로 반사효과
       />
     </mesh>
   );
