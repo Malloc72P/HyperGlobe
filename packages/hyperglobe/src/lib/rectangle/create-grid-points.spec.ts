@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { OrthographicProj } from '../projections/orthographic';
 import type { Coordinate } from '../../types/coordinate';
 import { createGridPoints } from './create-grid-points';
+import { magnitude3D } from '../math/magnitude';
 
 describe('createGridPoints', () => {
   it('subdivisions=1일 때 4개의 그리드 포인트를 생성해야 함', () => {
@@ -136,7 +137,7 @@ describe('createGridPoints', () => {
 
     // Then: 모든 포인트가 구 표면에 있어야 함 (반지름이 fillRadius와 가까워야 함)
     result.forEach((point) => {
-      const distance = Math.sqrt(point[0] ** 2 + point[1] ** 2 + point[2] ** 2);
+      const distance = magnitude3D(point);
       expect(distance).toBeCloseTo(fillRadius, 3);
     });
   });

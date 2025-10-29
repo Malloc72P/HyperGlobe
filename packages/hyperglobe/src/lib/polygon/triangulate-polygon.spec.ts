@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Coordinate } from '../../types/coordinate';
 import { triangulatePolygon } from './triangulate-polygon';
+import { magnitude3D } from '../math/magnitude';
 
 describe('triangulatePolygon', () => {
   it('삼각형 폴리곤은 1개의 삼각형을 생성해야 함', () => {
@@ -95,7 +96,7 @@ describe('triangulatePolygon', () => {
 
     // Then: 모든 점이 구 표면에 있어야 함
     result.vertices.forEach((vertex) => {
-      const distance = Math.sqrt(vertex[0] ** 2 + vertex[1] ** 2 + vertex[2] ** 2);
+      const distance = magnitude3D(vertex);
       expect(distance).toBeCloseTo(radius, 3);
     });
   });

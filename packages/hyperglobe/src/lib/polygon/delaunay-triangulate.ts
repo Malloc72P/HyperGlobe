@@ -1,6 +1,7 @@
 import Delaunator from 'delaunator';
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
 import { OrthographicProj } from '../projections/orthographic';
+import { distance2D } from '../math/magnitude';
 
 /**
  * 폴리곤의 경계 상자(Bounding Box) 계산
@@ -41,15 +42,6 @@ function isInside(point: Coordinate, polygon: Coordinate[]): boolean {
 }
 
 /**
- * 두 점 사이의 유클리드 거리 계산
- */
-function distance(p1: Coordinate, p2: Coordinate): number {
-  const dx = p2[0] - p1[0];
-  const dy = p2[1] - p1[1];
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
-/**
  * 경계선을 densify (점들 사이에 보간점 추가)
  * simplify된 데이터에서 경계선이 너무 성글 때 유용
  */
@@ -62,7 +54,7 @@ function densifyBoundary(polygon: Coordinate[], maxSegmentLength: number): Coord
 
     densified.push(current);
 
-    const dist = distance(current, next);
+    const dist = distance2D(current, next);
     const numSegments = Math.ceil(dist / maxSegmentLength);
 
     // 중간 점들 추가
