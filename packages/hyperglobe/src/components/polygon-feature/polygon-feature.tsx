@@ -62,6 +62,47 @@ export interface PolygonFeatureProps {
    * ```
    */
   subdivision?: SubdivisionOptions;
+
+  /**
+   * 경계 밀집화 옵션
+   * 큰 삼각형 생성을 방지하여 면이 찢어지는 현상 해결
+   *
+   * @default true (자동으로 적절한 밀집도 계산)
+   * @deprecated useDelaunay를 사용하세요
+   *
+   * @example
+   * ```tsx
+   * // 자동 밀집화 (권장)
+   * <PolygonFeature densifyBoundary />
+   *
+   * // 수동 밀집화
+   * <PolygonFeature densifyBoundary={0.1} />
+   *
+   * // 밀집화 비활성화
+   * <PolygonFeature densifyBoundary={false} />
+   * ```
+   */
+  densifyBoundary?: boolean | number;
+
+  /**
+   * Delaunay 삼각분할 사용 (권장)
+   * 균등한 크기의 삼각형 생성으로 면 찢어짐 방지
+   *
+   * @default true
+   *
+   * @example
+   * ```tsx
+   * // 기본 사용 (권장)
+   * <PolygonFeature useDelaunay />
+   *
+   * // 더 촘촘하게 (gridSpacing 2도)
+   * <PolygonFeature useDelaunay={2} />
+   *
+   * // 비활성화
+   * <PolygonFeature useDelaunay={false} />
+   * ```
+   */
+  useDelaunay?: boolean | number;
 }
 
 /**
@@ -71,25 +112,29 @@ export interface PolygonFeatureProps {
  */
 export function PolygonFeature({
   polygons,
-  lineWidth = 1,
+  lineWidth = 2,
   color = '#3a5dbb',
   fill = false,
   fillColor = '#78a9e2',
   fillOpacity = 1,
   wireframe = false,
   subdivision,
+  densifyBoundary,
+  useDelaunay = 3, // 기본값: Delaunay 사용
 }: PolygonFeatureProps) {
-  // 면 렌더링을 위한 geometry 생성 (Earcut 삼각분할 + 선택적 세분화)
+  // 면 렌더링을 위한 geometry 생성 (Delaunay 또는 Earcut 삼각분할)
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
 
     const fillRadius = UiConstant.feature.fillRadius;
 
-    // 삼각분할 (세분화 옵션 포함)
+    // 삼각분할 (Delaunay 또는 Earcut + subdivision/densification)
     const { vertices, indices } = triangulatePolygon({
       coordinates: polygons,
       radius: fillRadius,
       subdivision, // 세분화 옵션 전달
+      densifyBoundary, // 경계 밀집화 옵션 전달 (deprecated)
+      useDelaunay, // Delaunay 옵션 전달 (권장)
     });
 
     // BufferGeometry 생성
@@ -102,7 +147,7 @@ export function PolygonFeature({
     geometry.computeVertexNormals();
 
     return geometry;
-  }, [polygons, fill, subdivision]);
+  }, [polygons, fill, subdivision, densifyBoundary, useDelaunay]);
 
   return (
     <group>
@@ -118,8 +163,8 @@ export function PolygonFeature({
             opacity={fillOpacity}
             side={THREE.DoubleSide}
             wireframe={wireframe}
-            // roughness={0.3}
-            // metalness={0.4}
+            // roughness={0.7}
+            // metalness={0.5}
           />
         </mesh>
       )}

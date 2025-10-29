@@ -28,9 +28,9 @@ export const MapData: Story = {
     globeColor: '#3d3d3d',
     regionStyle: {
       fill: true,
-      lineWidth: 1,
-      color: '#ffc71b',
-      fillColor: '#6d6d6d',
+      lineWidth: 1.2,
+      color: '#bb5502',
+      fillColor: 'white',
     },
   },
 };
