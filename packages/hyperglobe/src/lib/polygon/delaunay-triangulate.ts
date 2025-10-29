@@ -41,13 +41,63 @@ function isInside(point: Coordinate, polygon: Coordinate[]): boolean {
 }
 
 /**
+ * 두 점 사이의 유클리드 거리 계산
+ */
+function distance(p1: Coordinate, p2: Coordinate): number {
+  const dx = p2[0] - p1[0];
+  const dy = p2[1] - p1[1];
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * 경계선을 densify (점들 사이에 보간점 추가)
+ * simplify된 데이터에서 경계선이 너무 성글 때 유용
+ */
+function densifyBoundary(polygon: Coordinate[], maxSegmentLength: number): Coordinate[] {
+  const densified: Coordinate[] = [];
+
+  for (let i = 0; i < polygon.length; i++) {
+    const current = polygon[i];
+    const next = polygon[(i + 1) % polygon.length];
+
+    densified.push(current);
+
+    const dist = distance(current, next);
+    const numSegments = Math.ceil(dist / maxSegmentLength);
+
+    // 중간 점들 추가
+    if (numSegments > 1) {
+      for (let j = 1; j < numSegments; j++) {
+        const t = j / numSegments;
+        const interpolated: Coordinate = [
+          current[0] + (next[0] - current[0]) * t,
+          current[1] + (next[1] - current[1]) * t,
+        ];
+        densified.push(interpolated);
+      }
+    }
+  }
+
+  return densified;
+}
+
+/**
  * 폴리곤 내부에 균등한 격자점 생성
  *
  * 이것이 핵심! 경계만이 아니라 내부에도 점을 추가해야
  * Delaunay 삼각분할이 균등한 삼각형을 만들 수 있습니다.
  */
-function generateInnerPoints(polygon: Coordinate[], gridSpacing: number): Coordinate[] {
-  const result: Coordinate[] = [...polygon]; // 경계 점들 포함
+function generateInnerPoints(
+  polygon: Coordinate[],
+  gridSpacing: number,
+  densifyBoundaryPoints: boolean = true
+): Coordinate[] {
+  // 경계선 densify (simplify된 데이터 대응)
+  const boundaryPoints = densifyBoundaryPoints
+    ? densifyBoundary(polygon, gridSpacing * 0.5) // 격자 간격의 절반으로 경계 보간
+    : polygon;
+
+  const result: Coordinate[] = [...boundaryPoints]; // 경계 점들 포함
   const bbox = findBBox(polygon);
 
   // 경계 상자 내부를 균등한 격자로 채움
@@ -61,9 +111,7 @@ function generateInnerPoints(polygon: Coordinate[], gridSpacing: number): Coordi
   }
 
   return result;
-}
-
-/**
+} /**
  * 삼각형의 중심점이 폴리곤 내부에 있는지 확인하여
  * 폴리곤 외부의 삼각형 제거
  */
@@ -117,8 +165,15 @@ export interface DelaunayTriangulateOptions {
    * @default 5 (StackOverflow 예제에서 사용한 값)
    */
   gridSpacing?: number;
-}
 
+  /**
+   * 경계선 densification 활성화
+   * simplify된 데이터에서 경계가 성글 때 유용
+   *
+   * @default true
+   */
+  densifyBoundary?: boolean;
+}
 export interface DelaunayTriangulateResult {
   /**
    * 3D 좌표 배열 (구면 위의 점들)
@@ -148,7 +203,8 @@ export interface DelaunayTriangulateResult {
  * const result = delaunayTriangulate({
  *   coordinates: [[0, 0], [10, 0], [10, 10], [0, 10]],
  *   radius: 1.005,
- *   gridSpacing: 2  // 2도 간격으로 격자점 생성
+ *   gridSpacing: 2,  // 2도 간격으로 격자점 생성
+ *   densifyBoundary: true  // 경계선 보간 활성화
  * });
  * ```
  */
@@ -156,9 +212,10 @@ export function delaunayTriangulate({
   coordinates,
   radius,
   gridSpacing = 5,
+  densifyBoundary: shouldDensify = true,
 }: DelaunayTriangulateOptions): DelaunayTriangulateResult {
-  // 1. 폴리곤 내부에 균등한 격자점 생성
-  const allPoints = generateInnerPoints(coordinates, gridSpacing);
+  // 1. 폴리곤 내부에 균등한 격자점 생성 (경계선 densify 포함)
+  const allPoints = generateInnerPoints(coordinates, gridSpacing, shouldDensify);
 
   // 2. 2D 좌표를 flat array로 변환
   const flatCoords = allPoints.flatMap((coord) => [coord[0], coord[1]]);

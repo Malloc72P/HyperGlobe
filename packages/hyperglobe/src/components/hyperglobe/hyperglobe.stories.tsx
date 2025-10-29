@@ -25,12 +25,13 @@ export const MapData: Story = {
     ...StorybookConstant.props.HyperGlobe,
     mapData: GeoJson as any,
     textureEnabled: false,
-    globeColor: '#3d3d3d',
+    globeColor: '#4f4f4f',
     regionStyle: {
       fill: true,
       lineWidth: 1.2,
-      color: '#bb5502',
+      color: '#a20f40',
       fillColor: 'white',
+      //   wireframe: true,
     },
   },
 };
