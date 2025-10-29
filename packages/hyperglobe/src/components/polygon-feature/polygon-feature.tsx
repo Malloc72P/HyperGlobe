@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { Coordinate } from '../../types/coordinate';
 import { LineFeature } from '../line-feature';
-import { triangulatePolygon, type SubdivisionOptions } from '../../lib/polygon/triangulate-polygon';
+import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
 import type { FeaturePolygons } from '../../types/polygon';
 import { UiConstant } from '../../constants';
 
@@ -45,64 +45,41 @@ export interface PolygonFeatureProps {
   wireframe?: boolean;
 
   /**
-   * 삼각형 세분화 옵션
-   * 큰 폴리곤에서 더 부드러운 곡면을 위해 사용
+   * 내부 격자점 간격 (도 단위)
+   * 작을수록 더 촘촘한 삼각형 생성
+   *
+   * @default 3
    *
    * @example
    * ```tsx
-   * // 기본 세분화 (적당한 품질)
-   * <PolygonFeature subdivision={{}} />
+   * // 기본 사용 (3도 간격)
+   * <PolygonFeature />
    *
-   * // 높은 품질 세분화
-   * <PolygonFeature subdivision={{
-   *   maxDepth: 4,
-   *   maxTriangleArea: 0.005,
-   *   maxEdgeLength: 0.1
-   * }} />
+   * // 더 촘촘하게 (1도 간격)
+   * <PolygonFeature gridSpacing={1} />
+   *
+   * // 더 성기게 (5도 간격)
+   * <PolygonFeature gridSpacing={5} />
    * ```
    */
-  subdivision?: SubdivisionOptions;
+  gridSpacing?: number;
 
   /**
-   * 경계 밀집화 옵션
-   * 큰 삼각형 생성을 방지하여 면이 찢어지는 현상 해결
-   *
-   * @default true (자동으로 적절한 밀집도 계산)
-   * @deprecated useDelaunay를 사용하세요
-   *
-   * @example
-   * ```tsx
-   * // 자동 밀집화 (권장)
-   * <PolygonFeature densifyBoundary />
-   *
-   * // 수동 밀집화
-   * <PolygonFeature densifyBoundary={0.1} />
-   *
-   * // 밀집화 비활성화
-   * <PolygonFeature densifyBoundary={false} />
-   * ```
-   */
-  densifyBoundary?: boolean | number;
-
-  /**
-   * Delaunay 삼각분할 사용 (권장)
-   * 균등한 크기의 삼각형 생성으로 면 찢어짐 방지
+   * 경계선 densification 활성화
+   * simplify된 데이터에서 경계가 성글 때 유용
    *
    * @default true
    *
    * @example
    * ```tsx
-   * // 기본 사용 (권장)
-   * <PolygonFeature useDelaunay />
-   *
-   * // 더 촘촘하게 (gridSpacing 2도)
-   * <PolygonFeature useDelaunay={2} />
+   * // 경계선 보간 활성화 (권장)
+   * <PolygonFeature densifyBoundary />
    *
    * // 비활성화
-   * <PolygonFeature useDelaunay={false} />
+   * <PolygonFeature densifyBoundary={false} />
    * ```
    */
-  useDelaunay?: boolean | number;
+  densifyBoundary?: boolean;
 }
 
 /**
@@ -118,23 +95,21 @@ export function PolygonFeature({
   fillColor = '#78a9e2',
   fillOpacity = 1,
   wireframe = false,
-  subdivision,
-  densifyBoundary,
-  useDelaunay = 3, // 기본값: Delaunay 사용
+  gridSpacing = 3,
+  densifyBoundary = true,
 }: PolygonFeatureProps) {
-  // 면 렌더링을 위한 geometry 생성 (Delaunay 또는 Earcut 삼각분할)
+  // 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
   const fillGeometry = useMemo(() => {
     if (!fill) return null;
 
     const fillRadius = UiConstant.feature.fillRadius;
 
-    // 삼각분할 (Delaunay 또는 Earcut + subdivision/densification)
+    // Delaunay 삼각분할
     const { vertices, indices } = triangulatePolygon({
       coordinates: polygons,
       radius: fillRadius,
-      subdivision, // 세분화 옵션 전달
-      densifyBoundary, // 경계 밀집화 옵션 전달 (deprecated)
-      useDelaunay, // Delaunay 옵션 전달 (권장)
+      gridSpacing,
+      densifyBoundary,
     });
 
     // BufferGeometry 생성
@@ -147,7 +122,7 @@ export function PolygonFeature({
     geometry.computeVertexNormals();
 
     return geometry;
-  }, [polygons, fill, subdivision, densifyBoundary, useDelaunay]);
+  }, [polygons, fill, gridSpacing, densifyBoundary]);
 
   return (
     <group>
