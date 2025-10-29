@@ -111,7 +111,9 @@ function generateInnerPoints(
   }
 
   return result;
-} /**
+}
+
+/**
  * 삼각형의 중심점이 폴리곤 내부에 있는지 확인하여
  * 폴리곤 외부의 삼각형 제거
  */
@@ -164,7 +166,7 @@ export interface DelaunayTriangulateOptions {
    *
    * @default 5 (StackOverflow 예제에서 사용한 값)
    */
-  gridSpacing?: number;
+  gridSpacing: number;
 
   /**
    * 경계선 densification 활성화
@@ -211,7 +213,7 @@ export interface DelaunayTriangulateResult {
 export function delaunayTriangulate({
   coordinates,
   radius,
-  gridSpacing = 5,
+  gridSpacing,
   densifyBoundary: shouldDensify = true,
 }: DelaunayTriangulateOptions): DelaunayTriangulateResult {
   // 1. 폴리곤 내부에 균등한 격자점 생성 (경계선 densify 포함)
