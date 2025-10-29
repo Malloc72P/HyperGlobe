@@ -83,9 +83,9 @@ export function RegionFeature({ feature, ...polygonFeatureProps }: RegionFeature
           key={i}
           polygons={polygon}
           subdivision={{
-            maxDepth: 10,
-            maxTriangleArea: 0.1,
-            maxEdgeLength: 0.03,
+            maxDepth: 3,
+            maxTriangleArea: 0.01,
+            maxEdgeLength: 0.09,
           }}
           {...polygonFeatureProps}
         />

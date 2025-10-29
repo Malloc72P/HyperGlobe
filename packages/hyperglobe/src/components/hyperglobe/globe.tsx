@@ -108,9 +108,9 @@ export function Globe({
         ref={materialRef}
         map={textureEnabled ? earthTexture : null}
         wireframe={wireframe}
-        color={color}
-        roughness={0.3} // 매끄러운 표면
-        metalness={0.4} // 약간의 금속성으로 반사효과
+        color={textureEnabled ? undefined : color}
+        // roughness={0.3} // 매끄러운 표면
+        // metalness={0.4} // 약간의 금속성으로 반사효과
       />
     </mesh>
   );

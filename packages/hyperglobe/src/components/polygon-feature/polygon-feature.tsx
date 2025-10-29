@@ -118,8 +118,8 @@ export function PolygonFeature({
             opacity={fillOpacity}
             side={THREE.DoubleSide}
             wireframe={wireframe}
-            roughness={0.3}
-            metalness={0.4}
+            // roughness={0.3}
+            // metalness={0.4}
           />
         </mesh>
       )}
