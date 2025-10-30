@@ -9,7 +9,7 @@ export interface RegionFeatureProps {
    *
    * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
-  feature: Feature<Polygon | MultiPolygon>;
+  feature: any;
 
   /**
    * 선 색상
