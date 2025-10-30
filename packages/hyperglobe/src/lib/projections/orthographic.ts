@@ -1,4 +1,6 @@
 import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import { toRadian } from '../math/to-radian';
+import { magnitude3D } from '../math/magnitude';
 
 /**
  * 경위도 좌표를 3차원 직교좌표계의 좌표로 투영합니다.
@@ -24,8 +26,8 @@ function project(coordinate: Coordinate, radius = 1): VectorCoordinate {
   const latitude = coordinate[1];
 
   // 도(degree)를 라디안(radian)으로 변환
-  const phi = (longitude * Math.PI) / 180;
-  const theta = (latitude * Math.PI) / 180;
+  const phi = toRadian(longitude);
+  const theta = toRadian(latitude);
 
   // 구면 좌표계를 직교 좌표계로 변환
   // x축: 경도 0도, 위도 0도 방향
@@ -76,13 +78,13 @@ function interpolate(
     const z = start[2] + (end[2] - start[2]) * t;
 
     // 벡터의 길이(magnitude) 계산
-    const magnitude = Math.sqrt(x * x + y * y + z * z);
+    const mag = magnitude3D([x, y, z]);
 
     // 정규화 후 반지름 적용 (구 표면에 투영)
     const normalized: VectorCoordinate = [
-      (x / magnitude) * radius,
-      (y / magnitude) * radius,
-      (z / magnitude) * radius,
+      (x / mag) * radius,
+      (y / mag) * radius,
+      (z / mag) * radius,
     ];
 
     result.push(normalized);

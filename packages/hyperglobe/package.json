@@ -14,19 +14,21 @@
   "dependencies": {
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
+    "delaunator": "^5.0.1",
     "earcut": "^3.0.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "three": "^0.180.0"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.8",
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@storybook/addon-docs": "^9.1.13",
     "@storybook/react": "^9.1.13",
     "@storybook/react-vite": "^9.1.13",
+    "@types/delaunator": "^5.0.3",
     "@types/earcut": "^3.0.0",
+    "@types/geojson": "^7946.0.8",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",

@@ -1,2 +1,2 @@
 export * from './to-radian';
-export * from './spherical-interpolation';
+export * from './magnitude';

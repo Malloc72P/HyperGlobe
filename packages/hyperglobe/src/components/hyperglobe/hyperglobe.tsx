@@ -1,6 +1,6 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe } from './globe';
+import { Globe, type GlobeProps } from './globe';
 import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
 import { LoadingUI } from '../loading-ui';
@@ -52,9 +52,20 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
   mapData?: FeatureCollection<MultiPolygon, Polygon>;
+  globeStyle?: Pick<GlobeProps, 'color' | 'roughness' | 'metalness'>;
+  /**
+   * 리젼 피쳐의 공통 스타일 설정
+   */
   regionStyle?: Pick<
     RegionFeatureProps,
-    'color' | 'lineWidth' | 'fill' | 'fillColor' | 'fillOpacity' | 'wireframe'
+    | 'color'
+    | 'lineWidth'
+    | 'fill'
+    | 'fillColor'
+    | 'fillOpacity'
+    | 'wireframe'
+    | 'metalness'
+    | 'roughness'
   >;
 }
 
@@ -82,7 +93,8 @@ export function HyperGlobe({
   mapData,
   rotation = [0, -Math.PI / 2, 0],
   textureEnabled = true,
-  globeVisible = true,
+  globeStyle,
+  globeVisible,
   regionStyle,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
@@ -123,6 +135,7 @@ export function HyperGlobe({
             setIsRendered={setIsRendered}
             wireframe={wireframe}
             textureEnabled={textureEnabled}
+            {...globeStyle}
           />
 
           {/* Children */}

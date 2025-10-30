@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { HyperGlobe } from './hyperglobe';
 import { StorybookConstant } from '../../constants/storybook-constant';
-import GeoJson from '../../../public/world-low.geo.json';
+import GeoJson from '../../data/world-low.geo.json';
 
 const meta = {
   title: 'Components/HyperGlobe',
@@ -25,13 +25,18 @@ export const MapData: Story = {
     ...StorybookConstant.props.HyperGlobe,
     mapData: GeoJson as any,
     textureEnabled: false,
+    globeStyle: {
+      color: '#E1E1E1',
+      //   metalness: 0.3,
+      //   roughness: 0.4,
+    },
     regionStyle: {
       fill: true,
-      fillColor: '#78a9e2',
-      lineWidth: 1,
-      //   fillOpacity: 0.9,
-      color: '#3a5dbb',
-      //   wireframe: true,
+      lineWidth: 1.2,
+      color: '#454545',
+      fillColor: '#6794dc',
+      //   metalness: 0.3,
+      //   roughness: 0.4,
     },
   },
 };
