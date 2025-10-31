@@ -81,8 +81,8 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
     regionColor: color[4],
     hoverRegionStrokeWidth: 2,
     hoverRegionFill: color[4],
-    metalness: 0.7,
-    roughness: 0.3,
+    metalness: 0.8,
+    roughness: 0.9,
   };
 
   return (
