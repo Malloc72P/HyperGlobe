@@ -69,15 +69,18 @@ export interface NationsDemoProps {
  * - [RegionFeature](/docs/components-regionfeature--docs)
  * - [Graticule](/docs/components-graticule--docs)
  */
-export function NationsDemo({ theme = 'gray' }: NationsDemoProps) {
+export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
   const color = useMemo(() => {
     return colorThemes[theme];
   }, [theme]);
 
   const styles = {
-    globeColor: color[3],
+    globeColor: color[2],
+    regionStrokeWidth: 1.3,
     regionFill: color[5],
     regionColor: color[4],
+    hoverRegionStrokeWidth: 2,
+    hoverRegionFill: color[4],
     metalness: 0.7,
     roughness: 0.3,
   };
@@ -98,9 +101,15 @@ export function NationsDemo({ theme = 'gray' }: NationsDemoProps) {
           key={feature.id}
           feature={feature}
           fill={true}
-          lineWidth={1.5}
-          color={styles.regionColor}
-          fillColor={styles.regionFill}
+          style={{
+            lineWidth: styles.regionStrokeWidth,
+            color: styles.regionColor,
+            fillColor: styles.regionFill,
+          }}
+          hoverStyle={{
+            lineWidth: styles.hoverRegionStrokeWidth,
+            fillColor: styles.hoverRegionFill,
+          }}
           metalness={styles.metalness}
           roughness={styles.roughness}
         />

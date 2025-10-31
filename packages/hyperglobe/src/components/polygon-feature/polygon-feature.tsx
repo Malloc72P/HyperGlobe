@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import * as THREE from 'three';
-import type { Coordinate } from '../../types/coordinate';
-import { LineFeature } from '../line-feature';
-import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
-import type { FeaturePolygons } from '../../types/polygon';
 import { UiConstant } from '../../constants';
+import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
+import type { FeatureStyle } from '../../types/feature';
+import type { FeaturePolygons } from '../../types/polygon';
+import { LineFeature } from '../line-feature';
+import { useFeatureStyle } from '../../hooks/use-feature-style';
 
 export interface PolygonFeatureProps {
   /**
@@ -15,29 +16,14 @@ export interface PolygonFeatureProps {
   polygons: FeaturePolygons;
 
   /**
-   * 선 색상
-   */
-  color?: string;
-
-  /**
-   * 선 두께
-   */
-  lineWidth?: number;
-
-  /**
    * 면 채우기 활성화 여부
    */
   fill?: boolean;
 
   /**
-   * 면 색상
+   * 폴리곤 스타일(외곽선, 면 채우기 등)
    */
-  fillColor?: string;
-
-  /**
-   * 면 투명도 (0~1)
-   */
-  fillOpacity?: number;
+  style?: FeatureStyle;
 
   /**
    * 재질의 거칠기
@@ -108,11 +94,8 @@ export interface PolygonFeatureProps {
  */
 export function PolygonFeature({
   polygons,
-  lineWidth = 2,
-  color = '#3a5dbb',
-  fill = false,
-  fillColor = '#78a9e2',
-  fillOpacity = 1,
+  fill,
+  style,
   wireframe = false,
   gridSpacing = 3,
   densifyBoundary = true,
@@ -148,16 +131,16 @@ export function PolygonFeature({
   return (
     <group>
       {/* 외곽선 렌더링 */}
-      <LineFeature coordinates={polygons} color={color} lineWidth={lineWidth} />
+      <LineFeature coordinates={polygons} color={style?.color} lineWidth={style?.lineWidth} />
 
       {/* 면 렌더링 */}
       {fill && fillGeometry && (
         <mesh geometry={fillGeometry}>
           <meshStandardMaterial
-            color={fillColor}
             transparent
-            opacity={fillOpacity}
             side={THREE.DoubleSide}
+            color={style?.fillColor}
+            opacity={style?.fillOpacity}
             wireframe={wireframe}
             roughness={roughness}
             metalness={metalness}

@@ -1,7 +1,10 @@
 import type { Feature, MultiPolygon, Polygon } from 'geojson';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { FeaturePolygons } from '../../types/polygon';
 import { PolygonFeature } from '../polygon-feature/polygon-feature';
+import type { FeatureStyle } from '../../types/feature';
+import { useFeatureStyle } from '../../hooks/use-feature-style';
+import { UiConstant } from '../../constants';
 
 export interface RegionFeatureProps {
   /**
@@ -12,29 +15,19 @@ export interface RegionFeatureProps {
   feature: any;
 
   /**
-   * 선 색상
-   */
-  color?: string;
-
-  /**
-   * 선 두께
-   */
-  lineWidth?: number;
-
-  /**
    * 면 채우기 활성화 여부
    */
   fill?: boolean;
 
   /**
-   * 면 색상
+   * 지역 스타일
    */
-  fillColor?: string;
+  style?: FeatureStyle;
 
   /**
-   * 면 투명도 (0~1)
+   * 지역이 호버되었을때의 스타일
    */
-  fillOpacity?: number;
+  hoverStyle?: FeatureStyle;
 
   /**
    * wireframe 모드 여부
@@ -66,10 +59,18 @@ export interface RegionFeatureProps {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature({ feature, ...polygonFeatureProps }: RegionFeatureProps) {
-  const memorized = useMemo(() => {
+export function RegionFeature({
+  feature,
+  style = UiConstant.polygonFeature.default.style,
+  hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
+  ...polygonFeatureProps
+}: RegionFeatureProps) {
+  const [hovered, setHovered] = useState(false);
+  const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
+
+  const featurePolygons = useMemo(() => {
     // 멀티, 싱글 폴리곤 전부 처리할 수 있어야 함.
-    const featurePolygons: FeaturePolygons[] = [];
+    const _featurePolygons: FeaturePolygons[] = [];
 
     if (feature.geometry.coordinates.length === 0) return;
 
@@ -77,27 +78,32 @@ export function RegionFeature({ feature, ...polygonFeatureProps }: RegionFeature
       // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
       const borderlinePolygon = feature.geometry.coordinates[0];
 
-      featurePolygons.push(borderlinePolygon as FeaturePolygons);
+      _featurePolygons.push(borderlinePolygon as FeaturePolygons);
     } else {
       for (const singlePolygon of feature.geometry.coordinates) {
         // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
         const borderlinePolygon = singlePolygon[0];
 
-        featurePolygons.push(borderlinePolygon as FeaturePolygons);
+        _featurePolygons.push(borderlinePolygon as FeaturePolygons);
       }
     }
 
-    return {
-      featurePolygons,
-    };
+    return _featurePolygons;
   }, []);
 
-  if (!memorized) return;
+  if (!featurePolygons) return;
 
   return (
-    <group>
-      {memorized.featurePolygons.map((polygon, i) => (
-        <PolygonFeature key={i} polygons={polygon} {...polygonFeatureProps} />
+    <group
+      onPointerEnter={() => {
+        setHovered(true);
+      }}
+      onPointerLeave={() => {
+        setHovered(false);
+      }}
+    >
+      {featurePolygons.map((polygon, i) => (
+        <PolygonFeature key={i} polygons={polygon} style={appliedStyle} {...polygonFeatureProps} />
       ))}
     </group>
   );

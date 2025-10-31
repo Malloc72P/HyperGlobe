@@ -19,7 +19,6 @@ const meta = {
           metalness: 0.5,
           roughness: 0.5,
         }}
-        //   wireframe
       >
         {Story()}
       </HyperGlobe>
@@ -34,10 +33,17 @@ export const FeatureStory: Story = {
   name: 'RegionFeature',
   args: {
     feature: world.features[0] as any,
-    color: '#3a5dbb',
     fill: true,
-    fillColor: '#78a9e2',
-    fillOpacity: 0.8,
-    lineWidth: 3,
+    style: {
+      color: '#3a5dbb',
+      fillColor: '#78a9e2',
+      fillOpacity: 0.8,
+      lineWidth: 1.5,
+    },
+    hoverStyle: {
+      color: '#354c98',
+      fillOpacity: 1,
+      lineWidth: 2,
+    },
   },
 };
