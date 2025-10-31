@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import * as THREE from 'three';
 import { UiConstant } from '../../constants';
 import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
 import type { FeatureStyle } from '../../types/feature';
 import type { FeaturePolygons } from '../../types/polygon';
 import { LineFeature } from '../line-feature';
-import { useFeatureStyle } from '../../hooks/use-feature-style';
 
 export interface PolygonFeatureProps {
   /**

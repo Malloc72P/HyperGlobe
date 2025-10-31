@@ -41,10 +41,12 @@ export const PolygonFeatureStory: Story = {
       [0, -5],
       [-5, -5],
     ],
-    color: 'orange',
     fill: true,
-    fillColor: 'red',
-    fillOpacity: 0.4,
-    lineWidth: 3,
+    style: {
+      color: 'orange',
+      fillColor: 'red',
+      fillOpacity: 0.4,
+      lineWidth: 3,
+    },
   },
 };
