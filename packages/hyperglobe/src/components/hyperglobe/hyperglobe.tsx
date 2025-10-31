@@ -1,11 +1,9 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Globe, type GlobeProps } from './globe';
-import { CoordinateSystem } from '../coordinate-system';
 import { useState, type PropsWithChildren } from 'react';
+import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
-import type { GeoJSON, Feature, MultiPolygon, Polygon, FeatureCollection } from 'geojson';
-import { RegionFeature, type RegionFeatureProps } from '../region-feature';
+import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -23,7 +21,11 @@ export interface HyperGlobeProps extends PropsWithChildren {
   /**
    * 지구본의 크기
    */
-  size?: number;
+  size?: number | string;
+  /**
+   * 지구본의 최대 크기
+   */
+  maxSize?: number | string;
   /**
    * 좌표축 시각화 여부
    */
@@ -38,6 +40,8 @@ export interface HyperGlobeProps extends PropsWithChildren {
   rotation?: [number, number, number];
   /**
    * 텍스처 사용 여부
+   *
+   * 주의: 해당 옵션은 초기 렌더링 시에만 적용됩니다. 런타임 중에는 변경되지 않습니다.
    */
   textureEnabled?: boolean;
   /**
@@ -45,28 +49,13 @@ export interface HyperGlobeProps extends PropsWithChildren {
    */
   globeVisible?: boolean;
   /**
-   * 지도 데이터 (GeoJSON 형식)
-   *
-   * - 해당 데이터를 통해 지구본에 리젼 피쳐를 렌더링할 수 있습니다.
-   * - ex: 국가별 경계 정보를 담은 GeoJSON 데이터를 전달하여 국가 경계선을 리젼 피쳐로 표현.
-   * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
+   * Canvas 요소에 적용할 스타일 객체
    */
-  mapData?: FeatureCollection<MultiPolygon, Polygon>;
-  globeStyle?: Pick<GlobeProps, 'color' | 'roughness' | 'metalness'>;
+  style?: React.CSSProperties;
   /**
-   * 리젼 피쳐의 공통 스타일 설정
+   * 지구본의 공통 스타일 설정
    */
-  regionStyle?: Pick<
-    RegionFeatureProps,
-    | 'color'
-    | 'lineWidth'
-    | 'fill'
-    | 'fillColor'
-    | 'fillOpacity'
-    | 'wireframe'
-    | 'metalness'
-    | 'roughness'
-  >;
+  globeStyle?: GlobeStyle;
 }
 
 /**
@@ -75,27 +64,36 @@ export interface HyperGlobeProps extends PropsWithChildren {
  * - HyperGlobe 컴포넌트의 루트 컴포넌트입니다.
  * - 해당 컴포넌트를 통해 지구본을 랜더링하고 다양한 3D 피쳐들을 자식 컴포넌트로 추가할 수 있습니다.
  * - 피쳐를 추가하려면 RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가하면 됩니다
- * ```
+ *
+ * ### 예시
+ *
+ * ```tsx
  * <HyperGlobe>
  *     <Graticule />
  *     {features.map((feature) => <RegionFeature feature={feature} />)}
  * </HyperGlobe>
  * ```
  *
+ * ### import
+ *
+ * ```
+ * import { HyperGlobe } from 'hyperglobe';
+ * ```
+ *
  */
 export function HyperGlobe({
   id,
   loading = false,
-  size = 600,
+  size = '100%',
+  maxSize,
   coordinateSystemVisible,
   wireframe,
   children,
-  mapData,
   rotation = [0, -Math.PI / 2, 0],
   textureEnabled = true,
-  globeStyle,
   globeVisible,
-  regionStyle,
+  globeStyle,
+  style,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
@@ -104,8 +102,7 @@ export function HyperGlobe({
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
-        style={{ height: size }}
-        // 초기 카메라 위치
+        style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
         data-is-rendered={isRendered ? 'true' : 'false'}
       >
@@ -142,10 +139,6 @@ export function HyperGlobe({
           {children}
 
           {/* Region Features by MapData */}
-          {mapData &&
-            mapData.features.map((feature) => (
-              <RegionFeature key={feature.id} feature={feature} {...regionStyle} />
-            ))}
         </group>
 
         {/* 좌표축 시각화 헬퍼들 */}

@@ -1,0 +1,110 @@
+import { useMemo } from 'react';
+import { HyperGlobe, Graticule, RegionFeature } from '../src';
+import GeoJson from '../src/data/world-low.geo.json';
+
+const pink = [
+  '#fff1f3',
+  '#ffe3e7',
+  '#ffc0cb',
+  '#ffa2b3',
+  '#fe6e8b',
+  '#f83b66',
+  '#e51951',
+  '#c20e43',
+  '#a20f40',
+  '#8a113c',
+  '#4d041c',
+];
+const blue = [
+  '#f2f6fc',
+  '#e0ebf9',
+  '#c9dcf4',
+  '#a4c6ec',
+  '#78a9e2',
+  '#6794dc',
+  '#4470cc',
+  '#3a5dbb',
+  '#354c98',
+  '#2f4279',
+  '#212a4a',
+];
+
+const gray = [
+  '#f6f6f6',
+  '#e7e7e7',
+  '#d1d1d1',
+  '#b0b0b0',
+  '#808080',
+  '#6d6d6d',
+  '#5d5d5d',
+  '#4f4f4f',
+  '#454545',
+  '#3d3d3d',
+  '#262626',
+];
+
+const colorThemes = {
+  pink,
+  blue,
+  gray,
+};
+
+export interface NationsDemoProps {
+  theme?: 'pink' | 'blue' | 'gray';
+}
+
+/**
+ * **국가별 세계지도 데모**
+ *
+ * ### 소개
+ * - HyperGlobe 컴포넌트와 Graticule, RegionFeature 컴포넌트를 사용하여 국가별 세계지도를 렌더링합니다.
+ * - HyperGlobe의 textureEnabled 속성을 false로 설정하여 지구본의 텍스처를 비활성화합니다.
+ * - 대신 globeStyle속성을 사용하여 지구본의 색상과 재질 속성을 지정합니다.
+ * - Graticule 컴포넌트로 지구본의 격자선을 추가합니다.
+ * - RegionFeature 컴포넌트를 사용하여 GeoJSON 데이터의 각 국가를 렌더링합니다.
+ *
+ * ### 관련 문서
+ *
+ * - [HyperGlobe](/docs/components-hyperglobe--docs)
+ * - [RegionFeature](/docs/components-regionfeature--docs)
+ * - [Graticule](/docs/components-graticule--docs)
+ */
+export function NationsDemo({ theme = 'gray' }: NationsDemoProps) {
+  const color = useMemo(() => {
+    return colorThemes[theme];
+  }, [theme]);
+
+  const styles = {
+    globeColor: color[3],
+    regionFill: color[5],
+    regionColor: color[4],
+    metalness: 0.7,
+    roughness: 0.3,
+  };
+
+  return (
+    <HyperGlobe
+      maxSize={900}
+      textureEnabled={false}
+      globeStyle={{
+        color: styles.globeColor,
+        metalness: styles.metalness,
+        roughness: styles.roughness,
+      }}
+    >
+      <Graticule />
+      {GeoJson.features.map((feature) => (
+        <RegionFeature
+          key={feature.id}
+          feature={feature}
+          fill={true}
+          lineWidth={1.5}
+          color={styles.regionColor}
+          fillColor={styles.regionFill}
+          metalness={styles.metalness}
+          roughness={styles.roughness}
+        />
+      ))}
+    </HyperGlobe>
+  );
+}

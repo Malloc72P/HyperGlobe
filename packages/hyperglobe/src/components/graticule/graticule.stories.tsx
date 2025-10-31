@@ -14,7 +14,12 @@ const meta = {
         // coordinateSystemVisible
         // wireframe
         // globeVisible={false}
-        // textureEnabled={false}
+        textureEnabled={false}
+        globeStyle={{
+          color: 'white',
+          metalness: 0.4,
+          roughness: 0.3,
+        }}
       >
         {Story()}
       </HyperGlobe>

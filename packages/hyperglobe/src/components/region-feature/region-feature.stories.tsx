@@ -13,6 +13,12 @@ const meta = {
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
         rotation={[-Math.PI * 0.03, Math.PI * 0.84, 0]}
+        textureEnabled={false}
+        globeStyle={{
+          color: 'white',
+          metalness: 0.5,
+          roughness: 0.5,
+        }}
         //   wireframe
       >
         {Story()}
@@ -32,6 +38,6 @@ export const FeatureStory: Story = {
     fill: true,
     fillColor: '#78a9e2',
     fillOpacity: 0.8,
-    lineWidth: 7,
+    lineWidth: 3,
   },
 };
