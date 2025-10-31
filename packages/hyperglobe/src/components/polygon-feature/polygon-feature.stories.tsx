@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { PolygonFeature } from './polygon-feature';
 import { HyperGlobe } from '../..';
 import { StorybookConstant } from '../../constants/storybook-constant';
-import TestFeature from '../../data/test-polygon.json';
-import type { Coordinate } from '../../types/coordinate';
+import { PolygonFeature } from './polygon-feature';
 
 const meta = {
   title: 'Components/PolygonFeature',
@@ -13,9 +11,12 @@ const meta = {
     (Story) => (
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        rotation={[-Math.PI / 10, -Math.PI / 6, 0]}
-        // coordinateSystemVisible
-        //   wireframe
+        textureEnabled={false}
+        globeStyle={{
+          color: 'white',
+          metalness: 0.7,
+          roughness: 0.7,
+        }}
       >
         {Story()}
       </HyperGlobe>
@@ -29,11 +30,21 @@ type Story = StoryObj<typeof meta>;
 export const PolygonFeatureStory: Story = {
   name: 'PolygonFeature',
   args: {
-    polygons: TestFeature.geometry.coordinates[0] as Coordinate[],
-    color: '#6d6d6d',
+    polygons: [
+      [-5, -5],
+      [-5, 0],
+      [-5, 5],
+      [0, 5],
+      [5, 5],
+      [10, 0],
+      [5, -5],
+      [0, -5],
+      [-5, -5],
+    ],
+    color: 'orange',
     fill: true,
-    fillColor: 'white',
-    fillOpacity: 0.7,
-    lineWidth: 5,
+    fillColor: 'red',
+    fillOpacity: 0.4,
+    lineWidth: 3,
   },
 };

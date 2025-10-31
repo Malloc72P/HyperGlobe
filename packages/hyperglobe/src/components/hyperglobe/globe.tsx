@@ -1,8 +1,36 @@
 import { useLoader } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MeshStandardMaterial, TextureLoader } from 'three';
 
-export interface GlobeProps {
+/**
+ * 지구본 스타일
+ *
+ * - 구체의 색상을 지정하거나, 재질의 특성을 설정할 수 있습니다.
+ */
+export interface GlobeStyle {
+  /**
+   * 구체 색상
+   */
+  color?: string;
+  /**
+   * 재질의 거칠기
+   *
+   * - 값이 클수록 표면이 거칠어집니다.
+   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  roughness?: number;
+  /**
+   * 재질의 금속성
+   *
+   * - 값이 클수록 금속성 효과가 강해집니다.
+   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
+   * - 범위: 0 ~ 1
+   */
+  metalness?: number;
+}
+
+export interface GlobeProps extends GlobeStyle {
   /**
    * visible 여부
    */
@@ -33,26 +61,6 @@ export interface GlobeProps {
    * 텍스처 사용 여부
    */
   textureEnabled?: boolean;
-  /**
-   * 구체 색상
-   */
-  color?: string;
-  /**
-   * 재질의 거칠기
-   *
-   * - 값이 클수록 표면이 거칠어집니다.
-   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
-   * - 범위: 0 ~ 1
-   */
-  roughness?: number;
-  /**
-   * 재질의 금속성
-   *
-   * - 값이 클수록 금속성 효과가 강해집니다.
-   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
-   * - 범위: 0 ~ 1
-   */
-  metalness?: number;
 }
 
 /**
@@ -82,16 +90,26 @@ export function Globe({
   isRendered,
   setIsRendered,
   wireframe,
-  textureEnabled = true,
+  textureEnabled: _textureEnabled = true,
   visible = true,
   color = '#0077be',
   roughness,
   metalness,
 }: GlobeProps) {
   /**
+   * 텍스처 사용 여부 메모이제이션
+   * - 초기 렌더링 시에만 결정됨.
+   * - 런타임중에 변경하는 경우, 지구본 컴포넌트가 비정상적으로 그려지는 현상이 발생하여 이렇게 막았다.
+   */
+  const textureEnabled = useMemo(() => {
+    return _textureEnabled;
+  }, []);
+
+  /**
    * 지구 텍스처 로드
    */
   const earthTexture = useLoader(TextureLoader, '/earth-texture.jpg');
+
   /**
    * 메쉬 마테리얼 참조 객체
    */
@@ -126,7 +144,7 @@ export function Globe({
         ref={materialRef}
         map={textureEnabled ? earthTexture : null}
         wireframe={wireframe}
-        color={textureEnabled ? undefined : color}
+        color={textureEnabled ? 'unset' : color}
         roughness={roughness} // 매끄러운 표면
         metalness={metalness} // 약간의 금속성으로 반사효과
       />

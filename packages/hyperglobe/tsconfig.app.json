@@ -23,5 +23,5 @@
     "noUncheckedSideEffectImports": true
   },
   "exclude": ["**/*.stories.tsx"],
-  "include": ["src"]
+  "include": ["src", "declaration.d.ts"]
 }

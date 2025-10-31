@@ -104,6 +104,7 @@ export interface PolygonFeatureProps {
  * 폴리곤 피쳐 컴포넌트.
  *
  * - 폴리곤 좌표 배열을 받아 다각형을 그립니다.
+ * - polygons props에 폴리곤 좌표 배열을 전달해야 합니다.
  */
 export function PolygonFeature({
   polygons,
