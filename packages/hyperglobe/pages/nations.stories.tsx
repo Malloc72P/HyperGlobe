@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Demo: Story = {
   name: '국가별 세계지도',
-  tags: ['autodocs', '!dev'],
+  tags: ['autodocs'],
   parameters: {
     docs: {
       source: {

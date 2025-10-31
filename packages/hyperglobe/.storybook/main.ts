@@ -21,6 +21,9 @@ const config: StorybookConfig = {
       //   },
     },
   ],
+  docs: {
+    docsMode: true,
+  },
 };
 
 export default config;
