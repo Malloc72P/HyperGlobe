@@ -18,6 +18,8 @@ export interface GlobeStyle {
    * - 값이 클수록 표면이 거칠어집니다.
    * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
    * - 범위: 0 ~ 1
+   *
+   * @default 0.5
    */
   roughness?: number;
   /**
@@ -26,6 +28,8 @@ export interface GlobeStyle {
    * - 값이 클수록 금속성 효과가 강해집니다.
    * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
    * - 범위: 0 ~ 1
+   *
+   * @default 0
    */
   metalness?: number;
 }
@@ -93,8 +97,8 @@ export function Globe({
   textureEnabled: _textureEnabled = true,
   visible = true,
   color = '#0077be',
-  roughness,
-  metalness,
+  roughness = 0.5,
+  metalness = 0,
 }: GlobeProps) {
   /**
    * 텍스처 사용 여부 메모이제이션

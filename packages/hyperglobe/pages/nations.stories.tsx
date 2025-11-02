@@ -17,9 +17,9 @@ export const Demo: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { useMemo } from 'react';
+        code: `import { useMemo, useState } from 'react';
         import { HyperGlobe, Graticule, RegionFeature } from 'hyperglobe';
-        import GeoJson from 'hyperglobe/data/geojson/nations';
+        import GeoJson from 'hyperglobe';
         
         const pink = [
           '#fff1f3',
@@ -81,22 +81,31 @@ export const Demo: Story = {
          * - 대신 globeStyle속성을 사용하여 지구본의 색상과 재질 속성을 지정합니다.
          * - Graticule 컴포넌트로 지구본의 격자선을 추가합니다.
          * - RegionFeature 컴포넌트를 사용하여 GeoJSON 데이터의 각 국가를 렌더링합니다.
+         *
+         * ### 관련 문서
+         *
+         * - [HyperGlobe](/docs/components-hyperglobe--docs)
+         * - [RegionFeature](/docs/components-regionfeature--docs)
+         * - [Graticule](/docs/components-graticule--docs)
          */
         export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
           const color = useMemo(() => {
             return colorThemes[theme];
           }, [theme]);
         
-          const styles = {
-            globeColor: color[2],
-            regionStrokeWidth: 1.3,
-            regionFill: color[5],
-            regionColor: color[4],
-            hoverRegionStrokeWidth: 2,
-            hoverRegionFill: color[4],
-            metalness: 0.7,
-            roughness: 0.3,
-          };
+          const styles = useMemo(
+            () => ({
+              globeColor: gray[0],
+              regionStrokeWidth: 1.3,
+              hoverRegionStrokeWidth: 2,
+              regionFill: color[3],
+              hoverRegionFill: color[4],
+              regionColor: color[7],
+              metalness: 0,
+              roughness: 0.5,
+            }),
+            [theme]
+          );
         
           return (
             <HyperGlobe

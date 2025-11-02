@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { HyperGlobe, Graticule, RegionFeature } from '../src';
 import GeoJson from '../src/data/world-low.geo.json';
 
@@ -74,16 +74,19 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
     return colorThemes[theme];
   }, [theme]);
 
-  const styles = {
-    globeColor: color[2],
-    regionStrokeWidth: 1.3,
-    regionFill: color[5],
-    regionColor: color[4],
-    hoverRegionStrokeWidth: 2,
-    hoverRegionFill: color[4],
-    metalness: 0.8,
-    roughness: 0.9,
-  };
+  const styles = useMemo(
+    () => ({
+      globeColor: gray[0],
+      regionStrokeWidth: 1.3,
+      hoverRegionStrokeWidth: 2,
+      regionFill: color[4],
+      hoverRegionFill: color[5],
+      regionColor: color[7],
+      metalness: 0,
+      roughness: 0.5,
+    }),
+    [theme]
+  );
 
   return (
     <HyperGlobe

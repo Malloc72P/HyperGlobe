@@ -1,9 +1,10 @@
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useState, type PropsWithChildren } from 'react';
+import { useRef, useState, type PropsWithChildren } from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
+import type { DirectionalLight } from 'three';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -96,6 +97,7 @@ export function HyperGlobe({
   style,
 }: HyperGlobeProps) {
   const [isRendered, setIsRendered] = useState<boolean>(false);
+  const lightRef = useRef<DirectionalLight>(null);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -107,8 +109,8 @@ export function HyperGlobe({
         data-is-rendered={isRendered ? 'true' : 'false'}
       >
         {/* 기본 조명 설정 */}
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <ambientLight intensity={2} />
+        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={1} />
 
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
@@ -122,7 +124,18 @@ export function HyperGlobe({
            * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
            */
           maxDistance={10}
-        />
+          onChange={(e) => {
+            const camera = e?.target.object;
+            const light = lightRef.current;
+
+            if (!light || !camera) return;
+
+            light.position.set(0, 0, 0);
+            light.position.add(camera.position);
+          }}
+        ></OrbitControls>
+
+        <PerspectiveCamera></PerspectiveCamera>
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         <group rotation={rotation}>
