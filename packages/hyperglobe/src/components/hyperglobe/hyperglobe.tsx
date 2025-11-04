@@ -1,10 +1,23 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useRef, useState, type PropsWithChildren } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+  type PropsWithChildren,
+} from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 import type { DirectionalLight } from 'three';
+import { Tooltip } from '../tooltip';
+import type { Coordinate2D } from '../../types/tooltip';
+import { throttle } from '../../lib';
+import { useThrottle } from '../../hooks/use-throttle';
+import { useMainStore } from '../../store';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -96,11 +109,40 @@ export function HyperGlobe({
   globeStyle,
   style,
 }: HyperGlobeProps) {
+  const rootElementRef = useRef<HTMLDivElement>(null);
   const [isRendered, setIsRendered] = useState<boolean>(false);
   const lightRef = useRef<DirectionalLight>(null);
+  const rootElRect = useRef<DOMRect | null>(null);
+  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
+
+  const getTooltipPosition = useThrottle<[Coordinate2D], Coordinate2D | null>({
+    fn: (e: Coordinate2D) => {
+      const rootElement = rootElementRef.current;
+
+      if (!rootElement) return null;
+
+      if (!rootElRect.current) {
+        rootElRect.current = rootElement.getBoundingClientRect();
+      }
+
+      const rect = rootElRect.current;
+
+      const nextPosition = {
+        x: e.x - rect.left,
+        y: e.y - rect.top,
+      };
+
+      return nextPosition;
+    },
+    delay: 25,
+  });
+
+  useEffect(() => {
+    registerUpdateTooltipPosition(getTooltipPosition);
+  }, [getTooltipPosition]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div ref={rootElementRef} style={{ position: 'relative', overflow: 'hidden' }}>
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
@@ -156,7 +198,10 @@ export function HyperGlobe({
 
         {/* 좌표축 시각화 헬퍼들 */}
         {coordinateSystemVisible && <CoordinateSystem />}
+
+        {/* 툴팁 */}
       </Canvas>
+      <Tooltip />
     </div>
   );
 }

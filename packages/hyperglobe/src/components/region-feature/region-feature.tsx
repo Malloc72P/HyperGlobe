@@ -1,10 +1,11 @@
-import type { Feature, MultiPolygon, Polygon } from 'geojson';
 import { useMemo, useState } from 'react';
+import { UiConstant } from '../../constants';
+import { useFeatureStyle } from '../../hooks/use-feature-style';
+import type { FeatureStyle } from '../../types/feature';
 import type { FeaturePolygons } from '../../types/polygon';
 import { PolygonFeature } from '../polygon-feature/polygon-feature';
-import type { FeatureStyle } from '../../types/feature';
-import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { UiConstant } from '../../constants';
+import type { RegionModel } from '../../types/region';
+import { useMainStore } from '../../store';
 
 export interface RegionFeatureProps {
   /**
@@ -67,6 +68,13 @@ export function RegionFeature({
 }: RegionFeatureProps) {
   const [hovered, setHovered] = useState(false);
   const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
+  const regionModel = useMemo<RegionModel>(() => {
+    return {
+      id: feature.id,
+      name: feature.properties.name || '',
+    };
+  }, [feature]);
+  const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
 
   const featurePolygons = useMemo(() => {
     // 멀티, 싱글 폴리곤 전부 처리할 수 있어야 함.
@@ -97,9 +105,11 @@ export function RegionFeature({
     <group
       onPointerEnter={() => {
         setHovered(true);
+        setHoveredRegion(regionModel);
       }}
       onPointerLeave={() => {
         setHovered(false);
+        setHoveredRegion(null);
       }}
     >
       {featurePolygons.map((polygon, i) => (
