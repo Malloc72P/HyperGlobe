@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { StorybookConstant } from '../../constants';
 import { HyperGlobe } from './hyperglobe';
+import { Graticule } from '../graticule';
 
 const meta = {
   title: 'Components/HyperGlobe',
@@ -15,6 +16,11 @@ export const HyperGlobeStory: Story = {
   tags: ['autodocs'],
   args: {
     ...StorybookConstant.props.HyperGlobe,
+    children: (
+      <>
+        <Graticule />
+      </>
+    ),
   },
   //   parameters: {
   //     docs: {
@@ -22,19 +28,9 @@ export const HyperGlobeStory: Story = {
   //     },
   //   },
   argTypes: {
-    globeVisible: {
+    children: {
       table: {
         disable: true,
-      },
-    },
-    coordinateSystemVisible: {
-      table: {
-        disable: true,
-      },
-    },
-    textureEnabled: {
-      table: {
-        readonly: true,
       },
     },
   },

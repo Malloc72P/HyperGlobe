@@ -12,13 +12,6 @@ const config: StorybookConfig = {
   addons: [
     {
       name: '@storybook/addon-docs',
-      //   options: {
-      //     mdxPluginOptions: {
-      //       mdxCompileOptions: {
-      //         remarkPlugins: [remarkGfm], // GitHub Flavored Markdown 지원
-      //       },
-      //     },
-      //   },
     },
   ],
   docs: {

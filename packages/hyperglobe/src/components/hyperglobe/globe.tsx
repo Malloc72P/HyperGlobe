@@ -1,8 +1,3 @@
-import { useLoader } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { MeshStandardMaterial, TextureLoader } from 'three';
-import { useMainStore } from '../../store';
-
 /**
  * 지구본 스타일
  *
@@ -54,10 +49,6 @@ export interface GlobeProps extends GlobeStyle {
    * wireframe 여부
    */
   wireframe?: boolean;
-  /**
-   * 텍스처 사용 여부
-   */
-  textureEnabled?: boolean;
 }
 
 /**
@@ -85,49 +76,17 @@ export function Globe({
   position = [0, 0, 0],
   segments = [64, 32],
   wireframe,
-  textureEnabled: _textureEnabled = true,
-  visible = true,
   color = '#0077be',
   roughness = 0.5,
   metalness = 0,
 }: GlobeProps) {
-  /**
-   * 텍스처 사용 여부 메모이제이션
-   * - 초기 렌더링 시에만 결정됨.
-   * - 런타임중에 변경하는 경우, 지구본 컴포넌트가 비정상적으로 그려지는 현상이 발생하여 이렇게 막았다.
-   */
-  const textureEnabled = useMemo(() => {
-    return _textureEnabled;
-  }, []);
-
-  /**
-   * 지구 텍스처 로드
-   */
-  const earthTexture = useLoader(TextureLoader, '/earth-texture.jpg');
-
-  /**
-   * 메쉬 마테리얼 참조 객체
-   */
-  const materialRef = useRef<MeshStandardMaterial>(null);
-
-  /**
-   * 텍스쳐 활성화 여부 props 변경시 마테리얼 업데이트
-   */
-  useEffect(() => {
-    const material = materialRef.current;
-
-    if (!material) return;
-
-    material.map = textureEnabled ? earthTexture : null;
-    material.needsUpdate = true;
-  }, [textureEnabled]);
-
   return (
     <mesh
-      visible={visible}
       position={position}
       /**
        * 포인터 이벤트 캡처 방지
+       *
+       * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
       onPointerEnter={(e) => e.stopPropagation()}
       onPointerLeave={(e) => e.stopPropagation()}
@@ -136,10 +95,8 @@ export function Globe({
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}
       <meshStandardMaterial
-        ref={materialRef}
-        map={textureEnabled ? earthTexture : null}
         wireframe={wireframe}
-        color={textureEnabled ? 'unset' : color}
+        color={color}
         roughness={roughness} // 매끄러운 표면
         metalness={metalness} // 약간의 금속성으로 반사효과
       />

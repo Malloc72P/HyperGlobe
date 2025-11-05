@@ -32,10 +32,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
    */
   maxSize?: number | string;
   /**
-   * 좌표축 시각화 여부
-   */
-  coordinateSystemVisible?: boolean;
-  /**
    * wireframe
    */
   wireframe?: boolean;
@@ -43,16 +39,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 지구본의 초기 회전 각도 (라디안 단위)
    */
   rotation?: [number, number, number];
-  /**
-   * 텍스처 사용 여부
-   *
-   * 주의: 해당 옵션은 초기 렌더링 시에만 적용됩니다. 런타임 중에는 변경되지 않습니다.
-   */
-  textureEnabled?: boolean;
-  /**
-   * 지구 보이기 여부
-   */
-  globeVisible?: boolean;
   /**
    * Canvas 요소에 적용할 스타일 객체
    */
@@ -75,7 +61,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
  * ```tsx
  * <HyperGlobe>
  *     <Graticule />
- *     {features.map((feature) => <RegionFeature feature={feature} />)}
  * </HyperGlobe>
  * ```
  *
@@ -91,12 +76,9 @@ export function HyperGlobe({
   loading = false,
   size = '100%',
   maxSize,
-  coordinateSystemVisible,
   wireframe,
   children,
   rotation = [0, -Math.PI / 2, 0],
-  textureEnabled = true,
-  globeVisible,
   globeStyle,
   style,
 }: HyperGlobeProps) {
@@ -108,17 +90,20 @@ export function HyperGlobe({
   const tooltipRef = useMainStore((s) => s.tooltipRef);
 
   const getTooltipPosition = useThrottle<[UpdateTooltipPositionFnParam], Coordinate2D | null>({
-    fn: ({ point, tooltipWidth, tooltipHeight }: UpdateTooltipPositionFnParam) => {
+    fn: ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
       const tooltipOffset = 10;
       const rootElement = rootElementRef.current;
 
-      if (!rootElement) return null;
+      if (!rootElement || !tooltipElement) return null;
 
-      const rect = rootElement.getBoundingClientRect();
+      const rootRect = rootElement.getBoundingClientRect();
+      const tooltipRect = tooltipElement.getBoundingClientRect();
+      const tooltipWidth = tooltipRect.width;
+      const tooltipHeight = tooltipRect.height;
 
       const nextPosition = {
-        x: point.x - rect.left,
-        y: point.y - rect.top,
+        x: point.x - rootRect.left,
+        y: point.y - rootRect.top,
       };
 
       // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
@@ -147,11 +132,9 @@ export function HyperGlobe({
 
         if (!tooltip || !getTooltipPosition) return;
 
-        const tooltipRect = tooltip.getBoundingClientRect();
         const nextPosition = getTooltipPosition({
           point: { x: clientX, y: clientY },
-          tooltipWidth: tooltipRect.width,
-          tooltipHeight: tooltipRect.height,
+          tooltipElement: tooltip,
         });
 
         if (!nextPosition) return;
@@ -192,16 +175,9 @@ export function HyperGlobe({
           }}
         />
 
-        <PerspectiveCamera></PerspectiveCamera>
-
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         <group rotation={rotation}>
-          <Globe
-            visible={globeVisible}
-            wireframe={wireframe}
-            textureEnabled={textureEnabled}
-            {...globeStyle}
-          />
+          <Globe wireframe={wireframe} {...globeStyle} />
 
           {/* Children */}
           {children}
@@ -209,11 +185,9 @@ export function HyperGlobe({
           {/* Region Features by MapData */}
         </group>
 
-        {/* 좌표축 시각화 헬퍼들 */}
-        {coordinateSystemVisible && <CoordinateSystem />}
-
         {/* 툴팁 */}
       </Canvas>
+
       <Tooltip />
     </div>
   );

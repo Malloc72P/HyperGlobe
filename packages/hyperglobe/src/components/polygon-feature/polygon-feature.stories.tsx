@@ -11,7 +11,6 @@ const meta = {
     (Story) => (
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        textureEnabled={false}
         globeStyle={{
           color: 'white',
           metalness: 0.7,

@@ -50,6 +50,11 @@ const colorThemes = {
 };
 
 export interface NationsDemoProps {
+  /**
+   * 데모에 적용할 색상을 지정합니다.
+   *
+   * @default 'blue'
+   */
   theme?: 'pink' | 'blue' | 'gray';
 }
 
@@ -91,7 +96,6 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
   return (
     <HyperGlobe
       maxSize={900}
-      textureEnabled={false}
       globeStyle={{
         color: styles.globeColor,
         metalness: styles.metalness,

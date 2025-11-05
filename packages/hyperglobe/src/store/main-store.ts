@@ -8,14 +8,7 @@ export interface UpdateTooltipPositionFnParam {
    * 툴팁을 표시할 좌표
    */
   point: Coordinate2D;
-  /**
-   * 툴팁의 너비
-   */
-  tooltipWidth: number;
-  /**
-   * 툴팁의 높이
-   */
-  tooltipHeight: number;
+  tooltipElement: HTMLDivElement;
 }
 export type UpdateTooltipPositionFn = (param: UpdateTooltipPositionFnParam) => Coordinate2D | null;
 
