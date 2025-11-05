@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store';
 import classes from './tooltip.module.css';
+import { classnames } from '../../lib/css';
 
 export interface TooltipProps {}
 
@@ -18,7 +19,7 @@ export function Tooltip({}: TooltipProps) {
   return (
     <div
       ref={ref}
-      className={['hygl-tooltip', classes.tooltip].join(' ')}
+      className={classnames('hygl-tooltip', classes.tooltip)}
       style={{
         display: hoveredRegion ? 'block' : 'none',
       }}
