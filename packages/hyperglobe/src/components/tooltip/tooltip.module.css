@@ -1,0 +1,36 @@
+.tooltip {
+  /* Position */
+  position: absolute;
+  transition: 0.1s;
+  left: 0;
+  top: 0;
+  z-index: 10;
+
+  /* Sizing */
+  min-width: 80px;
+  padding: 8px 12px;
+
+  /* Interaction */
+  pointer-events: none;
+
+  /* Color */
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+  /* Font */
+  font-size: 12px;
+
+  /* Border */
+  border-radius: 4px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -15px;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+  }
+}

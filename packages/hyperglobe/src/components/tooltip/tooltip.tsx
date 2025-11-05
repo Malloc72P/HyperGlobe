@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store';
+import classes from './tooltip.module.css';
 
 export interface TooltipProps {}
 
@@ -17,20 +18,8 @@ export function Tooltip({}: TooltipProps) {
   return (
     <div
       ref={ref}
-      className="tooltip"
+      className={['hygl-tooltip', classes.tooltip].join(' ')}
       style={{
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        transition: '0.1s',
-        pointerEvents: 'none',
-        background: 'white',
-        border: '1px solid black',
-        padding: '4px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-        minWidth: '80px',
         display: hoveredRegion ? 'block' : 'none',
       }}
     >

@@ -110,9 +110,6 @@ export function Globe({
     return _textureEnabled;
   }, []);
 
-  const tooltipRef = useMainStore((s) => s.tooltipRef);
-  const getTooltipPosition = useMainStore((s) => s.getTooltipPosition);
-
   /**
    * 지구 텍스처 로드
    */
@@ -143,22 +140,6 @@ export function Globe({
         if (!isRendered) {
           setIsRendered(true);
         }
-      }}
-      /**
-       * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
-       */
-      onPointerMove={(e) => {
-        const tooltip = tooltipRef?.current;
-        const { clientX, clientY } = e;
-
-        if (!tooltip || !getTooltipPosition) return;
-
-        const nextPosition = getTooltipPosition({
-          x: clientX,
-          y: clientY,
-        });
-
-        tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
       }}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}

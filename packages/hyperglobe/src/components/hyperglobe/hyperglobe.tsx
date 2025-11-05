@@ -17,7 +17,7 @@ import { Tooltip } from '../tooltip';
 import type { Coordinate2D } from '../../types/tooltip';
 import { throttle } from '../../lib';
 import { useThrottle } from '../../hooks/use-throttle';
-import { useMainStore } from '../../store';
+import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -112,25 +112,28 @@ export function HyperGlobe({
   const rootElementRef = useRef<HTMLDivElement>(null);
   const [isRendered, setIsRendered] = useState<boolean>(false);
   const lightRef = useRef<DirectionalLight>(null);
-  const rootElRect = useRef<DOMRect | null>(null);
-  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
 
-  const getTooltipPosition = useThrottle<[Coordinate2D], Coordinate2D | null>({
-    fn: (e: Coordinate2D) => {
+  //   store
+  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
+  const tooltipRef = useMainStore((s) => s.tooltipRef);
+
+  const getTooltipPosition = useThrottle<[UpdateTooltipPositionFnParam], Coordinate2D | null>({
+    fn: ({ point, tooltipWidth, tooltipHeight }: UpdateTooltipPositionFnParam) => {
+      const tooltipOffset = 10;
       const rootElement = rootElementRef.current;
 
       if (!rootElement) return null;
 
-      if (!rootElRect.current) {
-        rootElRect.current = rootElement.getBoundingClientRect();
-      }
-
-      const rect = rootElRect.current;
+      const rect = rootElement.getBoundingClientRect();
 
       const nextPosition = {
-        x: e.x - rect.left,
-        y: e.y - rect.top,
+        x: point.x - rect.left,
+        y: point.y - rect.top,
       };
+
+      // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
+      nextPosition.x = nextPosition.x - tooltipWidth / 2;
+      nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
 
       return nextPosition;
     },
@@ -142,7 +145,30 @@ export function HyperGlobe({
   }, [getTooltipPosition]);
 
   return (
-    <div ref={rootElementRef} style={{ position: 'relative', overflow: 'hidden' }}>
+    <div
+      ref={rootElementRef}
+      style={{ position: 'relative', overflow: 'hidden' }}
+      /**
+       * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
+       */
+      onPointerMove={(e) => {
+        const tooltip = tooltipRef?.current;
+        const { clientX, clientY } = e;
+
+        if (!tooltip || !getTooltipPosition) return;
+
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const nextPosition = getTooltipPosition({
+          point: { x: clientX, y: clientY },
+          tooltipWidth: tooltipRect.width,
+          tooltipHeight: tooltipRect.height,
+        });
+
+        if (!nextPosition) return;
+
+        tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
+      }}
+    >
       <LoadingUI loading={loading} />
       <Canvas
         id={id}

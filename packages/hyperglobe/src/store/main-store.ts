@@ -3,7 +3,21 @@ import type { Coordinate2D } from '../types/tooltip';
 import type { PointerEvent, RefObject } from 'react';
 import type { RegionModel } from '../types/region';
 
-export type UpdateTooltipPositionFn = (e: Coordinate2D) => Coordinate2D | null;
+export interface UpdateTooltipPositionFnParam {
+  /**
+   * 툴팁을 표시할 좌표
+   */
+  point: Coordinate2D;
+  /**
+   * 툴팁의 너비
+   */
+  tooltipWidth: number;
+  /**
+   * 툴팁의 높이
+   */
+  tooltipHeight: number;
+}
+export type UpdateTooltipPositionFn = (param: UpdateTooltipPositionFnParam) => Coordinate2D | null;
 
 export interface MainStore {
   hoveredRegion: RegionModel | null;
