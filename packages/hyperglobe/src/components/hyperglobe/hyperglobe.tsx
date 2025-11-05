@@ -1,13 +1,17 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useRef, useState, type PropsWithChildren } from 'react';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 import type { DirectionalLight } from 'three';
+import { Tooltip } from '../tooltip';
+import type { Coordinate2D } from '../../types/tooltip';
+import { useThrottle } from '../../hooks/use-throttle';
+import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 
 /**
- * HyperGlobe 컴포넌트의 Props
+ * HyperGlobe 컴포넌트의 Propsㅎㅎ
  */
 export interface HyperGlobeProps extends PropsWithChildren {
   /**
@@ -96,17 +100,70 @@ export function HyperGlobe({
   globeStyle,
   style,
 }: HyperGlobeProps) {
-  const [isRendered, setIsRendered] = useState<boolean>(false);
+  const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
 
+  //   store
+  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
+  const tooltipRef = useMainStore((s) => s.tooltipRef);
+
+  const getTooltipPosition = useThrottle<[UpdateTooltipPositionFnParam], Coordinate2D | null>({
+    fn: ({ point, tooltipWidth, tooltipHeight }: UpdateTooltipPositionFnParam) => {
+      const tooltipOffset = 10;
+      const rootElement = rootElementRef.current;
+
+      if (!rootElement) return null;
+
+      const rect = rootElement.getBoundingClientRect();
+
+      const nextPosition = {
+        x: point.x - rect.left,
+        y: point.y - rect.top,
+      };
+
+      // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
+      nextPosition.x = nextPosition.x - tooltipWidth / 2;
+      nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
+
+      return nextPosition;
+    },
+    delay: 25,
+  });
+
+  useEffect(() => {
+    registerUpdateTooltipPosition(getTooltipPosition);
+  }, [getTooltipPosition]);
+
   return (
-    <div style={{ position: 'relative' }}>
+    <div
+      ref={rootElementRef}
+      style={{ position: 'relative', overflow: 'hidden' }}
+      /**
+       * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
+       */
+      onPointerMove={(e) => {
+        const tooltip = tooltipRef?.current;
+        const { clientX, clientY } = e;
+
+        if (!tooltip || !getTooltipPosition) return;
+
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const nextPosition = getTooltipPosition({
+          point: { x: clientX, y: clientY },
+          tooltipWidth: tooltipRect.width,
+          tooltipHeight: tooltipRect.height,
+        });
+
+        if (!nextPosition) return;
+
+        tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
+      }}
+    >
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
-        data-is-rendered={isRendered ? 'true' : 'false'}
       >
         {/* 기본 조명 설정 */}
         <ambientLight intensity={2} />
@@ -133,7 +190,7 @@ export function HyperGlobe({
             light.position.set(0, 0, 0);
             light.position.add(camera.position);
           }}
-        ></OrbitControls>
+        />
 
         <PerspectiveCamera></PerspectiveCamera>
 
@@ -141,8 +198,6 @@ export function HyperGlobe({
         <group rotation={rotation}>
           <Globe
             visible={globeVisible}
-            isRendered={isRendered}
-            setIsRendered={setIsRendered}
             wireframe={wireframe}
             textureEnabled={textureEnabled}
             {...globeStyle}
@@ -156,7 +211,10 @@ export function HyperGlobe({
 
         {/* 좌표축 시각화 헬퍼들 */}
         {coordinateSystemVisible && <CoordinateSystem />}
+
+        {/* 툴팁 */}
       </Canvas>
+      <Tooltip />
     </div>
   );
 }
