@@ -5,10 +5,11 @@ import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 import type { DirectionalLight } from 'three';
-import { Tooltip } from '../tooltip';
+import { Tooltip, type TooltipProps } from '../tooltip';
 import type { Coordinate2D } from '../../types/tooltip';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
+import { FpsCounter, FpsDisplay } from '../fps-counter';
 
 /**
  * HyperGlobe 컴포넌트의 Propsㅎㅎ
@@ -47,6 +48,14 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 지구본의 공통 스타일 설정
    */
   globeStyle?: GlobeStyle;
+  /**
+   * 툴팁 옵션
+   */
+  tooltipOption?: TooltipProps;
+  /**
+   * FPS(초당 프레임 수) 카운터 표시 여부
+   */
+  showFpsCounter?: boolean;
 }
 
 /**
@@ -81,9 +90,12 @@ export function HyperGlobe({
   rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
+  tooltipOption,
+  showFpsCounter = true,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
+  const [fps, setFps] = useState(0);
 
   //   store
   const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
@@ -145,6 +157,7 @@ export function HyperGlobe({
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
+        frameloop="demand"
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
@@ -159,7 +172,7 @@ export function HyperGlobe({
           /**
            * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
            */
-          minDistance={3}
+          minDistance={1.5}
           /**
            * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
            */
@@ -185,10 +198,14 @@ export function HyperGlobe({
           {/* Region Features by MapData */}
         </group>
 
+        {/* FPS Counter */}
+        {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
+
         {/* 툴팁 */}
       </Canvas>
 
-      <Tooltip />
+      <Tooltip {...tooltipOption} />
+      {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
   );
 }

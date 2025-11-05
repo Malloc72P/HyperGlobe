@@ -16,11 +16,6 @@ export interface RegionFeatureProps {
   feature: any;
 
   /**
-   * 면 채우기 활성화 여부
-   */
-  fill?: boolean;
-
-  /**
    * 지역 스타일
    */
   style?: FeatureStyle;

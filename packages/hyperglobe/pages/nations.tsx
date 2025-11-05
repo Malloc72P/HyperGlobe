@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { HyperGlobe, Graticule, RegionFeature } from '../src';
-import GeoJson from '../src/data/world-low.geo.json';
+import GeoJson from '../src/data/world-high.geo.json';
 
 const pink = [
   '#fff1f3',
@@ -107,7 +107,6 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
         <RegionFeature
           key={feature.id}
           feature={feature}
-          fill={true}
           style={{
             lineWidth: styles.regionStrokeWidth,
             color: styles.regionColor,
