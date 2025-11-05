@@ -1,26 +1,17 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type PointerEvent,
-  type PropsWithChildren,
-} from 'react';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 import type { DirectionalLight } from 'three';
 import { Tooltip } from '../tooltip';
 import type { Coordinate2D } from '../../types/tooltip';
-import { throttle } from '../../lib';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 
 /**
- * HyperGlobe 컴포넌트의 Props
+ * HyperGlobe 컴포넌트의 Propsㅎㅎ
  */
 export interface HyperGlobeProps extends PropsWithChildren {
   /**
@@ -110,7 +101,6 @@ export function HyperGlobe({
   style,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
-  const [isRendered, setIsRendered] = useState<boolean>(false);
   const lightRef = useRef<DirectionalLight>(null);
 
   //   store
@@ -174,7 +164,6 @@ export function HyperGlobe({
         id={id}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
-        data-is-rendered={isRendered ? 'true' : 'false'}
       >
         {/* 기본 조명 설정 */}
         <ambientLight intensity={2} />
@@ -201,7 +190,7 @@ export function HyperGlobe({
             light.position.set(0, 0, 0);
             light.position.add(camera.position);
           }}
-        ></OrbitControls>
+        />
 
         <PerspectiveCamera></PerspectiveCamera>
 
@@ -209,8 +198,6 @@ export function HyperGlobe({
         <group rotation={rotation}>
           <Globe
             visible={globeVisible}
-            isRendered={isRendered}
-            setIsRendered={setIsRendered}
             wireframe={wireframe}
             textureEnabled={textureEnabled}
             {...globeStyle}

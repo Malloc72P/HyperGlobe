@@ -103,11 +103,15 @@ export function RegionFeature({
 
   return (
     <group
-      onPointerEnter={() => {
+      onPointerEnter={(e) => {
+        e.stopPropagation();
+
         setHovered(true);
         setHoveredRegion(regionModel);
       }}
-      onPointerLeave={() => {
+      onPointerLeave={(e) => {
+        e.stopPropagation();
+
         setHovered(false);
         setHoveredRegion(null);
       }}

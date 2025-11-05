@@ -51,14 +51,6 @@ export interface GlobeProps extends GlobeStyle {
    */
   segments?: [number, number];
   /**
-   * 렌더링 상태
-   */
-  isRendered: boolean;
-  /**
-   * 렌더링 상태 설정 함수
-   */
-  setIsRendered: React.Dispatch<React.SetStateAction<boolean>>;
-  /**
    * wireframe 여부
    */
   wireframe?: boolean;
@@ -92,8 +84,6 @@ export interface GlobeProps extends GlobeStyle {
 export function Globe({
   position = [0, 0, 0],
   segments = [64, 32],
-  isRendered,
-  setIsRendered,
   wireframe,
   textureEnabled: _textureEnabled = true,
   visible = true,
@@ -126,7 +116,7 @@ export function Globe({
   useEffect(() => {
     const material = materialRef.current;
 
-    if (!material || !isRendered) return;
+    if (!material) return;
 
     material.map = textureEnabled ? earthTexture : null;
     material.needsUpdate = true;
@@ -136,11 +126,11 @@ export function Globe({
     <mesh
       visible={visible}
       position={position}
-      onAfterRender={() => {
-        if (!isRendered) {
-          setIsRendered(true);
-        }
-      }}
+      /**
+       * 포인터 이벤트 캡처 방지
+       */
+      onPointerEnter={(e) => e.stopPropagation()}
+      onPointerLeave={(e) => e.stopPropagation()}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
