@@ -157,7 +157,7 @@ export function HyperGlobe({
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
-        frameloop="demand"
+        // frameloop="demand"
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >

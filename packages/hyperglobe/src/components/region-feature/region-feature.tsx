@@ -90,8 +90,6 @@ export function RegionFeature({
 
     if (feature.geometry.coordinates.length === 0) return;
 
-    console.log('calculate featurePolygons');
-
     if (feature.geometry.type === 'Polygon') {
       // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
       const borderlinePolygon = feature.geometry.coordinates[0];
@@ -114,7 +112,6 @@ export function RegionFeature({
    */
   const meshSource = useMemo(() => {
     if (!featurePolygons) return;
-    console.log('calculate meshSource');
 
     const gridSpacing = 3;
     const densifyBoundary = true;
@@ -153,8 +150,6 @@ export function RegionFeature({
    */
   const regionFeatureGeometry = useMemo(() => {
     if (!meshSource || !featurePolygons) return;
-
-    console.log('calculate regionFeatureGeometry');
 
     const geometry = mergeGeometries(meshSource);
     const fillRadius = UiConstant.feature.strokeRadius;

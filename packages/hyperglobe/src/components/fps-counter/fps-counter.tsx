@@ -1,4 +1,4 @@
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
 
 /**
@@ -10,6 +10,7 @@ import { useRef } from 'react';
 export function FpsCounter({ onFpsUpdate }: { onFpsUpdate: (fps: number) => void }) {
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(performance.now());
+  const { gl } = useThree();
 
   useFrame(() => {
     frameCountRef.current += 1;
@@ -22,6 +23,13 @@ export function FpsCounter({ onFpsUpdate }: { onFpsUpdate: (fps: number) => void
       onFpsUpdate(currentFps);
       frameCountRef.current = 0;
       lastTimeRef.current = currentTime;
+
+      const info = gl.info.render;
+      console.log({
+        드로우콜: info.calls,
+        삼각형: info.triangles.toLocaleString(),
+        지오메트리: gl.info.memory.geometries,
+      });
     }
   });
 
