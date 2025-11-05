@@ -155,7 +155,7 @@ function analyzeGeoJSON(filePath) {
  * 메인 실행 함수
  */
 function main() {
-  const dataDir = path.join(__dirname, 'src', 'data');
+  const dataDir = path.join(__dirname, '../src', 'data');
   const geoJsonFiles = ['world-low.geo.json', 'world-mid.geo.json', 'world-high.geo.json'];
 
   console.log('🌍 GeoJSON 파일 분석 도구');
