@@ -1,3 +1,5 @@
+import { useThree, useFrame } from '@react-three/fiber';
+
 /**
  * 지구본 스타일
  *
@@ -80,6 +82,17 @@ export function Globe({
   roughness = 0.5,
   metalness = 0,
 }: GlobeProps) {
+  const { gl } = useThree();
+
+  useFrame(() => {
+    const info = gl.info.render;
+    console.log({
+      드로우콜: info.calls,
+      삼각형: info.triangles.toLocaleString(),
+      지오메트리: gl.info.memory.geometries,
+    });
+  });
+
   return (
     <mesh
       position={position}

@@ -1,5 +1,5 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
@@ -138,21 +138,21 @@ export function HyperGlobe({
       /**
        * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
        */
-      onPointerMove={(e) => {
-        const tooltip = tooltipRef?.current;
-        const { clientX, clientY } = e;
+      //   onPointerMove={(e) => {
+      //     const tooltip = tooltipRef?.current;
+      //     const { clientX, clientY } = e;
 
-        if (!tooltip || !getTooltipPosition) return;
+      //     if (!tooltip || !getTooltipPosition) return;
 
-        const nextPosition = getTooltipPosition({
-          point: { x: clientX, y: clientY },
-          tooltipElement: tooltip,
-        });
+      //     const nextPosition = getTooltipPosition({
+      //       point: { x: clientX, y: clientY },
+      //       tooltipElement: tooltip,
+      //     });
 
-        if (!nextPosition) return;
+      //     if (!nextPosition) return;
 
-        tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
-      }}
+      //     tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
+      //   }}
     >
       <LoadingUI loading={loading} />
       <Canvas
