@@ -1,4 +1,4 @@
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import type { Coordinate, VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 import { toRadian } from '../math/to-radian';
 import { magnitude3D } from '../math/magnitude';
 

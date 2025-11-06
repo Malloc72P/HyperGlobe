@@ -102,6 +102,9 @@ importers:
       '@hyperglobe/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@hyperglobe/interfaces':
+        specifier: workspace:*
+        version: link:../hyperglobe-interface
       '@hyperglobe/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -172,6 +175,9 @@ importers:
       '@hyperglobe/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/geojson':
+        specifier: ^7946.0.8
+        version: 7946.0.16
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0

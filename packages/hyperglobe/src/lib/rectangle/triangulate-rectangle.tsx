@@ -1,4 +1,4 @@
-import type { VectorCoordinate } from '../../types/coordinate';
+import type { VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 
 export interface triangulateRectangleOption {
   gridPoints: VectorCoordinate[];

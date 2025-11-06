@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { UiConstant } from '../../constants';
 import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
 import type { FeatureStyle } from '../../types/feature';
-import type { FeaturePolygons } from '../../types/polygon';
+import type { FeaturePolygons } from '../../../../hyperglobe-interface/src/polygon';
 import { LineFeature } from '../line-feature';
 
 export interface PolygonFeatureProps {

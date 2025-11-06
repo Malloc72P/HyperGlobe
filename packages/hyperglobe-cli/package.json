@@ -21,6 +21,7 @@
     "@hyperglobe/typescript-config": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.0",
+    "@types/geojson": "^7946.0.8",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.5",
     "tsup": "^8.5.0",

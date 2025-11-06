@@ -1,4 +1,4 @@
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import type { Coordinate, VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 import { delaunayTriangulate } from './delaunay-triangulate';
 
 export interface TriangulatePolygonOptions {

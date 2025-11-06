@@ -1,5 +1,5 @@
 import Delaunator from 'delaunator';
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import type { Coordinate, VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 import { OrthographicProj } from '../projections/orthographic';
 import { distance2D } from '../math/magnitude';
 

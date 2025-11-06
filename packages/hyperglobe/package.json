@@ -25,6 +25,7 @@
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
+    "@hyperglobe/interfaces": "workspace:*",
     "@storybook/addon-docs": "^9.1.13",
     "@storybook/blocks": "^8.6.14",
     "@storybook/react": "^9.1.13",

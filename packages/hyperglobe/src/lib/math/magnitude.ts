@@ -1,4 +1,4 @@
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import type { Coordinate, VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 
 /**
  * 2D 벡터의 크기(magnitude) 계산

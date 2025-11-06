@@ -23,5 +23,10 @@
     "noUncheckedSideEffectImports": true
   },
   "exclude": ["**/*.stories.tsx"],
-  "include": ["src", "declaration.d.ts"]
+  "include": [
+    "src",
+    "declaration.d.ts",
+    "../hyperglobe-interface/src/coordinate.ts",
+    "../hyperglobe-interface/src/polygon.ts"
+  ]
 }

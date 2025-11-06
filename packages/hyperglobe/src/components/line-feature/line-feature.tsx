@@ -1,7 +1,7 @@
 import { Line } from '@react-three/drei';
 import { useMemo } from 'react';
 import { OrthographicProj } from '../../lib/projections/orthographic';
-import type { Coordinate, VectorCoordinate } from '../../types/coordinate';
+import type { Coordinate, VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
 import { UiConstant } from '../../constants';
 
 export interface LineFeatureProps {

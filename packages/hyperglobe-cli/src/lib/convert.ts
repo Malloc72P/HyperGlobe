@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { loadGeoJson } from './load-geojson';
 import { HGMFile } from '@hyperglobe/interfaces';
+import { toFeaturePolygons } from './to-polygon';
 
 export interface ConvertOption {
   inputPath: string;
@@ -8,14 +9,10 @@ export interface ConvertOption {
 
 export function convert({ inputPath }: ConvertOption) {
   const hgmData: HGMFile = {
-    version: '1.0.0',
-    metadata: {
-      name: 'Converted HGM',
-      featureCount: 0,
-      triangleCount: 0,
-    },
     features: [],
   };
 
   const geoJson = loadGeoJson(inputPath);
+
+  const featurePolygons = geoJson.features.map((f: any) => toFeaturePolygons(f));
 }

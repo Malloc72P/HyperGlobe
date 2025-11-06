@@ -1,9 +1,9 @@
 export interface HGMFile {
-  version: string;
-  metadata: {
-    name: string;
-    featureCount: number;
-    triangleCount: number;
+  version?: string;
+  metadata?: {
+    name?: string;
+    featureCount?: number;
+    triangleCount?: number;
   };
   features: HGMFeature[];
 }
