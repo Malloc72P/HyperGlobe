@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { OrthographicProj } from '../projections/orthographic';
-import type { Coordinate } from '../../../../hyperglobe-interface/src/coordinate';
+import type { Coordinate } from '@hyperglobe/interfaces';
 import { createGridPoints } from './create-grid-points';
 import { magnitude3D } from '../math/magnitude';
 

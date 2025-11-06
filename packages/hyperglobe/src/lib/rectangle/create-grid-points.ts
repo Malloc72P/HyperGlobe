@@ -1,4 +1,4 @@
-import type { VectorCoordinate } from '../../../../hyperglobe-interface/src/coordinate';
+import type { VectorCoordinate } from '@hyperglobe/interfaces';
 import { OrthographicProj } from '../projections/orthographic';
 
 export interface CreateGridVectorsParam {

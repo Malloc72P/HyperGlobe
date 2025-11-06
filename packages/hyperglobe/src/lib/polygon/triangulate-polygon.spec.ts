@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Coordinate } from '../../../../hyperglobe-interface/src/coordinate';
+import type { Coordinate } from '@hyperglobe/interfaces';
 import { triangulatePolygon } from './triangulate-polygon';
 import { magnitude3D } from '../math/magnitude';
 
