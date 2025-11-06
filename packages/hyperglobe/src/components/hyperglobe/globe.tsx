@@ -90,8 +90,8 @@ export function Globe({
        *
        * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
-      onPointerEnter={(e) => e.stopPropagation()}
-      onPointerLeave={(e) => e.stopPropagation()}
+      //   onPointerEnter={(e) => e.stopPropagation()}
+      //   onPointerLeave={(e) => e.stopPropagation()}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
