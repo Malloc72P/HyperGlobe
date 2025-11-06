@@ -1,0 +1,12 @@
+{
+  "name": "@hyperglobe/interfaces",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "devDependencies": {
+    "@hyperglobe/eslint-config": "workspace:*",
+    "@hyperglobe/typescript-config": "workspace:*"
+  }
+}
