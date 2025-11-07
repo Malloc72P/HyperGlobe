@@ -10,9 +10,10 @@ import type { Coordinate2D } from '../../types/tooltip';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
-import type { HGMFile } from '@hyperglobe/interfaces';
+import type { HGM, RawHGMFile } from '@hyperglobe/interfaces';
 import { RegionFeature2, type RegionFeature2Props } from '../region-feature2';
 import { RegionFeature } from '../region-feature';
+import { base64ToFloat32Array, base64ToUInt32Array, toNumArray } from 'src/lib';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -114,15 +115,31 @@ export function HyperGlobe({
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
   const [fps, setFps] = useState(0);
-  const [hgmData, setHgmData] = useState<HGMFile | null>(null);
+  const [hgmData, setHgmData] = useState<HGM | null>(null);
 
   useMemo(async () => {
     if (!hgm) return;
 
     const hgmData = hgm.stream().pipeThrough(new DecompressionStream('gzip'));
-    const data = await new Response(hgmData).json();
+    const rawHGM = (await new Response(hgmData).json()) as RawHGMFile;
 
-    setHgmData(data);
+    const _hgm: HGM = {
+      version: rawHGM.version,
+      metadata: rawHGM.metadata,
+      features: rawHGM.features.map((feature) => ({
+        id: feature.id,
+        p: feature.p,
+        g: feature.g.map((src) => ({
+          v: base64ToFloat32Array(src.v),
+          i: base64ToUInt32Array(src.i),
+        })),
+        b: {
+          p: base64ToFloat32Array(feature.b.p),
+        },
+      })),
+    };
+
+    setHgmData(_hgm);
   }, [hgm]);
 
   //   store

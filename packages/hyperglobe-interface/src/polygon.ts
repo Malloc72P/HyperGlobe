@@ -23,9 +23,9 @@ export interface SimpleFeature {
  */
 export interface GeometrySource {
   // vertices
-  v: number[];
+  v: Float32Array;
   // indices
-  i: number[];
+  i: Uint32Array;
 }
 
 /**
@@ -33,5 +33,17 @@ export interface GeometrySource {
  */
 export interface BorderlineSource {
   // positions
-  p: number[];
+  p: Float32Array;
+}
+
+export interface RawGeometrySource {
+  // vertices
+  v: string;
+  // indices
+  i: string;
+}
+
+export interface RawBorderlineSource {
+  // positions
+  p: string;
 }

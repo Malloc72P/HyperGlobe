@@ -1,4 +1,4 @@
-import { HGMFile } from '@hyperglobe/interfaces';
+import { RawHGMFile } from '@hyperglobe/interfaces';
 import { loadGeoJson } from './load-geojson';
 import { toHgmFeature } from './to-hgm-feature';
 import { toSimpleFeature } from './to-simple-feature';
@@ -15,7 +15,7 @@ export function convert({ inputPath }: ConvertOption) {
   const hgmFeatures = geoJson.features.map(toSimpleFeature).map(toHgmFeature);
 
   // HGM 포맷 객체 생성
-  const hgmData: HGMFile = {
+  const hgmData: RawHGMFile = {
     features: hgmFeatures,
   };
 

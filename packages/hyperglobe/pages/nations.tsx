@@ -104,7 +104,6 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
 
     (async function () {
       const hgm = await fetch('/world-low.hgm').then((res) => res.blob());
-      await sleep(2000);
 
       setHgm(hgm);
       setLoading(false);

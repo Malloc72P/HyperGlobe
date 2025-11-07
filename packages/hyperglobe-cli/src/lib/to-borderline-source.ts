@@ -1,7 +1,8 @@
-import { BorderlineSource, FeaturePolygons } from '@hyperglobe/interfaces';
+import { BorderlineSource, FeaturePolygons, RawBorderlineSource } from '@hyperglobe/interfaces';
 import { MathConstants, OrthographicProj, roundCoordinates } from '@hyperglobe/math';
+import { typedArrayToBase64 } from './base64';
 
-export function toBorderlineSource(featurePolygons: FeaturePolygons[]): BorderlineSource {
+export function toBorderlineSource(featurePolygons: FeaturePolygons[]): RawBorderlineSource {
   const strokeRadius = MathConstants.FEATURE_STROKE_Z_INDEX;
   const positions: number[] = [];
 
@@ -24,6 +25,7 @@ export function toBorderlineSource(featurePolygons: FeaturePolygons[]): Borderli
   }
 
   return {
-    p: positions.map(roundCoordinates),
+    // p: positions,
+    p: typedArrayToBase64(new Float32Array(positions)),
   };
 }
