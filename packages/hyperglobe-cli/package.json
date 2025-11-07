@@ -4,12 +4,11 @@
   "type": "module",
   "private": true,
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "bin": {
     "hyperglobe": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc && vite build",
     "dev": "tsx src/index.ts",
     "test": "vitest run"
   },
@@ -19,11 +18,13 @@
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
+    "@hyperglobe/math": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.1",
-    "tsup": "^8.5.0",
     "tsx": "^4.20.6"
   }
 }

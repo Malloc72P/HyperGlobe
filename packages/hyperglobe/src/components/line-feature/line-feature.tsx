@@ -1,6 +1,6 @@
 import { Line } from '@react-three/drei';
 import { useMemo } from 'react';
-import { OrthographicProj } from '@hyperglobe/math';
+import { MathConstants, OrthographicProj } from '@hyperglobe/math';
 import type { Coordinate, VectorCoordinate } from '@hyperglobe/interfaces';
 import { UiConstant } from '../../constants';
 
@@ -33,7 +33,7 @@ export function LineFeature({
   coordinates,
   color = 'red',
   lineWidth = 2,
-  z = UiConstant.feature.strokeRadius,
+  z = MathConstants.FEATURE_STROKE_Z_INDEX,
 }: LineFeatureProps) {
   const vectors = useMemo<VectorCoordinate[]>(() => {
     // 1. 경위도 좌표를 3D 벡터로 변환

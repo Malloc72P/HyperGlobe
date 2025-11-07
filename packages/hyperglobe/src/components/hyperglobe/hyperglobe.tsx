@@ -1,6 +1,6 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
+import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
 import { CoordinateSystem } from '../coordinate-system';
 import { LoadingUI } from '../loading-ui';
 import { Globe, type GlobeProps, type GlobeStyle } from './globe';
@@ -10,9 +10,12 @@ import type { Coordinate2D } from '../../types/tooltip';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
+import type { HGMFile } from '@hyperglobe/interfaces';
+import { RegionFeature2, type RegionFeature2Props } from '../region-feature2';
+import { RegionFeature } from '../region-feature';
 
 /**
- * HyperGlobe 컴포넌트의 Propsㅎㅎ
+ * HyperGlobe 컴포넌트의 Props
  */
 export interface HyperGlobeProps extends PropsWithChildren {
   /**
@@ -56,6 +59,19 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * FPS(초당 프레임 수) 카운터 표시 여부
    */
   showFpsCounter?: boolean;
+
+  /**
+   * 지역을 그리는데 필요한 지도 데이터(HGM 포맷).
+   *
+   * - HGM 파일은 Hyperglobe의 커스텀 지리 공간 데이터 포맷입니다.
+   * - 해당 데이터는 geoJson으로 생성할 수 있으며 Hyperglobe/cli를 통해 HGM 포맷으로 변환할 수 있습니다.
+   */
+  hgm?: Blob | null;
+
+  /**
+   * 리젼 피쳐의 공통 스타일 설정
+   */
+  regionOption: Pick<RegionFeature2Props, 'style' | 'hoverStyle' | 'metalness' | 'roughness'>;
 }
 
 /**
@@ -92,10 +108,22 @@ export function HyperGlobe({
   style,
   tooltipOption,
   showFpsCounter = true,
+  hgm,
+  regionOption,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
   const [fps, setFps] = useState(0);
+  const [hgmData, setHgmData] = useState<HGMFile | null>(null);
+
+  useMemo(async () => {
+    if (!hgm) return;
+
+    const hgmData = hgm.stream().pipeThrough(new DecompressionStream('gzip'));
+    const data = await new Response(hgmData).json();
+
+    setHgmData(data);
+  }, [hgm]);
 
   //   store
   const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
@@ -196,6 +224,9 @@ export function HyperGlobe({
           {children}
 
           {/* Region Features by MapData */}
+          {hgmData?.features.map((f) => (
+            <RegionFeature2 key={f.id} feature={f} {...regionOption} />
+          ))}
         </group>
 
         {/* FPS Counter */}

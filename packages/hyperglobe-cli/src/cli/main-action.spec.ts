@@ -1,5 +1,12 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { join, resolve } from 'path';
+import { describe, it } from 'vitest';
+import { mainAction } from './main-action';
 
-describe('mainAction', () => {
-  it('input과 output 경로를 resolve 해야 함', () => {});
+describe('main-action', () => {
+  it('디버거가 작동해야 한다', () => {
+    const inputPath = resolve(join(__dirname, '/../../dummy/world-low.geo.json'));
+    const outputPath = resolve(join(__dirname, '/../../dummy/world-low.hgm'));
+
+    mainAction({ input: inputPath, output: outputPath });
+  });
 });

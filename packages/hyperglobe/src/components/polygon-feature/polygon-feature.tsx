@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import * as THREE from 'three';
 import { UiConstant } from '../../constants';
-import { triangulatePolygon } from '@hyperglobe/math';
+import { MathConstants, triangulatePolygon } from '@hyperglobe/math';
 import type { FeatureStyle } from '../../types/feature';
 import type { FeaturePolygons } from '@hyperglobe/interfaces';
 import { LineFeature } from '../line-feature';
@@ -99,7 +99,7 @@ function _PolygonFeature({
 }: PolygonFeatureProps) {
   // 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
   const fillGeometry = useMemo(() => {
-    const fillRadius = UiConstant.feature.fillRadius;
+    const fillRadius = MathConstants.FEATURE_FILL_Z_INDEX;
 
     // Delaunay 삼각분할
     const { vertices, indices } = triangulatePolygon({

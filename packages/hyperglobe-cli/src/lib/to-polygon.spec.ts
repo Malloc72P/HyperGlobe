@@ -195,7 +195,7 @@ describe('toFeaturePolygons', () => {
   });
 
   describe('엣지 케이스', () => {
-    it('좌표가 비어있는 피쳐는 undefined를 반환해야 함', () => {
+    it('좌표가 비어있는 피쳐는 빈배열을 반환해야 함', () => {
       const feature = {
         type: 'Feature',
         geometry: {
@@ -207,10 +207,10 @@ describe('toFeaturePolygons', () => {
 
       const result = toFeaturePolygons(feature);
 
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual([]);
     });
 
-    it('빈 MultiPolygon도 undefined를 반환해야 함', () => {
+    it('빈 MultiPolygon도 빈 배열을 반환해야 함', () => {
       const feature = {
         type: 'Feature',
         geometry: {
@@ -222,7 +222,7 @@ describe('toFeaturePolygons', () => {
 
       const result = toFeaturePolygons(feature);
 
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual([]);
     });
 
     it('복잡한 실제 GeoJSON MultiPolygon 데이터를 처리해야 함', () => {

@@ -1,3 +1,5 @@
+import { BorderlineSource, GeometrySource } from './polygon';
+
 export interface HGMFile {
   version?: string;
   metadata?: {
@@ -10,16 +12,10 @@ export interface HGMFile {
 
 export interface HGMFeature {
   id: string;
-  properties: Record<string, any>;
-
-  // 메쉬 (삼각분할 완료된 상태)
-  mesh: {
-    vertices: Float32Array; // [x,y,z, ...]
-    indices: Uint32Array; // [0,1,2, ...]
-  };
-
-  // 외곽선 (이미 구체에 투영됨)
-  borderlines: {
-    positions: Float32Array; // [x1,y1,z1, x2,y2,z2, ...]
-  };
+  // 속성 정보
+  p: Record<string, any>;
+  // 지오메트리 생성을 위한 정보
+  g: GeometrySource[];
+  // 외곽선 정보
+  b: BorderlineSource;
 }

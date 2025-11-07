@@ -1,21 +1,20 @@
-import type { FeaturePolygons } from '@hyperglobe/interfaces';
+import type { HGMFeature } from '@hyperglobe/interfaces';
 import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { MathConstants, OrthographicProj, triangulatePolygon } from '@hyperglobe/math';
 import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
 import type { RegionModel } from '../../types/region';
 
-export interface RegionFeatureProps {
+export interface RegionFeature2Props {
   /**
    * 지역의 피쳐 정보(GeoJson 형식).
    *
    * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
-  feature: any;
+  feature: HGMFeature;
 
   /**
    * 지역 스타일
@@ -57,12 +56,12 @@ export interface RegionFeatureProps {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature({
+export function RegionFeature2({
   feature,
   style = UiConstant.polygonFeature.default.style,
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
   ...polygonFeatureProps
-}: RegionFeatureProps) {
+}: RegionFeature2Props) {
   const [hovered, setHovered] = useState(false);
   const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
   const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
@@ -73,65 +72,26 @@ export function RegionFeature({
   const regionModel = useMemo<RegionModel>(() => {
     return {
       id: feature.id,
-      name: feature.properties.name || '',
+      name: feature.p.name || '',
     };
   }, [feature]);
-
-  /**
-   * 피쳐의 폴리곤 배열
-   *
-   * - 멀티폴리곤과 싱글폴리곤을 일관된 방법으로 처리할 수 있도록, 하나의 폴리곤 배열로 반환함.
-   */
-  const featurePolygons = useMemo(() => {
-    // 멀티, 싱글 폴리곤 전부 처리할 수 있어야 함.
-    const _featurePolygons: FeaturePolygons[] = [];
-
-    if (feature.geometry.coordinates.length === 0) return;
-
-    if (feature.geometry.type === 'Polygon') {
-      // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
-      const borderlinePolygon = feature.geometry.coordinates[0];
-
-      _featurePolygons.push(borderlinePolygon as FeaturePolygons);
-    } else {
-      for (const singlePolygon of feature.geometry.coordinates) {
-        // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
-        const borderlinePolygon = singlePolygon[0];
-
-        _featurePolygons.push(borderlinePolygon as FeaturePolygons);
-      }
-    }
-
-    return _featurePolygons;
-  }, []);
 
   /**
    * 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
    */
   const meshSource = useMemo(() => {
-    if (!featurePolygons) return;
-
-    const gridSpacing = 3;
-    const densifyBoundary = true;
-    const fillRadius = MathConstants.FEATURE_FILL_Z_INDEX;
+    if (!feature) return;
 
     const geometries: THREE.BufferGeometry[] = [];
 
-    for (const polygon of featurePolygons) {
+    for (const geometrySource of feature.g) {
       // Delaunay 삼각분할
-      const { vertices, indices } = triangulatePolygon({
-        coordinates: polygon,
-        radius: fillRadius,
-        gridSpacing,
-        densifyBoundary,
-      });
+      const { v: vertices, i: indices } = geometrySource;
 
       // BufferGeometry 생성
       const geometry = new THREE.BufferGeometry();
 
-      // vertices를 flat array로 변환: [[x,y,z], [x,y,z]] => [x,y,z,x,y,z]
-      const flatVertices = vertices.flatMap((v) => [v[0], v[1], v[2]]);
-      geometry.setAttribute('position', new THREE.Float32BufferAttribute(flatVertices, 3));
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
       geometry.setIndex(indices);
       geometry.computeVertexNormals();
 
@@ -139,7 +99,7 @@ export function RegionFeature({
     }
 
     return geometries;
-  }, [featurePolygons]);
+  }, [feature]);
 
   /**
    * 드로우콜 최소화를 위해, 모든 폴리곤의 지오메트리를 병합
@@ -147,59 +107,24 @@ export function RegionFeature({
    * 외곽선은 EdgesGeometry로 생성
    */
   const regionFeatureGeometry = useMemo(() => {
-    if (!meshSource || !featurePolygons) return;
+    if (!meshSource || !feature) return;
 
     // 면을 위한 지오메트리 병합
     const geometry = mergeGeometries(meshSource);
 
-    // 외곽선을 위한 지오메트리 생성
-    const strokeRadius = MathConstants.FEATURE_STROKE_Z_INDEX;
-    const positions: number[] = [];
-
-    // 각 폴리곤을 구면에 투영하고, 외곽선의 정점 위치 계산
-    for (const polygon of featurePolygons) {
-      const projectedPoints = OrthographicProj.projects(polygon, strokeRadius);
-
-      // 이 폴리곤 내부에서만 선분 생성
-      for (let i = 0; i < projectedPoints.length; i++) {
-        const [x1, y1, z1] = projectedPoints[i];
-        // 마지막 점은 첫 점과 연결 (폴리곤 닫기)
-        const nextIndex = (i + 1) % projectedPoints.length;
-        const [x2, y2, z2] = projectedPoints[nextIndex];
-
-        // 선분 추가: 시작점 -> 끝점
-        positions.push(x1, y1, z1);
-        positions.push(x2, y2, z2);
-      }
-      // 여기서 끊김! 다음 폴리곤으로 넘어감
-    }
-
     const borderlineGeometry = new THREE.BufferGeometry();
-    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(feature.b.p, 3));
 
     return {
       geometry,
       borderlineGeometry,
     };
-  }, [meshSource, featurePolygons]);
+  }, [meshSource, feature]);
 
-  if (!featurePolygons) return;
+  if (!feature || !regionFeatureGeometry) return;
 
   return (
-    <group
-    //   onPointerEnter={(e) => {
-    //     e.stopPropagation();
-
-    //     setHovered(true);
-    //     setHoveredRegion(regionModel);
-    //   }}
-    //   onPointerLeave={(e) => {
-    //     e.stopPropagation();
-
-    //     setHovered(false);
-    //     setHoveredRegion(null);
-    //   }}
-    >
+    <group>
       {regionFeatureGeometry?.geometry && (
         <mesh geometry={regionFeatureGeometry.geometry}>
           <meshStandardMaterial
