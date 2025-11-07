@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { HyperGlobe, Graticule, RegionFeature } from '../src';
-import GeoJson from '../src/data/world-high.geo.json';
-import { HGMFile } from '@hyperglobe/interfaces';
 import { sleep } from '../src/lib';
 
 const pink = [
