@@ -11,23 +11,19 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/index.ts",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "commander": "^14.0.2"
   },
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
+    "vitest": "^4.0.1",
     "tsup": "^8.5.0",
     "tsx": "^4.20.6"
-  },
-  "dependencies": {
-    "commander": "^14.0.2"
   }
 }

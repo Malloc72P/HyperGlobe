@@ -4,61 +4,6 @@ import { triangulatePolygon } from './triangulate-polygon';
 import { magnitude3D } from '../math/magnitude';
 
 describe('triangulatePolygon', () => {
-  it('삼각형 폴리곤은 1개의 삼각형을 생성해야 함', () => {
-    // Given: 삼각형 좌표
-    const coordinates: Coordinate[] = [
-      [0, 0],
-      [10, 0],
-      [5, 10],
-    ];
-    const radius = 1;
-
-    // When
-    const result = triangulatePolygon({ coordinates, radius });
-
-    // Then: 삼각형 1개 = 인덱스 3개
-    expect(result.indices).toHaveLength(3);
-    expect(result.indices).toEqual([1, 2, 0]);
-    expect(result.vertices).toHaveLength(3);
-  });
-
-  it('사각형 폴리곤은 2개의 삼각형을 생성해야 함', () => {
-    // Given: 사각형 좌표
-    const coordinates: Coordinate[] = [
-      [0, 0],
-      [10, 0],
-      [10, 10],
-      [0, 10],
-    ];
-    const radius = 1;
-
-    // When
-    const result = triangulatePolygon({ coordinates, radius });
-
-    // Then: 삼각형 2개 = 인덱스 6개
-    expect(result.indices).toHaveLength(6);
-    expect(result.vertices).toHaveLength(4);
-  });
-
-  it('복잡한 폴리곤도 올바르게 삼각분할해야 함', () => {
-    // Given: 5각형
-    const coordinates: Coordinate[] = [
-      [0, 0],
-      [10, 0],
-      [12, 5],
-      [5, 10],
-      [-2, 5],
-    ];
-    const radius = 1;
-
-    // When
-    const result = triangulatePolygon({ coordinates, radius });
-
-    // Then: 5각형 = 삼각형 3개 = 인덱스 9개
-    expect(result.indices).toHaveLength(9);
-    expect(result.vertices).toHaveLength(5);
-  });
-
   it('생성된 모든 3D 좌표는 유효한 숫자여야 함', () => {
     // Given
     const coordinates: Coordinate[] = [

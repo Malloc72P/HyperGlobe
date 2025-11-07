@@ -1,10 +1,11 @@
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Command } from 'commander';
 import { createCommander } from './cli.js';
 import { mainAction } from './main-action.js';
 
 // mainAction 모킹
-jest.mock('../cli/main-action.js', () => ({
-  mainAction: jest.fn(),
+vi.mock('../cli/main-action.js', () => ({
+  mainAction: vi.fn(),
 }));
 
 describe('HyperGlobe CLI', () => {
@@ -13,7 +14,7 @@ describe('HyperGlobe CLI', () => {
   beforeEach(() => {
     // 매번 새로운 Command 인스턴스 생성
     program = createCommander();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('옵션 파싱', () => {

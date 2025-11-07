@@ -1,15 +1,13 @@
-import { useMemo, useState } from 'react';
-import { UiConstant } from '../../constants';
-import { useFeatureStyle } from '../../hooks/use-feature-style';
-import type { FeatureStyle } from '../../types/feature';
 import type { FeaturePolygons } from '@hyperglobe/interfaces';
-import { PolygonFeature } from '../polygon-feature/polygon-feature';
-import type { RegionModel } from '../../types/region';
-import { useMainStore } from '../../store';
-import { OrthographicProj, triangulatePolygon } from '../../lib';
+import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { LineFeature } from '../line-feature';
+import { UiConstant } from '../../constants';
+import { useFeatureStyle } from '../../hooks/use-feature-style';
+import { OrthographicProj, triangulatePolygon } from '@hyperglobe/math';
+import { useMainStore } from '../../store';
+import type { FeatureStyle } from '../../types/feature';
+import type { RegionModel } from '../../types/region';
 
 export interface RegionFeatureProps {
   /**

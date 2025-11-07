@@ -1,4 +1,5 @@
 import { toFeaturePolygons } from './to-polygon.js';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 describe('toFeaturePolygons', () => {
   describe('Polygon 타입 처리', () => {

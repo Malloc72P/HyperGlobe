@@ -17,7 +17,6 @@ export const config = tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
-  { ignores: ['jest.config.js'] },
   {
     plugins: {
       turbo: turboPlugin,

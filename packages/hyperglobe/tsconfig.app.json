@@ -20,13 +20,15 @@
     "strict": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // Path Aliases
+    "baseUrl": ".",
+    "paths": {
+      "@hyperglobe/math": ["../hyperglobe-math/src/*"],
+      "@hyperglobe/interfaces": ["../hyperglobe-interface/src/*"]
+    }
   },
   "exclude": ["**/*.stories.tsx"],
-  "include": [
-    "src",
-    "declaration.d.ts",
-    "../hyperglobe-interface/src/coordinate.ts",
-    "../hyperglobe-interface/src/polygon.ts"
-  ]
+  "include": ["src", "declaration.d.ts"]
 }

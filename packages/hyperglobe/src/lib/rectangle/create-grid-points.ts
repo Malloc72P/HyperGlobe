@@ -1,5 +1,5 @@
 import type { VectorCoordinate } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '../projections/orthographic';
+import { OrthographicProj } from '@hyperglobe/math';
 
 export interface CreateGridVectorsParam {
   /**

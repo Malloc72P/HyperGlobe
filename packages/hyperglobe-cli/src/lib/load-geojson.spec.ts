@@ -1,13 +1,14 @@
 import { readFileSync } from 'fs';
+import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { loadGeoJson } from './load-geojson.js';
 
-jest.mock('fs');
+vi.mock('fs');
 
 describe('loadGeoJson', () => {
-  const mockReadFileSync = readFileSync as jest.MockedFunction<typeof readFileSync>;
+  const mockReadFileSync = readFileSync as Mock<typeof readFileSync>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('유효한 GeoJSON 파일을 성공적으로 로드해야 함', () => {
@@ -35,10 +36,9 @@ describe('loadGeoJson', () => {
     expect(result).toEqual(mockGeoJson);
   });
 
-  it('실제 world-low.geo.json 파일을 로드할 수 있어야 함', () => {
-    mockReadFileSync.mockImplementation((...args) =>
-      jest.requireActual('fs').readFileSync(...args)
-    );
+  it('실제 world-low.geo.json 파일을 로드할 수 있어야 함', async () => {
+    const actualFs = await vi.importActual<typeof import('fs')>('fs');
+    mockReadFileSync.mockImplementation((...args) => actualFs.readFileSync(...args));
 
     const result = loadGeoJson('dummy/world-low.geo.json');
 
