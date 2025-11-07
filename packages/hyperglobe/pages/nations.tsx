@@ -103,7 +103,9 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
     lock.current = true;
 
     (async function () {
-      const hgm = await fetch('/world-low.hgm').then((res) => res.blob());
+      //   const hgm = await fetch('/world-low.hgm').then((res) => res.blob());
+      //   const hgm = await fetch('/world-mid.hgm').then((res) => res.blob());
+      const hgm = await fetch('/world-high.hgm').then((res) => res.blob());
 
       setHgm(hgm);
       setLoading(false);
