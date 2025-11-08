@@ -1,3 +1,3 @@
 # hyperglobe-interface
 
-- hyperglobe 모듈 간 인터페이스
+- hyperglobe에서 공통으로 사용하는 인터페이스를 모아놓은 모듈
