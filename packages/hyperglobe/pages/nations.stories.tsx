@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NationsDemo } from './nations';
 import fs from 'fs';
+import { mapsInfo } from '@hyperglobe/maps';
 
 const meta = {
   title: 'Demo/Nations',
@@ -11,9 +12,21 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const mapOptions = [...mapsInfo.map((map) => `${map.name}(${map.mb})`)];
+
 export const Demo: Story = {
   name: '국가별 세계지도',
   tags: ['autodocs'],
+  args: {
+    theme: 'blue',
+    map: mapOptions[3],
+  },
+  argTypes: {
+    map: {
+      control: 'select',
+      options: mapOptions,
+    },
+  },
   parameters: {
     docs: {
       source: {

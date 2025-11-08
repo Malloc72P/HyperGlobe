@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": {
+      "import": "./dist/index.ts",
+      "types": "./dist/index.ts"
+    }
+  },
   "scripts": {
     "build:map": "tsx ./src/script.ts",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "delaunator": "^5.0.1"
   },
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
@@ -16,7 +19,6 @@
     "@hyperglobe/interfaces": "workspace:*",
     "@hyperglobe/tools": "workspace:*",
     "@hyperglobe/node-tools": "workspace:*",
-    "@types/delaunator": "^5.0.3",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",
     "vitest": "^4.0.1"

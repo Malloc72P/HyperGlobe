@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { HyperGlobe, Graticule } from '../src';
+import { mapsInfo } from '@hyperglobe/maps';
 
 const pink = [
   '#fff1f3',
@@ -54,7 +55,14 @@ export interface NationsDemoProps {
    *
    * @default 'blue'
    */
-  theme?: 'pink' | 'blue' | 'gray';
+  theme: 'pink' | 'blue' | 'gray';
+
+  /**
+   * 사용할 지도 데이터를 지정합니다.
+   *
+   * @default 'nations-high'
+   */
+  map: string;
 }
 
 /**
@@ -73,8 +81,7 @@ export interface NationsDemoProps {
  * - [RegionFeature](/docs/components-regionfeature--docs)
  * - [Graticule](/docs/components-graticule--docs)
  */
-export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
-  const lock = useRef(false);
+export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDemoProps) {
   const [hgm, setHgm] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
   const color = useMemo(() => {
@@ -96,20 +103,16 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
   );
 
   useEffect(() => {
-    if (lock.current) return;
+    const mapName = map.split('(')[0];
     setLoading(true);
 
-    lock.current = true;
-
-    (async function () {
-      //   const hgm = await fetch('/maps/nations-low.hgm').then((res) => res.blob());
-      //   const hgm = await fetch('/maps/nations-mid.hgm').then((res) => res.blob());
-      const hgm = await fetch('/maps/nations-high.hgm').then((res) => res.blob());
-
-      setHgm(hgm);
-      setLoading(false);
-    })();
-  }, []);
+    fetch(`/maps/${mapName}.hgm`)
+      .then((res) => res.blob())
+      .then((_hgm) => {
+        setHgm(_hgm);
+        setLoading(false);
+      });
+  }, [map]);
 
   return (
     <HyperGlobe

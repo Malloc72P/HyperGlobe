@@ -99,6 +99,9 @@ importers:
       '@hyperglobe/interfaces':
         specifier: workspace:*
         version: link:../hyperglobe-interface
+      '@hyperglobe/maps':
+        specifier: workspace:*
+        version: link:../hyperglobe-maps
       '@hyperglobe/tools':
         specifier: workspace:*
         version: link:../hyperglobe-tools
@@ -204,10 +207,6 @@ importers:
         version: link:../typescript-config
 
   packages/hyperglobe-maps:
-    dependencies:
-      delaunator:
-        specifier: ^5.0.1
-        version: 5.0.1
     devDependencies:
       '@hyperglobe/eslint-config':
         specifier: workspace:*
@@ -224,9 +223,6 @@ importers:
       '@hyperglobe/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/delaunator':
-        specifier: ^5.0.3
-        version: 5.0.3
       '@types/geojson':
         specifier: ^7946.0.8
         version: 7946.0.16

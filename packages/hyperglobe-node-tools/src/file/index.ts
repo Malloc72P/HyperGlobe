@@ -5,3 +5,4 @@ export * from './resolve-path';
 export * from './base64';
 export * from './compress-hgm';
 export * from './mkdir-if-not-exist';
+export * from './format-bytes-to-mb';

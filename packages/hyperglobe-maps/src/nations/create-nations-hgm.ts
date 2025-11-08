@@ -18,7 +18,7 @@ export async function createNationsHGM() {
 
   const originalGeoJson = await simplify(
     await shpToGeoJson(shpPath, dbfPath, { encoding: 'UTF-8' }),
-    { simplifyPercent: 10, precision: 0.0001 }
+    { simplifyPercent: MapMeta.nations.defaultResolution.simplifyPercent, precision: 0.0001 }
   );
   const hgmList: RawHGMFile[] = [];
 
