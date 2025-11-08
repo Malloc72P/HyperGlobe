@@ -36,6 +36,12 @@ export interface BorderlineSource {
   p: Float32Array;
 }
 
+/**
+ * 지오메트리 생성을 위한 정보 (Raw 타입)
+ *
+ * - base64로 인코딩된 Float32Array, Uint32Array 형태.
+ * - vertices가 Float32Array로, indices가 Uint32Array로 인코딩되어 있음.
+ */
 export interface RawGeometrySource {
   // vertices
   v: string;
@@ -43,6 +49,11 @@ export interface RawGeometrySource {
   i: string;
 }
 
+/**
+ * 외곽선 생성을 위한 정보 (Raw 타입)
+ *
+ * - base64로 인코딩된 Float32Array 형태.
+ */
 export interface RawBorderlineSource {
   // positions
   p: string;

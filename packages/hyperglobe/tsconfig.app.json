@@ -25,7 +25,7 @@
     // Path Aliases
     "baseUrl": ".",
     "paths": {
-      "@hyperglobe/math": ["../hyperglobe-math/src/*"],
+      "@hyperglobe/tools": ["../hyperglobe-tools/src/*"],
       "@hyperglobe/interfaces": ["../hyperglobe-interface/src/*"]
     }
   },

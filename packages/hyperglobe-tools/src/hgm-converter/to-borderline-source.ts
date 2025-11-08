@@ -1,6 +1,7 @@
-import { BorderlineSource, FeaturePolygons, RawBorderlineSource } from '@hyperglobe/interfaces';
-import { MathConstants, OrthographicProj, roundCoordinates } from '@hyperglobe/math';
-import { typedArrayToBase64 } from './base64';
+import { FeaturePolygons, RawBorderlineSource } from '@hyperglobe/interfaces';
+import { MathConstants } from '../constants';
+import { typedArrayToBase64 } from '../file';
+import { OrthographicProj } from '../projections';
 
 export function toBorderlineSource(featurePolygons: FeaturePolygons[]): RawBorderlineSource {
   const strokeRadius = MathConstants.FEATURE_STROKE_Z_INDEX;
@@ -12,16 +13,16 @@ export function toBorderlineSource(featurePolygons: FeaturePolygons[]): RawBorde
 
     // 이 폴리곤 내부에서만 선분 생성
     for (let i = 0; i < projectedPoints.length; i++) {
-      const [x1, y1, z1] = projectedPoints[i];
-      // 마지막 점은 첫 점과 연결 (폴리곤 닫기)
+      const point = projectedPoints[i];
       const nextIndex = (i + 1) % projectedPoints.length;
-      const [x2, y2, z2] = projectedPoints[nextIndex];
+      const nextPoint = projectedPoints[nextIndex];
 
-      // 선분 추가: 시작점 -> 끝점
-      positions.push(x1, y1, z1);
-      positions.push(x2, y2, z2);
+      if (!point || !nextPoint) continue;
+
+      // x, y, z 좌표 추가
+      positions.push(...point);
+      positions.push(...nextPoint);
     }
-    // 여기서 끊김! 다음 폴리곤으로 넘어감
   }
 
   return {

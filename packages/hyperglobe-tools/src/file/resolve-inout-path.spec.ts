@@ -1,7 +1,6 @@
 import { resolve } from 'path';
-import { MainActionOption } from '../cli/main-action.js';
-import { resolveInOutPaths } from '../lib/resolve-inout-path.js';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { resolveInOutPaths } from './resolve-inout-path';
 
 describe('resolveInOutPaths', () => {
   it('input과 output 경로를 resolve 해야 함', () => {
@@ -9,7 +8,7 @@ describe('resolveInOutPaths', () => {
     const geoJsonPath = resolve(__dirname, '../../dummy/world-low.geo.json');
     const outputPath = resolve(__dirname, './output.hgm');
 
-    const options: MainActionOption = {
+    const options = {
       input: geoJsonPath,
       output: outputPath,
     };

@@ -99,9 +99,9 @@ importers:
       '@hyperglobe/interfaces':
         specifier: workspace:*
         version: link:../hyperglobe-interface
-      '@hyperglobe/math':
+      '@hyperglobe/tools':
         specifier: workspace:*
-        version: link:../hyperglobe-math
+        version: link:../hyperglobe-tools
       '@hyperglobe/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -166,9 +166,9 @@ importers:
       '@hyperglobe/interfaces':
         specifier: workspace:*
         version: link:../hyperglobe-interface
-      '@hyperglobe/math':
+      '@hyperglobe/tools':
         specifier: workspace:*
-        version: link:../hyperglobe-math
+        version: link:../hyperglobe-tools
       '@hyperglobe/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -200,7 +200,7 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
 
-  packages/hyperglobe-math:
+  packages/hyperglobe-tools:
     dependencies:
       delaunator:
         specifier: ^5.0.1

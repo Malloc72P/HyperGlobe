@@ -1,6 +1,7 @@
 import { FeaturePolygons, GeometrySource, RawGeometrySource } from '@hyperglobe/interfaces';
-import { MathConstants, roundCoordinates, triangulatePolygon } from '@hyperglobe/math';
-import { typedArrayToBase64 } from './base64';
+import { MathConstants } from '../constants';
+import { typedArrayToBase64 } from '../file';
+import { triangulatePolygon } from '../polygon';
 
 /**
  * 하나의 피쳐의 폴리곤 정보를 메쉬 소스로 변환합니다.
@@ -25,10 +26,10 @@ export function toGeometrySource(featurePolygons: FeaturePolygons[]): RawGeometr
     const flatVertices = vertices.flatMap((v) => [v[0], v[1], v[2]]);
 
     geometrySources.push({
+      // 성능 최적화를 위해 TypedArray로 변환하고 Base64로 인코딩한다.
+      // Base64로 인코딩하는 이유는 JSON 직렬화 시 TypedArray의 크기가 커지는 문제를 방지하기 위함이다.
       v: typedArrayToBase64(new Float32Array(flatVertices)),
       i: typedArrayToBase64(new Uint32Array(indices)),
-      //   v: flatVertices,
-      //   i: indices,
     });
   }
 

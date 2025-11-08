@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { OrthographicProj } from '@hyperglobe/math';
+import { OrthographicProj } from '../../../../hyperglobe-tools/src';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { createGridPoints } from './create-grid-points';
-import { magnitude3D } from '@hyperglobe/math';
+import { magnitude3D } from '../../../../hyperglobe-tools/src';
 
 describe('createGridPoints', () => {
   it('subdivisions=1일 때 4개의 그리드 포인트를 생성해야 함', () => {

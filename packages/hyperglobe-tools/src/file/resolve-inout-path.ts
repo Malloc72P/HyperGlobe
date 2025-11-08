@@ -1,8 +1,10 @@
 import { isExistFile } from './is-exist-file';
 import { resolvePath } from './resolve-path';
-import { CliOption } from '../types/cli-option';
 
-export interface resolveInOutPathsOption extends CliOption {}
+export interface resolveInOutPathsOption {
+  input: string;
+  output: string;
+}
 
 export function resolveInOutPaths(options: resolveInOutPathsOption) {
   const { input, output } = options;

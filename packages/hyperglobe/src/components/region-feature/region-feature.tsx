@@ -4,7 +4,11 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { MathConstants, OrthographicProj, triangulatePolygon } from '@hyperglobe/math';
+import {
+  MathConstants,
+  OrthographicProj,
+  triangulatePolygon,
+} from '../../../../hyperglobe-tools/src';
 import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
 import type { RegionModel } from '../../types/region';

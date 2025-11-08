@@ -1,6 +1,6 @@
 import { Line } from '@react-three/drei';
 import { useMemo } from 'react';
-import { MathConstants, OrthographicProj } from '@hyperglobe/math';
+import { MathConstants, OrthographicProj } from '../../../../hyperglobe-tools/src';
 import type { Coordinate, VectorCoordinate } from '@hyperglobe/interfaces';
 import { UiConstant } from '../../constants';
 

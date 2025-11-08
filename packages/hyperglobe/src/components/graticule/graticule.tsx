@@ -1,4 +1,4 @@
-import { toRadian } from '@hyperglobe/math';
+import { toRadian } from '../../../../hyperglobe-tools/src';
 import { GraticuleLine } from './graticule-line';
 
 export interface GraticuleProps {

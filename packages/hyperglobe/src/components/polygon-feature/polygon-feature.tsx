@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import * as THREE from 'three';
 import { UiConstant } from '../../constants';
-import { MathConstants, triangulatePolygon } from '@hyperglobe/math';
+import { MathConstants, triangulatePolygon } from '../../../../hyperglobe-tools/src';
 import type { FeatureStyle } from '../../types/feature';
 import type { FeaturePolygons } from '@hyperglobe/interfaces';
 import { LineFeature } from '../line-feature';
