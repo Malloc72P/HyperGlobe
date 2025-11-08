@@ -31,8 +31,8 @@ function isInside(point: Coordinate, polygon: Coordinate[]): boolean {
   let inside = false;
 
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const [xi, yi] = polygon[i];
-    const [xj, yj] = polygon[j];
+    const [xi, yi] = polygon[i]!;
+    const [xj, yj] = polygon[j]!;
 
     const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
     if (intersect) inside = !inside;
@@ -49,8 +49,8 @@ function densifyBoundary(polygon: Coordinate[], maxSegmentLength: number): Coord
   const densified: Coordinate[] = [];
 
   for (let i = 0; i < polygon.length; i++) {
-    const current = polygon[i];
-    const next = polygon[(i + 1) % polygon.length];
+    const current = polygon[i]!;
+    const next = polygon[(i + 1) % polygon.length]!;
 
     densified.push(current);
 
@@ -116,17 +116,17 @@ function filterOuterTriangles(
   const filteredIndices: number[] = [];
 
   for (let i = 0; i < delaunator.triangles.length; i += 3) {
-    const t0 = delaunator.triangles[i];
-    const t1 = delaunator.triangles[i + 1];
-    const t2 = delaunator.triangles[i + 2];
+    const t0 = delaunator.triangles[i]!;
+    const t1 = delaunator.triangles[i + 1]!;
+    const t2 = delaunator.triangles[i + 2]!;
 
     // 삼각형의 세 꼭짓점
-    const x0 = delaunator.coords[2 * t0];
-    const y0 = delaunator.coords[2 * t0 + 1];
-    const x1 = delaunator.coords[2 * t1];
-    const y1 = delaunator.coords[2 * t1 + 1];
-    const x2 = delaunator.coords[2 * t2];
-    const y2 = delaunator.coords[2 * t2 + 1];
+    const x0 = delaunator.coords[2 * t0]!;
+    const y0 = delaunator.coords[2 * t0 + 1]!;
+    const x1 = delaunator.coords[2 * t1]!;
+    const y1 = delaunator.coords[2 * t1 + 1]!;
+    const x2 = delaunator.coords[2 * t2]!;
+    const y2 = delaunator.coords[2 * t2 + 1]!;
 
     // 삼각형의 중심점
     const centerX = (x0 + x1 + x2) / 3;

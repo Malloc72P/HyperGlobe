@@ -8,6 +8,7 @@
     "hyperglobe": "./dist/index.js"
   },
   "scripts": {
+    "hg": "tsx ./src/index.ts",
     "build": "tsc && vite build",
     "test": "vitest run"
   },
@@ -18,6 +19,7 @@
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
     "@hyperglobe/tools": "workspace:*",
+    "@hyperglobe/node-tools": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",

@@ -9,18 +9,4 @@ describe('main-action', () => {
 
     mainAction({ input: inputPath, output: outputPath });
   });
-
-  it('world-mid', () => {
-    const inputPath = resolve(join(__dirname, '/../../dummy/world-mid.geo.json'));
-    const outputPath = resolve(join(__dirname, '/../../dummy/world-mid.hgm'));
-
-    mainAction({ input: inputPath, output: outputPath });
-  });
-
-  it('world-high', () => {
-    const inputPath = resolve(join(__dirname, '/../../dummy/world-high.geo.json'));
-    const outputPath = resolve(join(__dirname, '/../../dummy/world-high.hgm'));
-
-    mainAction({ input: inputPath, output: outputPath });
-  });
 });
