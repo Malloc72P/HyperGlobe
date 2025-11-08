@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { HyperGlobe, Graticule, RegionFeature } from '../src';
-import { sleep } from '../src/lib';
+import { HyperGlobe, Graticule } from '../src';
 
 const pink = [
   '#fff1f3',

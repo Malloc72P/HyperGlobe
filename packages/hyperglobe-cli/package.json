@@ -9,7 +9,6 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "dev": "tsx src/index.ts",
     "test": "vitest run"
   },
   "dependencies": {
