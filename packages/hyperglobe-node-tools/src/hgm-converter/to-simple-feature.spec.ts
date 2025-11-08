@@ -371,9 +371,9 @@ describe('toSimpleFeature', () => {
       expect(result.properties.population).toBe(51780579);
       expect(result.polygons).toHaveLength(2);
       // 본토 좌표 확인
-      expect(result.polygons[0][0]).toEqual([126.97, 37.56]);
+      expect(result.polygons[0]?.[0]).toEqual([126.97, 37.56]);
       // 제주도 좌표 확인
-      expect(result.polygons[1][0]).toEqual([126.53, 33.5]);
+      expect(result.polygons[1]?.[0]).toEqual([126.53, 33.5]);
     });
   });
 });

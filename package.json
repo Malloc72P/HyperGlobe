@@ -9,7 +9,8 @@
     "start": "turbo start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "turbo test"
+    "test": "turbo test",
+    "check-types": "turbo check-types"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

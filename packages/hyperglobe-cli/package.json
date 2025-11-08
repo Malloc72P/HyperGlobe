@@ -10,7 +10,8 @@
   "scripts": {
     "hg": "tsx ./src/index.ts",
     "build": "tsc && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "commander": "^14.0.2"
