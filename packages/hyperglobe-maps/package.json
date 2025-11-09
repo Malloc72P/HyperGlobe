@@ -21,6 +21,7 @@
     "@hyperglobe/node-tools": "workspace:*",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",
+    "tsx": "^4.20.6",
     "vitest": "^4.0.1"
   }
 }
