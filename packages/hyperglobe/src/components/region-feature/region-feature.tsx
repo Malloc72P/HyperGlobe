@@ -1,11 +1,19 @@
+import type {
+  Coordinate,
+  FeaturePolygons,
+  HGMFeature,
+  VectorCoordinate,
+} from '@hyperglobe/interfaces';
 import { useMemo, useState } from 'react';
+import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import type { FeatureStyle } from '../../types/feature';
-import type { FeaturePolygons } from '../../types/polygon';
-import { PolygonFeature } from '../polygon-feature/polygon-feature';
-import type { RegionModel } from '../../types/region';
 import { useMainStore } from '../../store';
+import type { FeatureStyle } from '../../types/feature';
+import type { RegionModel } from '@hyperglobe/interfaces';
+import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
+import { UseRegionModel } from './use-region-model';
 
 export interface RegionFeatureProps {
   /**
@@ -13,12 +21,7 @@ export interface RegionFeatureProps {
    *
    * - 폴리곤, 멀티폴리곤 형식의 지오메트리만 지원합니다.
    */
-  feature: any;
-
-  /**
-   * 면 채우기 활성화 여부
-   */
-  fill?: boolean;
+  feature: HGMFeature;
 
   /**
    * 지역 스타일
@@ -66,59 +69,81 @@ export function RegionFeature({
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
   ...polygonFeatureProps
 }: RegionFeatureProps) {
-  const [hovered, setHovered] = useState(false);
-  const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
-  const regionModel = useMemo<RegionModel>(() => {
-    return {
-      id: feature.id,
-      name: feature.properties.name || '',
-    };
-  }, [feature]);
-  const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
+  const [regionModel] = UseRegionModel({ feature });
+  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle });
 
-  const featurePolygons = useMemo(() => {
-    // 멀티, 싱글 폴리곤 전부 처리할 수 있어야 함.
-    const _featurePolygons: FeaturePolygons[] = [];
+  /**
+   * 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
+   */
+  const meshSource = useMemo(() => {
+    if (!feature) return;
 
-    if (feature.geometry.coordinates.length === 0) return;
+    const geometries: THREE.BufferGeometry[] = [];
 
-    if (feature.geometry.type === 'Polygon') {
-      // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
-      const borderlinePolygon = feature.geometry.coordinates[0];
+    for (const geometrySource of feature.geometries) {
+      // 삼각분할된 지오메트리 정보 추출
+      const { vertices: vertices, indices: indices } = geometrySource;
 
-      _featurePolygons.push(borderlinePolygon as FeaturePolygons);
-    } else {
-      for (const singlePolygon of feature.geometry.coordinates) {
-        // 첫번째는 경계정보 폴리곤. 그 다음부터는 구멍(holes) 정보 폴리곤
-        const borderlinePolygon = singlePolygon[0];
+      // BufferGeometry 생성
+      const geometry = new THREE.BufferGeometry();
 
-        _featurePolygons.push(borderlinePolygon as FeaturePolygons);
-      }
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      geometry.setIndex(Array.from(indices));
+      geometry.computeVertexNormals();
+
+      geometries.push(geometry);
     }
 
-    return _featurePolygons;
-  }, []);
+    return geometries;
+  }, [feature]);
 
-  if (!featurePolygons) return;
+  /**
+   * 드로우콜 최소화를 위해, 모든 폴리곤의 지오메트리를 병합
+   *
+   * 외곽선은 EdgesGeometry로 생성
+   */
+  const regionFeatureGeometry = useMemo(() => {
+    if (!meshSource || !feature) return;
+
+    // 면을 위한 지오메트리 병합
+    const geometry = mergeGeometries(meshSource);
+
+    const points: number[] = [];
+    for (const pointArray of feature.borderLines.pointArrays) {
+      points.push(...pointArray);
+    }
+
+    const borderlineGeometry = new THREE.BufferGeometry();
+    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+
+    return {
+      geometry,
+      borderlineGeometry,
+    };
+  }, [meshSource, feature]);
+
+  if (!feature || !regionFeatureGeometry) return;
 
   return (
-    <group
-      onPointerEnter={(e) => {
-        e.stopPropagation();
-
-        setHovered(true);
-        setHoveredRegion(regionModel);
-      }}
-      onPointerLeave={(e) => {
-        e.stopPropagation();
-
-        setHovered(false);
-        setHoveredRegion(null);
-      }}
-    >
-      {featurePolygons.map((polygon, i) => (
-        <PolygonFeature key={i} polygons={polygon} style={appliedStyle} {...polygonFeatureProps} />
-      ))}
+    <group>
+      {regionFeatureGeometry?.geometry && (
+        <mesh geometry={regionFeatureGeometry.geometry}>
+          <meshStandardMaterial
+            transparent
+            side={THREE.DoubleSide}
+            color={appliedStyle.fillColor}
+            opacity={appliedStyle.fillOpacity}
+            wireframe={polygonFeatureProps.wireframe}
+            roughness={polygonFeatureProps.roughness}
+            metalness={polygonFeatureProps.metalness}
+          />
+        </mesh>
+      )}
+      {regionFeatureGeometry?.borderlineGeometry && (
+        <lineSegments geometry={regionFeatureGeometry.borderlineGeometry}>
+          <lineBasicMaterial color={appliedStyle.color} linewidth={appliedStyle.lineWidth} />
+        </lineSegments>
+      )}
     </group>
   );
 }

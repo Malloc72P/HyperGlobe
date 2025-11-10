@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { NationsDemo } from './nations';
-import fs from 'fs';
+import { mapsInfo } from '@hyperglobe/maps';
 
 const meta = {
   title: 'Demo/Nations',
@@ -11,15 +11,26 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const mapOptions = [...mapsInfo.map((map) => `${map.name}(${map.mb})`)];
+
 export const Demo: Story = {
   name: '국가별 세계지도',
   tags: ['autodocs'],
+  args: {
+    theme: 'blue',
+    map: mapOptions[3],
+  },
+  argTypes: {
+    map: {
+      control: 'select',
+      options: mapOptions,
+    },
+  },
   parameters: {
     docs: {
       source: {
-        code: `import { useMemo, useState } from 'react';
-        import { HyperGlobe, Graticule, RegionFeature } from 'hyperglobe';
-        import GeoJson from 'hyperglobe';
+        code: `import { useEffect, useMemo, useState } from 'react';
+        import { Graticule, HyperGlobe, RegionFeature2, useHGM } from '@hyperglobe/core';
         
         const pink = [
           '#fff1f3',
@@ -69,7 +80,19 @@ export const Demo: Story = {
         };
         
         export interface NationsDemoProps {
-          theme?: 'pink' | 'blue' | 'gray';
+          /**
+           * 데모에 적용할 색상을 지정합니다.
+           *
+           * @default 'blue'
+           */
+          theme: 'pink' | 'blue' | 'gray';
+        
+          /**
+           * 사용할 지도 데이터를 지정합니다.
+           *
+           * @default 'nations-high'
+           */
+          map: string;
         }
         
         /**
@@ -88,7 +111,10 @@ export const Demo: Story = {
          * - [RegionFeature](/docs/components-regionfeature--docs)
          * - [Graticule](/docs/components-graticule--docs)
          */
-        export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
+        export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDemoProps) {
+          const [loading, setLoading] = useState(false);
+          const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
+          const [hgm] = useHGM({ rawHgmBlob });
           const color = useMemo(() => {
             return colorThemes[theme];
           }, [theme]);
@@ -98,8 +124,8 @@ export const Demo: Story = {
               globeColor: gray[0],
               regionStrokeWidth: 1.3,
               hoverRegionStrokeWidth: 2,
-              regionFill: color[3],
-              hoverRegionFill: color[4],
+              regionFill: color[4],
+              hoverRegionFill: color[5],
               regionColor: color[7],
               metalness: 0,
               roughness: 0.5,
@@ -107,10 +133,22 @@ export const Demo: Story = {
             [theme]
           );
         
+          useEffect(() => {
+            const mapName = map.split('(')[0];
+            setLoading(true);
+        
+            fetch(\`/maps/\${mapName}.hgm\`)
+              .then((res) => res.blob())
+              .then((blob) => {
+                setRawHgmBlob(blob);
+                setTimeout(() => setLoading(false), 300);
+              });
+          }, [map]);
+        
           return (
             <HyperGlobe
               maxSize={900}
-              textureEnabled={false}
+              loading={loading}
               globeStyle={{
                 color: styles.globeColor,
                 metalness: styles.metalness,
@@ -118,24 +156,23 @@ export const Demo: Story = {
               }}
             >
               <Graticule />
-              {GeoJson.features.map((feature) => (
-                <RegionFeature
-                  key={feature.id}
-                  feature={feature}
-                  fill={true}
-                  style={{
-                    lineWidth: styles.regionStrokeWidth,
-                    color: styles.regionColor,
-                    fillColor: styles.regionFill,
-                  }}
-                  hoverStyle={{
-                    lineWidth: styles.hoverRegionStrokeWidth,
-                    fillColor: styles.hoverRegionFill,
-                  }}
-                  metalness={styles.metalness}
-                  roughness={styles.roughness}
-                />
-              ))}
+              {hgm &&
+                hgm.features.map((feature) => (
+                  <RegionFeature2
+                    feature={feature}
+                    style={{
+                      lineWidth: styles.regionStrokeWidth,
+                      color: styles.regionColor,
+                      fillColor: styles.regionFill,
+                    }}
+                    hoverStyle={{
+                      lineWidth: styles.hoverRegionStrokeWidth,
+                      fillColor: styles.hoverRegionFill,
+                    }}
+                    metalness={styles.metalness}
+                    roughness={styles.roughness}
+                  />
+                ))}
             </HyperGlobe>
           );
         }

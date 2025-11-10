@@ -1,0 +1,27 @@
+{
+  "name": "@hyperglobe/maps",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "import": "./dist/index.ts",
+      "types": "./dist/index.ts"
+    }
+  },
+  "scripts": {
+    "build:map": "tsx ./src/script.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@hyperglobe/eslint-config": "workspace:*",
+    "@hyperglobe/interfaces": "workspace:*",
+    "@hyperglobe/node-tools": "workspace:*",
+    "@hyperglobe/tools": "workspace:*",
+    "@hyperglobe/typescript-config": "workspace:*",
+    "@types/geojson": "^7946.0.8",
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "vitest": "^4.0.1"
+  }
+}

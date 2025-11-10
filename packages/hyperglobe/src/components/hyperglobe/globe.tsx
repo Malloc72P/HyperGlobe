@@ -1,3 +1,7 @@
+import { findRegionByVector } from '@hyperglobe/tools';
+import { useThrottle } from 'src/hooks/use-throttle';
+import { useMainStore } from 'src/store';
+
 /**
  * 지구본 스타일
  *
@@ -49,6 +53,11 @@ export interface GlobeProps extends GlobeStyle {
    * wireframe 여부
    */
   wireframe?: boolean;
+  /**
+   * 상위 컴포넌트에서 사용한 그룹에 대한 rotation
+   * 이걸로 globe를 회전시키지 않으니 주의.
+   */
+  rotation: [number, number, number];
 }
 
 /**
@@ -73,13 +82,32 @@ export interface GlobeProps extends GlobeStyle {
  * @returns JSX.Element
  */
 export function Globe({
+  wireframe,
+  rotation,
   position = [0, 0, 0],
   segments = [64, 32],
-  wireframe,
   color = '#0077be',
   roughness = 0.5,
   metalness = 0,
 }: GlobeProps) {
+  const rTree = useMainStore((s) => s.tree);
+  const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
+
+  const onPointerMove = useThrottle({
+    fn: (e) => {
+      const { point } = e;
+
+      const foundRegion = findRegionByVector({
+        rTree,
+        rotation,
+        vector: point,
+      });
+
+      setHoveredRegion(foundRegion);
+    },
+    delay: 50,
+  });
+
   return (
     <mesh
       position={position}
@@ -88,8 +116,7 @@ export function Globe({
        *
        * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
-      onPointerEnter={(e) => e.stopPropagation()}
-      onPointerLeave={(e) => e.stopPropagation()}
+      onPointerMove={onPointerMove}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />

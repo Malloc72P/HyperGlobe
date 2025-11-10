@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
-import { HyperGlobe, Graticule, RegionFeature } from '../src';
-import GeoJson from '../src/data/world-low.geo.json';
+import { useEffect, useMemo, useState } from 'react';
+import { Graticule, HyperGlobe, RegionFeature, useHGM } from '../src';
 
 const pink = [
   '#fff1f3',
@@ -55,7 +54,14 @@ export interface NationsDemoProps {
    *
    * @default 'blue'
    */
-  theme?: 'pink' | 'blue' | 'gray';
+  theme: 'pink' | 'blue' | 'gray';
+
+  /**
+   * 사용할 지도 데이터를 지정합니다.
+   *
+   * @default 'nations-high'
+   */
+  map: string;
 }
 
 /**
@@ -74,7 +80,10 @@ export interface NationsDemoProps {
  * - [RegionFeature](/docs/components-regionfeature--docs)
  * - [Graticule](/docs/components-graticule--docs)
  */
-export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
+export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDemoProps) {
+  const [loading, setLoading] = useState(false);
+  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
+  const [hgm] = useHGM({ rawHgmBlob });
   const color = useMemo(() => {
     return colorThemes[theme];
   }, [theme]);
@@ -93,9 +102,22 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
     [theme]
   );
 
+  useEffect(() => {
+    const mapName = map.split('(')[0];
+    setLoading(true);
+
+    fetch(`/maps/${mapName}.hgm`)
+      .then((res) => res.blob())
+      .then((blob) => {
+        setRawHgmBlob(blob);
+        setTimeout(() => setLoading(false), 300);
+      });
+  }, [map]);
+
   return (
     <HyperGlobe
       maxSize={900}
+      loading={loading}
       globeStyle={{
         color: styles.globeColor,
         metalness: styles.metalness,
@@ -103,24 +125,24 @@ export function NationsDemo({ theme = 'blue' }: NationsDemoProps) {
       }}
     >
       <Graticule />
-      {GeoJson.features.map((feature) => (
-        <RegionFeature
-          key={feature.id}
-          feature={feature}
-          fill={true}
-          style={{
-            lineWidth: styles.regionStrokeWidth,
-            color: styles.regionColor,
-            fillColor: styles.regionFill,
-          }}
-          hoverStyle={{
-            lineWidth: styles.hoverRegionStrokeWidth,
-            fillColor: styles.hoverRegionFill,
-          }}
-          metalness={styles.metalness}
-          roughness={styles.roughness}
-        />
-      ))}
+      {hgm &&
+        hgm.features.map((feature) => (
+          <RegionFeature
+            key={feature.id}
+            feature={feature}
+            style={{
+              lineWidth: styles.regionStrokeWidth,
+              color: styles.regionColor,
+              fillColor: styles.regionFill,
+            }}
+            hoverStyle={{
+              lineWidth: styles.hoverRegionStrokeWidth,
+              fillColor: styles.hoverRegionFill,
+            }}
+            metalness={styles.metalness}
+            roughness={styles.roughness}
+          />
+        ))}
     </HyperGlobe>
   );
 }

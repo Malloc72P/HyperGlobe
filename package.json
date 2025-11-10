@@ -1,14 +1,16 @@
 {
-  "name": "HyperGlobe-actual",
+  "name": "hyperglobe-actual",
   "private": true,
   "scripts": {
+    "hg": "pnpm --filter @hyperglobe/cli hg",
     "build": "turbo build",
+    "build:map": "pnpm --filter @hyperglobe/maps build:map",
     "dev": "turbo dev",
     "start": "turbo start",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo check-types",
-    "test": "turbo test"
+    "test": "turbo test",
+    "check-types": "turbo check-types"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

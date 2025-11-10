@@ -1,17 +1,18 @@
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+'use client';
+
+import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { CoordinateSystem } from '../coordinate-system';
-import { LoadingUI } from '../loading-ui';
-import { Globe, type GlobeProps, type GlobeStyle } from './globe';
 import type { DirectionalLight } from 'three';
-import { Tooltip } from '../tooltip';
-import type { Coordinate2D } from '../../types/tooltip';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
+import { FpsCounter, FpsDisplay } from '../fps-counter';
+import { LoadingUI } from '../loading-ui';
+import { Tooltip, type TooltipProps } from '../tooltip';
+import { Globe, type GlobeStyle } from './globe';
 
 /**
- * HyperGlobe 컴포넌트의 Propsㅎㅎ
+ * HyperGlobe 컴포넌트의 Props
  */
 export interface HyperGlobeProps extends PropsWithChildren {
   /**
@@ -47,6 +48,14 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 지구본의 공통 스타일 설정
    */
   globeStyle?: GlobeStyle;
+  /**
+   * 툴팁 옵션
+   */
+  tooltipOption?: TooltipProps;
+  /**
+   * FPS(초당 프레임 수) 카운터 표시 여부
+   */
+  showFpsCounter?: boolean;
 }
 
 /**
@@ -78,73 +87,84 @@ export function HyperGlobe({
   maxSize,
   wireframe,
   children,
+  /**
+   * 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다.
+   *
+   * y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다.
+   */
   rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
+  tooltipOption,
+  showFpsCounter = true,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
+  const [fps, setFps] = useState(0);
 
   //   store
-  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
   const tooltipRef = useMainStore((s) => s.tooltipRef);
+  const cleanMainStore = useMainStore((s) => s.clean);
 
-  const getTooltipPosition = useThrottle<[UpdateTooltipPositionFnParam], Coordinate2D | null>({
-    fn: ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-      const tooltipOffset = 10;
-      const rootElement = rootElementRef.current;
+  const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
+    const tooltipOffset = 10;
+    const rootElement = rootElementRef.current;
 
-      if (!rootElement || !tooltipElement) return null;
+    if (!rootElement || !tooltipElement) return null;
 
-      const rootRect = rootElement.getBoundingClientRect();
-      const tooltipRect = tooltipElement.getBoundingClientRect();
-      const tooltipWidth = tooltipRect.width;
-      const tooltipHeight = tooltipRect.height;
+    const rootRect = rootElement.getBoundingClientRect();
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+    const tooltipWidth = tooltipRect.width;
+    const tooltipHeight = tooltipRect.height;
 
-      const nextPosition = {
-        x: point.x - rootRect.left,
-        y: point.y - rootRect.top,
-      };
+    const nextPosition = {
+      x: point[0] - rootRect.left,
+      y: point[1] - rootRect.top,
+    };
 
-      // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
-      nextPosition.x = nextPosition.x - tooltipWidth / 2;
-      nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
+    // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
+    nextPosition.x = nextPosition.x - tooltipWidth / 2;
+    nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
 
-      return nextPosition;
+    return nextPosition;
+  };
+
+  const onPointerMove = useThrottle({
+    fn: (e) => {
+      const tooltipElement = tooltipRef?.current;
+      const { clientX, clientY } = e;
+
+      if (!tooltipElement) return;
+
+      const tooltipPosition = getTooltipPosition({
+        point: [clientX, clientY],
+        tooltipElement,
+      });
+
+      if (tooltipPosition) {
+        const { x, y } = tooltipPosition;
+        tooltipElement.style.transform = `translate(${x}px, ${y}px)`;
+      }
     },
-    delay: 25,
+    delay: 50,
   });
 
   useEffect(() => {
-    registerUpdateTooltipPosition(getTooltipPosition);
-  }, [getTooltipPosition]);
+    return () => {
+      cleanMainStore();
+    };
+  }, []);
 
   return (
     <div
       ref={rootElementRef}
       style={{ position: 'relative', overflow: 'hidden' }}
-      /**
-       * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
-       */
-      onPointerMove={(e) => {
-        const tooltip = tooltipRef?.current;
-        const { clientX, clientY } = e;
-
-        if (!tooltip || !getTooltipPosition) return;
-
-        const nextPosition = getTooltipPosition({
-          point: { x: clientX, y: clientY },
-          tooltipElement: tooltip,
-        });
-
-        if (!nextPosition) return;
-
-        tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
-      }}
+      onPointerMove={onPointerMove}
     >
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
+        // frameloop="demand"
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
@@ -159,7 +179,7 @@ export function HyperGlobe({
           /**
            * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
            */
-          minDistance={3}
+          minDistance={1.5}
           /**
            * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
            */
@@ -177,18 +197,20 @@ export function HyperGlobe({
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         <group rotation={rotation}>
-          <Globe wireframe={wireframe} {...globeStyle} />
+          <Globe wireframe={wireframe} rotation={rotation} {...globeStyle} />
 
           {/* Children */}
           {children}
-
-          {/* Region Features by MapData */}
         </group>
+
+        {/* FPS Counter */}
+        {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
 
         {/* 툴팁 */}
       </Canvas>
 
-      <Tooltip />
+      <Tooltip {...tooltipOption} />
+      {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
   );
 }

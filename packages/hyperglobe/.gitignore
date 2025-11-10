@@ -28,3 +28,4 @@ dist-ssr
 # website: https://storybook.js.org/
 
 storybook-static/
+public/maps

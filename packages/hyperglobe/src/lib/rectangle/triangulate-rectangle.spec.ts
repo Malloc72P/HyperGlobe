@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { VectorCoordinate } from '../../types/coordinate';
+import type { VectorCoordinate } from '@hyperglobe/interfaces';
 import { triangulateRectangle } from './triangulate-rectangle';
 
 describe('triangulateRectangle', () => {

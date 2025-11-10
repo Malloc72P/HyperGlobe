@@ -1,0 +1,105 @@
+import { describe, expect, it } from 'vitest';
+import type { Coordinate } from '@hyperglobe/interfaces';
+import { triangulatePolygon } from './triangulate-polygon';
+import { magnitude3D } from '../math/magnitude';
+
+describe('triangulatePolygon', () => {
+  it('생성된 모든 3D 좌표는 유효한 숫자여야 함', () => {
+    // Given
+    const coordinates: Coordinate[] = [
+      [-10, 20],
+      [10, 20],
+      [10, -20],
+      [-10, -20],
+    ];
+    const radius = 1.005;
+
+    // When
+    const result = triangulatePolygon({ coordinates, radius });
+
+    // Then: 모든 좌표가 [x, y, z] 형태이고 NaN이 없어야 함
+    result.vertices.forEach((vertex) => {
+      expect(vertex).toHaveLength(3);
+      expect(Number.isNaN(vertex[0])).toBe(false);
+      expect(Number.isNaN(vertex[1])).toBe(false);
+      expect(Number.isNaN(vertex[2])).toBe(false);
+    });
+  });
+
+  it('생성된 모든 3D 좌표는 구면 위에 있어야 함', () => {
+    // Given
+    const coordinates: Coordinate[] = [
+      [0, 30],
+      [30, 30],
+      [30, -30],
+      [0, -30],
+    ];
+    const radius = 1.005;
+
+    // When
+    const result = triangulatePolygon({ coordinates, radius });
+
+    // Then: 모든 점이 구 표면에 있어야 함
+    result.vertices.forEach((vertex) => {
+      const distance = magnitude3D(vertex);
+      expect(distance).toBeCloseTo(radius, 3);
+    });
+  });
+
+  it('인덱스는 유효한 범위 내에 있어야 함', () => {
+    // Given
+    const coordinates: Coordinate[] = [
+      [0, 0],
+      [10, 0],
+      [10, 10],
+      [0, 10],
+    ];
+    const radius = 1;
+
+    // When
+    const result = triangulatePolygon({ coordinates, radius });
+
+    // Then: 모든 인덱스가 vertices 범위 내에 있어야 함
+    const maxIndex = result.vertices.length - 1;
+    result.indices.forEach((index) => {
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(index).toBeLessThanOrEqual(maxIndex);
+    });
+  });
+
+  it('인덱스는 항상 3의 배수여야 함 (삼각형 단위)', () => {
+    // Given: 다양한 폴리곤
+    const testCases: Coordinate[][] = [
+      // 삼각형
+      [
+        [0, 0],
+        [10, 0],
+        [5, 10],
+      ],
+      // 사각형
+      [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+        [0, 10],
+      ],
+      // 육각형
+      [
+        [0, 0],
+        [10, 0],
+        [15, 5],
+        [10, 10],
+        [0, 10],
+        [-5, 5],
+      ],
+    ];
+
+    testCases.forEach((coordinates) => {
+      // When
+      const result = triangulatePolygon({ coordinates, radius: 1 });
+
+      // Then: 인덱스 개수는 항상 3의 배수
+      expect(result.indices.length % 3).toBe(0);
+    });
+  });
+});

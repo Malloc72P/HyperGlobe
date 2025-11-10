@@ -5,7 +5,7 @@ const preview: Preview = {
   parameters: {
     options: {
       storySort: {
-        order: ['Guide', 'Demo', 'Components', ['HyperGlobe', 'RegionFeature']],
+        order: ['Guide', 'Demo', 'Components', ['HyperGlobe']],
       },
     },
   },

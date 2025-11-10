@@ -20,8 +20,19 @@
     "strict": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    // Path Aliases
+    "baseUrl": ".",
+    "paths": {
+      "@hyperglobe/tools": ["../hyperglobe-tools/src/*"],
+      "@hyperglobe/interfaces": ["../hyperglobe-interface/src/*"]
+    }
   },
   "exclude": ["**/*.stories.tsx"],
-  "include": ["src", "declaration.d.ts"]
+  "include": [
+    "src",
+    "declaration.d.ts",
+    "../hyperglobe-tools/src/polygon/is-point-in-polygon.spec.ts"
+  ]
 }

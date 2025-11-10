@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import * as THREE from 'three';
 import { UiConstant } from '../../constants';
-import { triangulatePolygon } from '../../lib/polygon/triangulate-polygon';
+import { MathConstants, triangulatePolygon } from '../../../../hyperglobe-tools/src';
 import type { FeatureStyle } from '../../types/feature';
-import type { FeaturePolygons } from '../../types/polygon';
+import type { FeaturePolygons } from '@hyperglobe/interfaces';
 import { LineFeature } from '../line-feature';
 
 export interface PolygonFeatureProps {
@@ -13,11 +13,6 @@ export interface PolygonFeatureProps {
    * - 피쳐를 구성하는 경위도 좌표를 순서대로 지정해야 합니다.
    */
   polygons: FeaturePolygons;
-
-  /**
-   * 면 채우기 활성화 여부
-   */
-  fill?: boolean;
 
   /**
    * 폴리곤 스타일(외곽선, 면 채우기 등)
@@ -85,15 +80,16 @@ export interface PolygonFeatureProps {
   densifyBoundary?: boolean;
 }
 
+export const PolygonFeature = memo(_PolygonFeature);
+
 /**
  * 폴리곤 피쳐 컴포넌트.
  *
  * - 폴리곤 좌표 배열을 받아 다각형을 그립니다.
  * - polygons props에 폴리곤 좌표 배열을 전달해야 합니다.
  */
-export function PolygonFeature({
+function _PolygonFeature({
   polygons,
-  fill,
   style,
   wireframe = false,
   gridSpacing = 3,
@@ -103,9 +99,7 @@ export function PolygonFeature({
 }: PolygonFeatureProps) {
   // 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
   const fillGeometry = useMemo(() => {
-    if (!fill) return null;
-
-    const fillRadius = UiConstant.feature.fillRadius;
+    const fillRadius = MathConstants.FEATURE_FILL_Z_INDEX;
 
     // Delaunay 삼각분할
     const { vertices, indices } = triangulatePolygon({
@@ -125,7 +119,7 @@ export function PolygonFeature({
     geometry.computeVertexNormals();
 
     return geometry;
-  }, [polygons, fill, gridSpacing, densifyBoundary]);
+  }, [polygons, gridSpacing, densifyBoundary]);
 
   return (
     <group>
@@ -133,19 +127,17 @@ export function PolygonFeature({
       <LineFeature coordinates={polygons} color={style?.color} lineWidth={style?.lineWidth} />
 
       {/* 면 렌더링 */}
-      {fill && fillGeometry && (
-        <mesh geometry={fillGeometry}>
-          <meshStandardMaterial
-            transparent
-            side={THREE.DoubleSide}
-            color={style?.fillColor}
-            opacity={style?.fillOpacity}
-            wireframe={wireframe}
-            roughness={roughness}
-            metalness={metalness}
-          />
-        </mesh>
-      )}
+      <mesh geometry={fillGeometry}>
+        <meshStandardMaterial
+          transparent
+          side={THREE.DoubleSide}
+          color={style?.fillColor}
+          opacity={style?.fillOpacity}
+          wireframe={wireframe}
+          roughness={roughness}
+          metalness={metalness}
+        />
+      </mesh>
     </group>
   );
 }
