@@ -13,6 +13,7 @@ import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
 import type { RegionModel } from '@hyperglobe/interfaces';
 import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
+import { UseRegionModel } from './use-region-model';
 
 export interface RegionFeatureProps {
   /**
@@ -68,44 +69,8 @@ export function RegionFeature({
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
   ...polygonFeatureProps
 }: RegionFeatureProps) {
-  const [hovered, setHovered] = useState(false);
-  const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
-  const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
-  const insertRegionModel = useMainStore((s) => s.insertRegionModel);
-  const removeRegionModel = useMainStore((s) => s.removeRegionModel);
-
-  /**
-   * 리전 모델 정보
-   */
-  const regionModel = useMemo<RegionModel>(() => {
-    const width = Math.abs(feature.bbox.maxX - feature.bbox.minX);
-    const height = Math.abs(feature.bbox.maxY - feature.bbox.minY);
-    const newModel: RegionModel = {
-      id: feature.id,
-      name: feature.properties.name || '',
-      polygons: feature.borderLines.pointArrays.map((typedArr) =>
-        Array.from(typedArr).reduce((acc, curr, i, array) => {
-          if (i % 3 !== 0 || i + 2 >= array.length) return acc;
-
-          const vector: VectorCoordinate = [curr, array[i + 1], array[i + 2]];
-          const coordinate = OrthographicProj.unproject(
-            vector,
-            MathConstants.FEATURE_STROKE_Z_INDEX
-          );
-
-          acc.push(coordinate);
-
-          return acc;
-        }, [] as FeaturePolygons)
-      ),
-      bboxSize: width * height,
-      ...feature.bbox,
-    };
-
-    insertRegionModel(newModel);
-
-    return newModel;
-  }, [feature]);
+  const [regionModel] = UseRegionModel({ feature });
+  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle });
 
   /**
    * 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
