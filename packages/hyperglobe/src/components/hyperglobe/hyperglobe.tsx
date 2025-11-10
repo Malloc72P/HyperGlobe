@@ -1,20 +1,13 @@
-import type { HGM, RawHGMFile } from '@hyperglobe/interfaces';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { base64ToFloat32Array, base64ToUInt32Array } from 'src/lib';
 import type { DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
-import type { Coordinate2D } from '../../types/tooltip';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
-import { RegionFeature, type RegionFeatureProps } from '../region-feature';
 import { Tooltip, type TooltipProps } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
-import { useHGM } from 'src/hooks/use-hgm';
-import { OrthographicProj } from '@hyperglobe/tools';
-import { CoordinateSystem } from '../coordinate-system';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -108,7 +101,6 @@ export function HyperGlobe({
   const [fps, setFps] = useState(0);
 
   //   store
-  const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
   const tooltipRef = useMainStore((s) => s.tooltipRef);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
@@ -123,8 +115,8 @@ export function HyperGlobe({
     const tooltipHeight = tooltipRect.height;
 
     const nextPosition = {
-      x: point.x - rootRect.left,
-      y: point.y - rootRect.top,
+      x: point[0] - rootRect.left,
+      y: point[1] - rootRect.top,
     };
 
     // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
@@ -142,7 +134,7 @@ export function HyperGlobe({
       if (!tooltipElement) return;
 
       const tooltipPosition = getTooltipPosition({
-        point: { x: clientX, y: clientY },
+        point: [clientX, clientY],
         tooltipElement,
       });
 
@@ -153,10 +145,6 @@ export function HyperGlobe({
     },
     delay: 50,
   });
-
-  useEffect(() => {
-    registerUpdateTooltipPosition(getTooltipPosition);
-  }, [getTooltipPosition]);
 
   return (
     <div

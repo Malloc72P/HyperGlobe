@@ -12,7 +12,7 @@ import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
 import type { RegionModel } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '@hyperglobe/tools';
+import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
 
 export interface RegionFeatureProps {
   /**
@@ -88,7 +88,10 @@ export function RegionFeature({
           if (i % 3 !== 0 || i + 2 >= array.length) return acc;
 
           const vector: VectorCoordinate = [curr, array[i + 1], array[i + 2]];
-          const coordinate = OrthographicProj.unproject(vector);
+          const coordinate = OrthographicProj.unproject(
+            vector,
+            MathConstants.FEATURE_STROKE_Z_INDEX
+          );
 
           acc.push(coordinate);
 

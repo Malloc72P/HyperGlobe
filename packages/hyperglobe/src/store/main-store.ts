@@ -1,17 +1,16 @@
 import { create } from 'zustand';
-import type { Coordinate2D } from '../types/tooltip';
 import type { PointerEvent, RefObject } from 'react';
-import type { RegionModel } from '@hyperglobe/interfaces';
+import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
 import RBush from 'rbush';
 
 export interface UpdateTooltipPositionFnParam {
   /**
    * 툴팁을 표시할 좌표
    */
-  point: Coordinate2D;
+  point: Coordinate;
   tooltipElement: HTMLDivElement;
 }
-export type UpdateTooltipPositionFn = (param: UpdateTooltipPositionFnParam) => Coordinate2D | null;
+export type UpdateTooltipPositionFn = (param: UpdateTooltipPositionFnParam) => Coordinate | null;
 
 export interface MainStore {
   /**
@@ -30,8 +29,6 @@ export interface MainStore {
    */
   // 툴팁 ref 등록
   registerTooltipRef: (ref: RefObject<HTMLDivElement | null>) => void;
-  // 툴팁 위치 업데이트 함수 등록
-  registerGetTooltipPosition: (fn: UpdateTooltipPositionFn) => void;
   // 리젼피쳐 호버링 설정
   setHoveredRegion: (regionModel: RegionModel | null) => void;
   // 리젼 BBox 등록
@@ -47,7 +44,6 @@ export const useMainStore = create<MainStore>()((set, get) => ({
   tooltipRef: null,
   getTooltipPosition: null,
   tree: new RBush<RegionModel>(),
-  registerGetTooltipPosition: (fn) => set({ getTooltipPosition: fn }),
   registerTooltipRef: (ref) => set({ tooltipRef: ref }),
   setHoveredRegion: (regionModel) => set({ hoveredRegion: regionModel }),
   insertRegionModel: (bbox) => {

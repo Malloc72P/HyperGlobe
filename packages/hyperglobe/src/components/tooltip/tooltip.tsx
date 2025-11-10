@@ -34,10 +34,10 @@ export function Tooltip({ style, styles }: TooltipProps) {
     <div
       ref={ref}
       className={classnames('hyperglobe-tooltip', classes.tooltip)}
-      hidden={!hoveredRegion}
       style={{
         ...style,
         ...styles?.rootStyle,
+        visibility: hoveredRegion ? 'visible' : 'hidden',
       }}
     >
       <div style={{ ...styles?.idStyle }}>{hoveredRegion?.id}</div>

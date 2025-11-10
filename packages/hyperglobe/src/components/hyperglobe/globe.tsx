@@ -98,6 +98,7 @@ export function Globe({
   const onPointerMove = useThrottle({
     fn: (e) => {
       const { point } = e;
+
       const foundRegion = findRegionByVector({
         rTree,
         rotation,
@@ -106,7 +107,7 @@ export function Globe({
 
       setHoveredRegion(foundRegion);
     },
-    delay: 100,
+    delay: 50,
   });
 
   return (
