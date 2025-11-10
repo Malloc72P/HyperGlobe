@@ -1,4 +1,9 @@
-import type { HGMFeature } from '@hyperglobe/interfaces';
+import type {
+  Coordinate,
+  FeaturePolygons,
+  HGMFeature,
+  VectorCoordinate,
+} from '@hyperglobe/interfaces';
 import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -7,6 +12,7 @@ import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
 import type { RegionModel } from '@hyperglobe/interfaces';
+import { OrthographicProj } from '@hyperglobe/tools';
 
 export interface RegionFeatureProps {
   /**
@@ -75,6 +81,18 @@ export function RegionFeature({
     const newModel: RegionModel = {
       id: feature.id,
       name: feature.properties.name || '',
+      polygons: feature.borderLines.pointArrays.map((typedArr) =>
+        Array.from(typedArr).reduce((acc, curr, i, array) => {
+          if (i % 3 !== 0 || i + 2 >= array.length) return acc;
+
+          const vector: VectorCoordinate = [curr, array[i + 1], array[i + 2]];
+          const coordinate = OrthographicProj.unproject(vector);
+
+          acc.push(coordinate);
+
+          return acc;
+        }, [] as FeaturePolygons)
+      ),
       ...feature.bbox,
     };
 
@@ -119,11 +137,13 @@ export function RegionFeature({
     // 면을 위한 지오메트리 병합
     const geometry = mergeGeometries(meshSource);
 
+    const points: number[] = [];
+    for (const pointArray of feature.borderLines.pointArrays) {
+      points.push(...pointArray);
+    }
+
     const borderlineGeometry = new THREE.BufferGeometry();
-    borderlineGeometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(feature.borderLines.points, 3)
-    );
+    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
 
     return {
       geometry,

@@ -26,7 +26,7 @@ export function useHGM({ rawHgmBlob }: UseHgmOptions) {
             indices: base64ToUInt32Array(src.i),
           })),
           borderLines: {
-            points: base64ToFloat32Array(feature.l.p),
+            pointArrays: feature.l.p.map((base64) => base64ToFloat32Array(base64)),
           },
           bbox: feature.b,
         })),

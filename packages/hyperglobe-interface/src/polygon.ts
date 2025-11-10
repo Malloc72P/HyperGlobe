@@ -34,7 +34,7 @@ export interface GeometrySource {
  */
 export interface BorderlineSource {
   // positions
-  points: Float32Array;
+  pointArrays: Float32Array[];
 }
 
 /**
@@ -57,5 +57,5 @@ export interface RawGeometrySource {
  */
 export interface RawBorderlineSource {
   // positions
-  p: string;
+  p: string[];
 }

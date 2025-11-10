@@ -1,4 +1,4 @@
-import type { Coordinate } from '@hyperglobe/interfaces';
+import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
 import { OrthographicProj } from '@hyperglobe/tools';
 import { useThree, useFrame } from '@react-three/fiber';
 import { useMainStore } from 'src/store';
@@ -119,7 +119,7 @@ export function Globe({
 
         // 역투영
         const coordinate = OrthographicProj.unproject([x, y, z]);
-
+        let foundRegion: null | RegionModel = null;
         const searchResult = rTree.search({
           minX: coordinate[0],
           minY: coordinate[1],
@@ -127,15 +127,24 @@ export function Globe({
           maxY: coordinate[1],
         });
 
-        for (const bbox of searchResult) {
+        for (const region of searchResult) {
+          let found = false;
+          const polygons = region.polygons;
+          for (const polygon of polygons) {
+            if (isPointInPolygon(coordinate, polygon)) {
+              // 해당 좌표가 이 폴리곤 내부에 있음
+              found = true;
+              break;
+            }
+          }
+
+          if (found) {
+            foundRegion = region;
+            break;
+          }
         }
 
-        console.log(
-          `[${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}] → [경도: ${coordinate[0].toFixed(4)}도, 위도: ${coordinate[1].toFixed(4)}도]`,
-          {
-            searchResult,
-          }
-        );
+        console.log(foundRegion ? foundRegion.name : 'unknown');
       }}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
@@ -151,7 +160,7 @@ export function Globe({
   );
 }
 
-function isPointInPolygon(point: [number, number], polygon: Coordinate[]): boolean {
+export function isPointInPolygon(point: [number, number], polygon: Coordinate[]): boolean {
   // Ray casting 알고리즘
   const [x, y] = point;
   let inside = false;
