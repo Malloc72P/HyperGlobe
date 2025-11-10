@@ -1,19 +1,18 @@
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
-import { CoordinateSystem } from '../coordinate-system';
-import { LoadingUI } from '../loading-ui';
-import { Globe, type GlobeProps, type GlobeStyle } from './globe';
+import type { HGM, RawHGMFile } from '@hyperglobe/interfaces';
+import { OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
+import { base64ToFloat32Array, base64ToUInt32Array } from 'src/lib';
 import type { DirectionalLight } from 'three';
-import { Tooltip, type TooltipProps } from '../tooltip';
-import type { Coordinate2D } from '../../types/tooltip';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
+import type { Coordinate2D } from '../../types/tooltip';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
-import type { HGM, RawHGMFile } from '@hyperglobe/interfaces';
+import { LoadingUI } from '../loading-ui';
 import { RegionFeature2, type RegionFeature2Props } from '../region-feature2';
-import { RegionFeature } from '../region-feature';
-import { base64ToFloat32Array, base64ToUInt32Array, toNumArray } from 'src/lib';
+import { Tooltip, type TooltipProps } from '../tooltip';
+import { Globe, type GlobeStyle } from './globe';
+import { useHGM } from 'src/hooks/use-hgm';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -60,19 +59,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * FPS(초당 프레임 수) 카운터 표시 여부
    */
   showFpsCounter?: boolean;
-
-  /**
-   * 지역을 그리는데 필요한 지도 데이터(HGM 포맷).
-   *
-   * - HGM 파일은 Hyperglobe의 커스텀 지리 공간 데이터 포맷입니다.
-   * - 해당 데이터는 geoJson으로 생성할 수 있으며 Hyperglobe/cli를 통해 HGM 포맷으로 변환할 수 있습니다.
-   */
-  hgm?: Blob | null;
-
-  /**
-   * 리젼 피쳐의 공통 스타일 설정
-   */
-  regionOption: Pick<RegionFeature2Props, 'style' | 'hoverStyle' | 'metalness' | 'roughness'>;
 }
 
 /**
@@ -109,39 +95,10 @@ export function HyperGlobe({
   style,
   tooltipOption,
   showFpsCounter = true,
-  hgm,
-  regionOption,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
   const [fps, setFps] = useState(0);
-  const [hgmData, setHgmData] = useState<HGM | null>(null);
-
-  useEffect(() => {
-    if (!hgm) return;
-
-    const hgmData = hgm.stream().pipeThrough(new DecompressionStream('gzip'));
-    new Response(hgmData).json().then((rawHGM: RawHGMFile) => {
-      const _hgm: HGM = {
-        version: rawHGM.version,
-        metadata: rawHGM.metadata,
-        features: rawHGM.features.map((feature) => ({
-          id: feature.id,
-          properties: feature.p,
-          geometries: feature.g.map((src) => ({
-            vertices: base64ToFloat32Array(src.v),
-            indices: base64ToUInt32Array(src.i),
-          })),
-          borderLines: {
-            points: base64ToFloat32Array(feature.l.p),
-          },
-          bbox: feature.b,
-        })),
-      };
-
-      setHgmData(_hgm);
-    });
-  }, [hgm]);
 
   //   store
   const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
@@ -240,11 +197,6 @@ export function HyperGlobe({
 
           {/* Children */}
           {children}
-
-          {/* Region Features by MapData */}
-          {hgmData?.features.map((f) => (
-            <RegionFeature2 key={f.id} feature={f} {...regionOption} />
-          ))}
         </group>
 
         {/* FPS Counter */}

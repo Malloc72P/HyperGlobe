@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { HyperGlobe, Graticule } from '../src';
-import { mapsInfo } from '@hyperglobe/maps';
+import { useEffect, useMemo, useState } from 'react';
+import { Graticule, HyperGlobe, RegionFeature2, useHGM } from '../src';
 
 const pink = [
   '#fff1f3',
@@ -82,8 +81,9 @@ export interface NationsDemoProps {
  * - [Graticule](/docs/components-graticule--docs)
  */
 export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDemoProps) {
-  const [hgm, setHgm] = useState<Blob | null>(null);
   const [loading, setLoading] = useState(false);
+  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
+  const [hgm] = useHGM({ rawHgmBlob });
   const color = useMemo(() => {
     return colorThemes[theme];
   }, [theme]);
@@ -108,37 +108,40 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
 
     fetch(`/maps/${mapName}.hgm`)
       .then((res) => res.blob())
-      .then((_hgm) => {
-        setHgm(_hgm);
-        setLoading(false);
+      .then((blob) => {
+        setRawHgmBlob(blob);
+        setTimeout(() => setLoading(false), 300);
       });
   }, [map]);
 
   return (
     <HyperGlobe
       maxSize={900}
-      hgm={hgm}
       loading={loading}
       globeStyle={{
         color: styles.globeColor,
         metalness: styles.metalness,
         roughness: styles.roughness,
       }}
-      regionOption={{
-        style: {
-          lineWidth: styles.regionStrokeWidth,
-          color: styles.regionColor,
-          fillColor: styles.regionFill,
-        },
-        hoverStyle: {
-          lineWidth: styles.hoverRegionStrokeWidth,
-          fillColor: styles.hoverRegionFill,
-        },
-        metalness: styles.metalness,
-        roughness: styles.roughness,
-      }}
     >
       <Graticule />
+      {hgm &&
+        hgm.features.map((feature) => (
+          <RegionFeature2
+            feature={feature}
+            style={{
+              lineWidth: styles.regionStrokeWidth,
+              color: styles.regionColor,
+              fillColor: styles.regionFill,
+            }}
+            hoverStyle={{
+              lineWidth: styles.hoverRegionStrokeWidth,
+              fillColor: styles.hoverRegionFill,
+            }}
+            metalness={styles.metalness}
+            roughness={styles.roughness}
+          />
+        ))}
     </HyperGlobe>
   );
 }
