@@ -10,16 +10,19 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "delaunator": "^5.0.1"
+    "delaunator": "^5.0.1",
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
     "@types/delaunator": "^5.0.3",
+    "@types/rbush": "^4.0.0",
     "@types/node": "^24.10.0",
     "@types/geojson": "^7946.0.8",
     "@types/shapefile": "^0.6.4",
+    "@types/three": "^0.180.0",
     "vitest": "^4.0.1",
     "shapefile": "^0.6.6",
     "@turf/turf": "^7.2.0",

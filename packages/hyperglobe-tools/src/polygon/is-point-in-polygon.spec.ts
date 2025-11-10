@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Coordinate } from '@hyperglobe/interfaces';
-import { isPointInPolygon } from './globe';
+import { isPointInPolygon } from './is-point-in-polygon';
 
 describe('isPointInPolygon', () => {
   it('사각형 내부의 점', () => {

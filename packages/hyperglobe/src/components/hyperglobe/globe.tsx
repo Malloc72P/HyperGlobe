@@ -1,6 +1,6 @@
 import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '@hyperglobe/tools';
-import { useThree, useFrame } from '@react-three/fiber';
+import { findRegionByVector, OrthographicProj } from '@hyperglobe/tools';
+import { useThrottle } from 'src/hooks/use-throttle';
 import { useMainStore } from 'src/store';
 import { Euler, Matrix4, Vector3 } from 'three';
 
@@ -93,6 +93,21 @@ export function Globe({
   metalness = 0,
 }: GlobeProps) {
   const rTree = useMainStore((s) => s.tree);
+  const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
+
+  const onPointerMove = useThrottle({
+    fn: (e) => {
+      const { point } = e;
+      const foundRegion = findRegionByVector({
+        rTree,
+        rotation,
+        vector: point,
+      });
+
+      setHoveredRegion(foundRegion);
+    },
+    delay: 100,
+  });
 
   return (
     <mesh
@@ -102,50 +117,7 @@ export function Globe({
        *
        * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
-      onPointerMove={(e) => {
-        // 월드 좌표.
-        // 이 좌표는 회전이 적용된 후의 좌표이다.
-        // 해당 좌표의 경위도 좌표를 구하려면, 회전을 상쇄시키고 역투영해야한다.
-        const point = e.point;
-
-        // 회전 상쇄를 위한 회전행렬에 대한 역행렬 계산
-        const inverseMatrix = new Matrix4();
-        inverseMatrix.makeRotationFromEuler(new Euler(...rotation));
-        inverseMatrix.invert();
-
-        // 역행렬을 적용하여 회전이 상쇄된 로컬 좌표 계산
-        const localPoint = new Vector3(point.x, point.y, point.z).applyMatrix4(inverseMatrix);
-        const { x, y, z } = localPoint;
-
-        // 역투영
-        const coordinate = OrthographicProj.unproject([x, y, z]);
-        let foundRegion: null | RegionModel = null;
-        const searchResult = rTree.search({
-          minX: coordinate[0],
-          minY: coordinate[1],
-          maxX: coordinate[0],
-          maxY: coordinate[1],
-        });
-
-        for (const region of searchResult) {
-          let found = false;
-          const polygons = region.polygons;
-          for (const polygon of polygons) {
-            if (isPointInPolygon(coordinate, polygon)) {
-              // 해당 좌표가 이 폴리곤 내부에 있음
-              found = true;
-              break;
-            }
-          }
-
-          if (found) {
-            foundRegion = region;
-            break;
-          }
-        }
-
-        console.log(foundRegion ? foundRegion.name : 'unknown');
-      }}
+      onPointerMove={onPointerMove}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />

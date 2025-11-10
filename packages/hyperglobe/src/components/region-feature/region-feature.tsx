@@ -78,6 +78,8 @@ export function RegionFeature({
    * 리전 모델 정보
    */
   const regionModel = useMemo<RegionModel>(() => {
+    const width = Math.abs(feature.bbox.maxX - feature.bbox.minX);
+    const height = Math.abs(feature.bbox.maxY - feature.bbox.minY);
     const newModel: RegionModel = {
       id: feature.id,
       name: feature.properties.name || '',
@@ -93,6 +95,7 @@ export function RegionFeature({
           return acc;
         }, [] as FeaturePolygons)
       ),
+      bboxSize: width * height,
       ...feature.bbox,
     };
 

@@ -284,6 +284,9 @@ importers:
       delaunator:
         specifier: ^5.0.1
         version: 5.0.1
+      three:
+        specifier: ^0.180.0
+        version: 0.180.0
     devDependencies:
       '@hyperglobe/eslint-config':
         specifier: workspace:*
@@ -309,9 +312,15 @@ importers:
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
+      '@types/rbush':
+        specifier: ^4.0.0
+        version: 4.0.0
       '@types/shapefile':
         specifier: ^0.6.4
         version: 0.6.4
+      '@types/three':
+        specifier: ^0.180.0
+        version: 0.180.0
       mapshaper:
         specifier: ^0.6.99
         version: 0.6.113(@types/geojson@7946.0.16)

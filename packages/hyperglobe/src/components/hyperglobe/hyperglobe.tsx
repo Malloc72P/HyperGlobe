@@ -111,30 +111,47 @@ export function HyperGlobe({
   const registerUpdateTooltipPosition = useMainStore((s) => s.registerGetTooltipPosition);
   const tooltipRef = useMainStore((s) => s.tooltipRef);
 
-  const getTooltipPosition = useThrottle<[UpdateTooltipPositionFnParam], Coordinate2D | null>({
-    fn: ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-      const tooltipOffset = 10;
-      const rootElement = rootElementRef.current;
+  const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
+    const tooltipOffset = 10;
+    const rootElement = rootElementRef.current;
 
-      if (!rootElement || !tooltipElement) return null;
+    if (!rootElement || !tooltipElement) return null;
 
-      const rootRect = rootElement.getBoundingClientRect();
-      const tooltipRect = tooltipElement.getBoundingClientRect();
-      const tooltipWidth = tooltipRect.width;
-      const tooltipHeight = tooltipRect.height;
+    const rootRect = rootElement.getBoundingClientRect();
+    const tooltipRect = tooltipElement.getBoundingClientRect();
+    const tooltipWidth = tooltipRect.width;
+    const tooltipHeight = tooltipRect.height;
 
-      const nextPosition = {
-        x: point.x - rootRect.left,
-        y: point.y - rootRect.top,
-      };
+    const nextPosition = {
+      x: point.x - rootRect.left,
+      y: point.y - rootRect.top,
+    };
 
-      // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
-      nextPosition.x = nextPosition.x - tooltipWidth / 2;
-      nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
+    // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
+    nextPosition.x = nextPosition.x - tooltipWidth / 2;
+    nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
 
-      return nextPosition;
+    return nextPosition;
+  };
+
+  const onPointerMove = useThrottle({
+    fn: (e) => {
+      const tooltipElement = tooltipRef?.current;
+      const { clientX, clientY } = e;
+
+      if (!tooltipElement) return;
+
+      const tooltipPosition = getTooltipPosition({
+        point: { x: clientX, y: clientY },
+        tooltipElement,
+      });
+
+      if (tooltipPosition) {
+        const { x, y } = tooltipPosition;
+        tooltipElement.style.transform = `translate(${x}px, ${y}px)`;
+      }
     },
-    delay: 25,
+    delay: 50,
   });
 
   useEffect(() => {
@@ -145,24 +162,7 @@ export function HyperGlobe({
     <div
       ref={rootElementRef}
       style={{ position: 'relative', overflow: 'hidden' }}
-      /**
-       * 성능을 위해 툴팁 위치를 state로 관리하지 않고 직접 스타일을 변경한다.
-       */
-      //   onPointerMove={(e) => {
-      //     const tooltip = tooltipRef?.current;
-      //     const { clientX, clientY } = e;
-
-      //     if (!tooltip || !getTooltipPosition) return;
-
-      //     const nextPosition = getTooltipPosition({
-      //       point: { x: clientX, y: clientY },
-      //       tooltipElement: tooltip,
-      //     });
-
-      //     if (!nextPosition) return;
-
-      //     tooltip.style.transform = `translate(${nextPosition?.x}px, ${nextPosition?.y}px)`;
-      //   }}
+      onPointerMove={onPointerMove}
     >
       <LoadingUI loading={loading} />
       <Canvas
@@ -208,8 +208,6 @@ export function HyperGlobe({
 
         {/* FPS Counter */}
         {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
-
-        <CoordinateSystem />
 
         {/* 툴팁 */}
       </Canvas>
