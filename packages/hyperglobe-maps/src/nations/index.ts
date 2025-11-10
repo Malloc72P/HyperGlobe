@@ -1,1 +1,1 @@
-export * from './create-nations-hgm';
+export * from './build-nations-hgm';

@@ -9,11 +9,12 @@ import {
   write,
   writeFileSync,
 } from 'fs';
-import { createNationsHGM } from './nations';
+import { buildNationsHGM } from './nations';
 import { RawHGMFile } from '../../hyperglobe-interface/src';
 import { dirname, join, resolve } from 'path';
 import { compressHgmData, mkdirIfNotExist, formatBytesToMB } from '@hyperglobe/node-tools';
 import { fileURLToPath } from 'url';
+import { BuildMapMeta } from './meta';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,7 +28,7 @@ export interface MapInfo {
 export async function buildMaps() {
   const distPath = resolve(join(__dirname, '../dist'));
   const storybookPublicPath = resolve(join(__dirname, '../../hyperglobe/public/maps'));
-  const rawHgmList: RawHGMFile[] = [...(await createNationsHGM())];
+  const rawHgmList: RawHGMFile[] = [...(await buildNationsHGM({ meta: BuildMapMeta.nations }))];
   const mapInfos: MapInfo[] = [];
 
   mkdirIfNotExist(distPath);

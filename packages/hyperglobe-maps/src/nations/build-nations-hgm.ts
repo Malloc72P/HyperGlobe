@@ -8,26 +8,38 @@ import { MapMeta } from '../meta';
 import { RawHGMFile } from '../../../hyperglobe-interface/src';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { getBoundingBox } from '../../../hyperglobe-tools/src';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export async function createNationsHGM() {
+export async function buildNationsHGM({ meta }: { meta: MapMeta }) {
   const shpPath = resolve(__dirname, './shp/ne_10m_admin_0_countries.shp');
   const dbfPath = resolve(__dirname, './shp/ne_10m_admin_0_countries.dbf');
 
+  /**
+   * SHP 파일을 GeoJSON으로 변환, simplify 적용
+   *
+   * - 원본 해상도가 너무 큰 관계로, defaultResolution.simplifyPercent만큼 simplify 적용
+   */
   const originalGeoJson = await simplify(
     await shpToGeoJson(shpPath, dbfPath, { encoding: 'UTF-8' }),
-    { simplifyPercent: MapMeta.nations.defaultResolution.simplifyPercent, precision: 0.0001 }
+    { simplifyPercent: meta.defaultResolution.simplifyPercent, precision: 0.0001 }
   );
   const hgmList: RawHGMFile[] = [];
 
-  for (const { resolution, simplifyPercent, precision } of MapMeta.nations.resolutions) {
+  /**
+   * 각 해상도별로 HGM 변환 및 리스트에 추가
+   */
+  for (const { resolution, simplifyPercent, precision } of meta.resolutions) {
     console.log(`[Nations] Simplify(${simplifyPercent}) 적용중...`);
 
     const simplifiedGeoJson = await simplify(originalGeoJson, { simplifyPercent, precision });
     console.log(`[Nations] Simplify(${simplifyPercent}) 완료!`);
 
+    /**
+     * GeoJSON 데이터 정리
+     */
     prepareGeoJson(simplifiedGeoJson);
 
     const metadata = {
@@ -38,6 +50,10 @@ export async function createNationsHGM() {
     };
 
     console.log(`[Nations] HGM 변환중...`);
+
+    /**
+     * HGM 변환
+     */
     hgmList.push(
       convertGeojsonToHgm({
         geojson: simplifiedGeoJson,
@@ -76,6 +92,7 @@ function prepareGeoJson(geojson: any) {
         labelX: LABEL_X,
         labelY: LABEL_Y,
         continent: resolveProperty(CONTINENT),
+        bbox: getBoundingBox(feature),
       },
     };
   });

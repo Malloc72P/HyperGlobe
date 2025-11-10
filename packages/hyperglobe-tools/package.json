@@ -22,6 +22,9 @@
     "@types/shapefile": "^0.6.4",
     "vitest": "^4.0.1",
     "shapefile": "^0.6.6",
+    "@turf/turf": "^7.2.0",
+    "@turf/bbox": "^7.2.0",
+    "rbush": "^4.0.1",
     "mapshaper": "^0.6.99"
   }
 }

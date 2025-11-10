@@ -1,4 +1,22 @@
-export const MapMeta = {
+export interface MapResolution {
+  resolution: string;
+  simplifyPercent: number;
+  precision: number;
+}
+
+export interface MapMeta {
+  defaultResolution: Pick<MapResolution, 'simplifyPercent'>;
+  resolutions: MapResolution[];
+}
+
+export const MapList = ['nations'] as const;
+export type MapListType = (typeof MapList)[number];
+
+export type BuildMapMetaType = {
+  [k in MapListType]: MapMeta;
+};
+
+export const BuildMapMeta: BuildMapMetaType = {
   nations: {
     defaultResolution: {
       simplifyPercent: 40,
@@ -31,4 +49,4 @@ export const MapMeta = {
       },
     ],
   },
-};
+} as const;
