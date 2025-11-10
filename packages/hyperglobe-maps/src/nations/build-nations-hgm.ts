@@ -92,7 +92,6 @@ function prepareGeoJson(geojson: any) {
         labelX: LABEL_X,
         labelY: LABEL_Y,
         continent: resolveProperty(CONTINENT),
-        bbox: getBoundingBox(feature),
       },
     };
   });

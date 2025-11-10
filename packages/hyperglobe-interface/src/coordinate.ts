@@ -14,3 +14,10 @@ export type Coordinate = [number, number];
  * - 세 번째 요소는 z 좌표를 나타냅니다.
  */
 export type VectorCoordinate = [number, number, number];
+
+export interface BoundingBox {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}

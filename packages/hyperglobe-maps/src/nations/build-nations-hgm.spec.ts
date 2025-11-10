@@ -23,9 +23,14 @@ describe('buildNationsHGM', () => {
     const feature = hgm?.features[0];
 
     expect(feature?.id).toBeTruthy();
+    // property 검증
     expect(feature?.p).toBeTruthy();
     expect(feature?.p?.id).toBeTruthy();
+    // geometrySource 검증
     expect(feature?.g).toBeTruthy();
+    // borderlineSource 검증
+    expect(feature?.l).toBeTruthy();
+    // boundingBox 검증
     expect(feature?.b).toBeTruthy();
   }, 30000);
 });

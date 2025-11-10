@@ -72,7 +72,7 @@ export function RegionFeature2({
   const regionModel = useMemo<RegionModel>(() => {
     return {
       id: feature.id,
-      name: feature.p.name || '',
+      name: feature.properties.name || '',
     };
   }, [feature]);
 
@@ -84,9 +84,9 @@ export function RegionFeature2({
 
     const geometries: THREE.BufferGeometry[] = [];
 
-    for (const geometrySource of feature.g) {
-      // Delaunay 삼각분할
-      const { v: vertices, i: indices } = geometrySource;
+    for (const geometrySource of feature.geometries) {
+      // 삼각분할된 지오메트리 정보 추출
+      const { vertices: vertices, indices: indices } = geometrySource;
 
       // BufferGeometry 생성
       const geometry = new THREE.BufferGeometry();
@@ -113,7 +113,10 @@ export function RegionFeature2({
     const geometry = mergeGeometries(meshSource);
 
     const borderlineGeometry = new THREE.BufferGeometry();
-    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(feature.b.p, 3));
+    borderlineGeometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(feature.borderLines.points, 3)
+    );
 
     return {
       geometry,

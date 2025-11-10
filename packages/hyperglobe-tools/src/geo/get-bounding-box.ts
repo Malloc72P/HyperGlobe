@@ -1,4 +1,3 @@
-import { SimpleFeature } from '@hyperglobe/interfaces';
 import { bbox } from '@turf/bbox';
 
 export function getBoundingBox(feature: GeoJSON.Feature) {

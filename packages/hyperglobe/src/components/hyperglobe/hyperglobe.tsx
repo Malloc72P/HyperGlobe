@@ -117,29 +117,30 @@ export function HyperGlobe({
   const [fps, setFps] = useState(0);
   const [hgmData, setHgmData] = useState<HGM | null>(null);
 
-  useMemo(async () => {
+  useEffect(() => {
     if (!hgm) return;
 
     const hgmData = hgm.stream().pipeThrough(new DecompressionStream('gzip'));
-    const rawHGM = (await new Response(hgmData).json()) as RawHGMFile;
-
-    const _hgm: HGM = {
-      version: rawHGM.version,
-      metadata: rawHGM.metadata,
-      features: rawHGM.features.map((feature) => ({
-        id: feature.id,
-        p: feature.p,
-        g: feature.g.map((src) => ({
-          v: base64ToFloat32Array(src.v),
-          i: base64ToUInt32Array(src.i),
+    new Response(hgmData).json().then((rawHGM: RawHGMFile) => {
+      const _hgm: HGM = {
+        version: rawHGM.version,
+        metadata: rawHGM.metadata,
+        features: rawHGM.features.map((feature) => ({
+          id: feature.id,
+          properties: feature.p,
+          geometries: feature.g.map((src) => ({
+            vertices: base64ToFloat32Array(src.v),
+            indices: base64ToUInt32Array(src.i),
+          })),
+          borderLines: {
+            points: base64ToFloat32Array(feature.l.p),
+          },
+          bbox: feature.b,
         })),
-        b: {
-          p: base64ToFloat32Array(feature.b.p),
-        },
-      })),
-    };
+      };
 
-    setHgmData(_hgm);
+      setHgmData(_hgm);
+    });
   }, [hgm]);
 
   //   store

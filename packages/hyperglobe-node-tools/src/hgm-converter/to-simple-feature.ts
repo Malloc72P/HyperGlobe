@@ -1,5 +1,6 @@
 import { SimpleFeature } from '@hyperglobe/interfaces';
 import { toFeaturePolygons } from './to-polygon';
+import { getBoundingBox } from '@hyperglobe/tools';
 
 export function toSimpleFeature(feature: any) {
   const simpleFeature: SimpleFeature = {
@@ -7,6 +8,7 @@ export function toSimpleFeature(feature: any) {
     type: feature.type,
     properties: feature.properties,
     polygons: toFeaturePolygons(feature),
+    bbox: getBoundingBox(feature),
   };
 
   return simpleFeature;

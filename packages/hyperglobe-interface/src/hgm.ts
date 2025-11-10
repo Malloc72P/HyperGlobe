@@ -1,3 +1,4 @@
+import { BoundingBox } from './coordinate';
 import {
   BorderlineSource,
   GeometrySource,
@@ -18,11 +19,13 @@ export interface HGM {
 export interface HGMFeature {
   id: string;
   // 속성 정보
-  p: Record<string, any>;
+  properties: Record<string, any>;
   // 지오메트리 생성을 위한 정보
-  g: GeometrySource[];
+  geometries: GeometrySource[];
   // 외곽선 정보
-  b: BorderlineSource;
+  borderLines: BorderlineSource;
+  // bbox
+  bbox: BoundingBox;
 }
 
 export interface RawHGMFile {
@@ -42,5 +45,7 @@ export interface RawHGMFeature {
   // 지오메트리 생성을 위한 정보
   g: RawGeometrySource[];
   // 외곽선 정보
-  b: RawBorderlineSource;
+  l: RawBorderlineSource;
+  // bbox
+  b: BoundingBox;
 }

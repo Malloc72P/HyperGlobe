@@ -10,7 +10,9 @@ export function toHgmFeature(feature: SimpleFeature): RawHGMFeature {
     // geometrySource
     g: toGeometrySource(feature.polygons),
     // borderlineSource
-    b: toBorderlineSource(feature.polygons),
+    l: toBorderlineSource(feature.polygons),
+    // bounding box
+    b: feature.bbox,
   };
 
   return hgmFeatures;

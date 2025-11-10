@@ -12,7 +12,7 @@ describe('hgm convert', () => {
     const rawFeature = rawHgmData.features[0]!;
     const vertices = toNumArray(base64ToFloat32Array(rawFeature.g[0]!.v));
     const indices = toNumArray(base64ToUInt32Array(rawFeature.g[0]!.i));
-    const borderlinePoints = toNumArray(base64ToFloat32Array(rawFeature.b.p));
+    const borderlinePoints = toNumArray(base64ToFloat32Array(rawFeature.l.p));
 
     expect(rawHgmData.features.length).toBeGreaterThan(0);
     expect(rawFeature.id).toBeDefined();

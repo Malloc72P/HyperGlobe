@@ -1,4 +1,4 @@
-import type { Coordinate } from './coordinate';
+import type { BoundingBox, Coordinate } from './coordinate';
 
 export type FeaturePolygons = Coordinate[];
 
@@ -13,6 +13,7 @@ export interface SimpleFeature {
   type: string;
   properties: any;
   polygons: FeaturePolygons[];
+  bbox: BoundingBox;
 }
 
 /**
@@ -23,9 +24,9 @@ export interface SimpleFeature {
  */
 export interface GeometrySource {
   // vertices
-  v: Float32Array;
+  vertices: Float32Array;
   // indices
-  i: Uint32Array;
+  indices: Uint32Array;
 }
 
 /**
@@ -33,7 +34,7 @@ export interface GeometrySource {
  */
 export interface BorderlineSource {
   // positions
-  p: Float32Array;
+  points: Float32Array;
 }
 
 /**
