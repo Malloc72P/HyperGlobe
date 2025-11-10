@@ -1,8 +1,6 @@
-import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
-import { findRegionByVector, OrthographicProj } from '@hyperglobe/tools';
+import { findRegionByVector } from '@hyperglobe/tools';
 import { useThrottle } from 'src/hooks/use-throttle';
 import { useMainStore } from 'src/store';
-import { Euler, Matrix4, Vector3 } from 'three';
 
 /**
  * 지구본 스타일
@@ -131,23 +129,4 @@ export function Globe({
       />
     </mesh>
   );
-}
-
-export function isPointInPolygon(point: [number, number], polygon: Coordinate[]): boolean {
-  // Ray casting 알고리즘
-  const [x, y] = point;
-  let inside = false;
-
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i][0],
-      yi = polygon[i][1];
-    const xj = polygon[j][0],
-      yj = polygon[j][1];
-
-    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-
-    if (intersect) inside = !inside;
-  }
-
-  return inside;
 }

@@ -27,6 +27,7 @@ export interface MainStore {
   /**
    * Mutations
    */
+  init: () => void;
   // 툴팁 ref 등록
   registerTooltipRef: (ref: RefObject<HTMLDivElement | null>) => void;
   // 리젼피쳐 호버링 설정
@@ -37,6 +38,8 @@ export interface MainStore {
   removeRegionModel: (RegionModel: RegionModel) => void;
   // R-Tree 초기화
   clearRTree: () => void;
+  // MainStore 정리
+  clean: () => void;
 }
 
 export const useMainStore = create<MainStore>()((set, get) => ({
@@ -44,6 +47,13 @@ export const useMainStore = create<MainStore>()((set, get) => ({
   tooltipRef: null,
   getTooltipPosition: null,
   tree: new RBush<RegionModel>(),
+  init: () => {
+    const { tree, clearRTree } = get();
+
+    if (tree) {
+      clearRTree();
+    }
+  },
   registerTooltipRef: (ref) => set({ tooltipRef: ref }),
   setHoveredRegion: (regionModel) => set({ hoveredRegion: regionModel }),
   insertRegionModel: (bbox) => {
@@ -56,5 +66,10 @@ export const useMainStore = create<MainStore>()((set, get) => ({
   },
   clearRTree: () => {
     get().tree.clear();
+  },
+  clean: () => {
+    const { clearRTree } = get();
+
+    clearRTree();
   },
 }));

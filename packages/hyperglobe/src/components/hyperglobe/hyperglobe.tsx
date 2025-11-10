@@ -1,3 +1,5 @@
+'use client';
+
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
@@ -102,6 +104,7 @@ export function HyperGlobe({
 
   //   store
   const tooltipRef = useMainStore((s) => s.tooltipRef);
+  const cleanMainStore = useMainStore((s) => s.clean);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
     const tooltipOffset = 10;
@@ -145,6 +148,12 @@ export function HyperGlobe({
     },
     delay: 50,
   });
+
+  useEffect(() => {
+    return () => {
+      cleanMainStore();
+    };
+  }, []);
 
   return (
     <div
