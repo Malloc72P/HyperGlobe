@@ -46,6 +46,43 @@ export class OrthographicProj {
   }
 
   /**
+   * 3차원 직교좌표를 경위도 좌표로 역투영합니다.
+   *
+   * @param vector - [x, y, z] 형태의 3차원 직교좌표
+   * @param radius - 구의 반지름 (기본값: 1)
+   * @returns [경도, 위도] 형태의 좌표 (단위: 도)
+   *
+   * @example
+   * ```ts
+   * // [1, 0, 0] → 경도 0도, 위도 0도
+   * unproject([1, 0, 0]); // [0, 0]
+   *
+   * // [0, 0, 1] → 경도 90도, 위도 0도
+   * unproject([0, 0, 1]); // [90, 0]
+   *
+   * // [0, 1, 0] → 경도 0도, 위도 90도 (북극점)
+   * unproject([0, 1, 0]); // [0, 90]
+   * ```
+   */
+  public static unproject(vector: VectorCoordinate, radius = 1): Coordinate {
+    const [x, y, z] = vector;
+
+    // 정규화 (반지름이 1이 아닐 경우를 대비)
+    const normalizedX = x / radius;
+    const normalizedY = y / radius;
+    const normalizedZ = z / radius;
+
+    // 위도 계산: arcsin(y)
+    const latitude = Math.asin(normalizedY) * (180 / Math.PI);
+
+    // 경도 계산: arctan2(z, x)
+    const longitude = Math.atan2(normalizedZ, normalizedX) * (180 / Math.PI);
+
+    // project 함수에서 경도에 -1을 곱했으므로, 역투영 시 다시 -1을 곱함
+    return [-longitude, latitude];
+  }
+
+  /**
    * 두 3D 벡터 사이를 구면을 따라 보간합니다.
    *
    * @param start - 시작 벡터 [x, y, z]

@@ -1,3 +1,5 @@
+import { RegionModel } from './region';
+
 /**
  * ### 경위도 좌표.
  *
@@ -20,4 +22,12 @@ export interface BoundingBox {
   minY: number;
   maxX: number;
   maxY: number;
+}
+
+export interface RegionBBox {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  region: RegionModel;
 }

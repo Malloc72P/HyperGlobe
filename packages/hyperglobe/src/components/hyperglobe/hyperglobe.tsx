@@ -9,10 +9,12 @@ import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import type { Coordinate2D } from '../../types/tooltip';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
-import { RegionFeature2, type RegionFeature2Props } from '../region-feature2';
+import { RegionFeature, type RegionFeatureProps } from '../region-feature';
 import { Tooltip, type TooltipProps } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
 import { useHGM } from 'src/hooks/use-hgm';
+import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateSystem } from '../coordinate-system';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -90,6 +92,11 @@ export function HyperGlobe({
   maxSize,
   wireframe,
   children,
+  /**
+   * 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다.
+   *
+   * y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다.
+   */
   rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
@@ -193,7 +200,7 @@ export function HyperGlobe({
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         <group rotation={rotation}>
-          <Globe wireframe={wireframe} {...globeStyle} />
+          <Globe wireframe={wireframe} rotation={rotation} {...globeStyle} />
 
           {/* Children */}
           {children}
@@ -201,6 +208,8 @@ export function HyperGlobe({
 
         {/* FPS Counter */}
         {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
+
+        <CoordinateSystem />
 
         {/* 툴팁 */}
       </Canvas>

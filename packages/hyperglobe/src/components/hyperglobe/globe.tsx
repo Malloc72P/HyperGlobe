@@ -1,4 +1,8 @@
+import type { Coordinate } from '@hyperglobe/interfaces';
+import { OrthographicProj } from '@hyperglobe/tools';
 import { useThree, useFrame } from '@react-three/fiber';
+import { useMainStore } from 'src/store';
+import { Euler, Matrix4, Vector3 } from 'three';
 
 /**
  * 지구본 스타일
@@ -51,6 +55,11 @@ export interface GlobeProps extends GlobeStyle {
    * wireframe 여부
    */
   wireframe?: boolean;
+  /**
+   * 상위 컴포넌트에서 사용한 그룹에 대한 rotation
+   * 이걸로 globe를 회전시키지 않으니 주의.
+   */
+  rotation: [number, number, number];
 }
 
 /**
@@ -75,13 +84,16 @@ export interface GlobeProps extends GlobeStyle {
  * @returns JSX.Element
  */
 export function Globe({
+  wireframe,
+  rotation,
   position = [0, 0, 0],
   segments = [64, 32],
-  wireframe,
   color = '#0077be',
   roughness = 0.5,
   metalness = 0,
 }: GlobeProps) {
+  const rTree = useMainStore((s) => s.tree);
+
   return (
     <mesh
       position={position}
@@ -90,8 +102,41 @@ export function Globe({
        *
        * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
-      //   onPointerEnter={(e) => e.stopPropagation()}
-      //   onPointerLeave={(e) => e.stopPropagation()}
+      onPointerMove={(e) => {
+        // 월드 좌표.
+        // 이 좌표는 회전이 적용된 후의 좌표이다.
+        // 해당 좌표의 경위도 좌표를 구하려면, 회전을 상쇄시키고 역투영해야한다.
+        const point = e.point;
+
+        // 회전 상쇄를 위한 회전행렬에 대한 역행렬 계산
+        const inverseMatrix = new Matrix4();
+        inverseMatrix.makeRotationFromEuler(new Euler(...rotation));
+        inverseMatrix.invert();
+
+        // 역행렬을 적용하여 회전이 상쇄된 로컬 좌표 계산
+        const localPoint = new Vector3(point.x, point.y, point.z).applyMatrix4(inverseMatrix);
+        const { x, y, z } = localPoint;
+
+        // 역투영
+        const coordinate = OrthographicProj.unproject([x, y, z]);
+
+        const searchResult = rTree.search({
+          minX: coordinate[0],
+          minY: coordinate[1],
+          maxX: coordinate[0],
+          maxY: coordinate[1],
+        });
+
+        for (const bbox of searchResult) {
+        }
+
+        console.log(
+          `[${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}] → [경도: ${coordinate[0].toFixed(4)}도, 위도: ${coordinate[1].toFixed(4)}도]`,
+          {
+            searchResult,
+          }
+        );
+      }}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
@@ -104,4 +149,23 @@ export function Globe({
       />
     </mesh>
   );
+}
+
+function isPointInPolygon(point: [number, number], polygon: Coordinate[]): boolean {
+  // Ray casting 알고리즘
+  const [x, y] = point;
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i][0],
+      yi = polygon[i][1];
+    const xj = polygon[j][0],
+      yj = polygon[j][1];
+
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
 }

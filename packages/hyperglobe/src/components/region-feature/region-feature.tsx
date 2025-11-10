@@ -6,9 +6,9 @@ import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
-import type { RegionModel } from '../../types/region';
+import type { RegionModel } from '@hyperglobe/interfaces';
 
-export interface RegionFeature2Props {
+export interface RegionFeatureProps {
   /**
    * 지역의 피쳐 정보(GeoJson 형식).
    *
@@ -56,24 +56,31 @@ export interface RegionFeature2Props {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature2({
+export function RegionFeature({
   feature,
   style = UiConstant.polygonFeature.default.style,
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
   ...polygonFeatureProps
-}: RegionFeature2Props) {
+}: RegionFeatureProps) {
   const [hovered, setHovered] = useState(false);
   const [appliedStyle] = useFeatureStyle({ hovered, style, hoverStyle });
   const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);
+  const insertRegionModel = useMainStore((s) => s.insertRegionModel);
+  const removeRegionModel = useMainStore((s) => s.removeRegionModel);
 
   /**
    * 리전 모델 정보
    */
   const regionModel = useMemo<RegionModel>(() => {
-    return {
+    const newModel: RegionModel = {
       id: feature.id,
       name: feature.properties.name || '',
+      ...feature.bbox,
     };
+
+    insertRegionModel(newModel);
+
+    return newModel;
   }, [feature]);
 
   /**
@@ -141,7 +148,6 @@ export function RegionFeature2({
           />
         </mesh>
       )}
-
       {regionFeatureGeometry?.borderlineGeometry && (
         <lineSegments geometry={regionFeatureGeometry.borderlineGeometry}>
           <lineBasicMaterial color={appliedStyle.color} linewidth={appliedStyle.lineWidth} />

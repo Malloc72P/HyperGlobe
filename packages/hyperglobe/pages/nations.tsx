@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Graticule, HyperGlobe, RegionFeature2, useHGM } from '../src';
+import { Graticule, HyperGlobe, RegionFeature, useHGM } from '../src';
 
 const pink = [
   '#fff1f3',
@@ -127,7 +127,8 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
       <Graticule />
       {hgm &&
         hgm.features.map((feature) => (
-          <RegionFeature2
+          <RegionFeature
+            key={feature.id}
             feature={feature}
             style={{
               lineWidth: styles.regionStrokeWidth,
