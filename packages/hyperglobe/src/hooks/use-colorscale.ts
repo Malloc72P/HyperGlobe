@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
+import type { ColorScaleModel } from 'src/types/colorscale';
 import type { FeatureStyle } from 'src/types/feature';
-import { label } from 'three/tsl';
 
 export interface ColorScaleStepOptions {
   /**
