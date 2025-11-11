@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { ColorScaleStepModel } from 'src/types/colorscale';
+import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
 import type { FeatureStyle } from 'src/types/feature';
 import { label } from 'three/tsl';
 
@@ -32,21 +32,65 @@ export interface ColorScaleStepOptions {
   hoverStyle?: FeatureStyle;
 }
 
+/**
+ * 컬러스케일 옵션
+ */
 export interface ColorScaleOptions {
+  /**
+   * 값이 null인 경우 적용될 스타일
+   */
+  nullStyle?: FeatureStyle;
+  /**
+   * 컬러스케일 구간에 대한 옵션
+   */
   steps: ColorScaleStepOptions[];
 }
 
-export function useColorScale({ steps: stepOptions }: ColorScaleOptions) {
-  const steps = useMemo<ColorScaleStepModel[]>(() => {
-    return stepOptions.map((stepOption, index) => ({
-      id: `cs-step-${index}`,
-      label: stepOption.label || '',
-      from: stepOption.from || -Infinity,
-      to: stepOption.to || Infinity,
-      style: stepOption.style,
-      hoverStyle: stepOption.hoverStyle,
-    }));
-  }, [stepOptions]);
+/**
+ * 컬러스케일 모델을 생성합니다.
+ */
+export function useColorScale({ nullStyle, steps: stepOptions }: ColorScaleOptions) {
+  /**
+   * 컬러스케일 모델
+   */
+  const colorscale = useMemo<ColorScaleModel>(() => {
+    return {
+      nullStyle,
+      steps: stepOptions.map((stepOption, index) => ({
+        id: `cs-step-${index}`,
+        label: stepOption.label || '',
+        from: stepOption.from || -Infinity,
+        to: stepOption.to || Infinity,
+        style: stepOption.style,
+        hoverStyle: stepOption.hoverStyle,
+      })),
+    };
+  }, [nullStyle, stepOptions]);
 
-  return steps;
+  /**
+   * 값에 해당하는 컬러스케일 구간을 찾습니다.
+   */
+  const findStepByValue = (value: number) => {
+    return colorscale.steps.find((step) => step.from <= value && value < step.to);
+  };
+
+  /**
+   * 값에 해당하는 구간의 스타일을 반환합니다.
+   */
+  const getColorScaleStyle = (value: number) => {
+    const step = findStepByValue(value);
+
+    return step ? step.style : colorscale.nullStyle;
+  };
+
+  /**
+   * 값에 해당하는 구간의 호버 스타일을 반환합니다.
+   */
+  const getColorScaleHoverStyle = (value: number) => {
+    const step = findStepByValue(value);
+
+    return step?.hoverStyle;
+  };
+
+  return { colorscale, getColorScaleStyle, getColorScaleHoverStyle };
 }
