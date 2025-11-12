@@ -66,30 +66,30 @@ export function useColorScale({ nullStyle, steps: stepOptions }: ColorScaleOptio
     };
   }, [nullStyle, stepOptions]);
 
-  /**
-   * 값에 해당하는 컬러스케일 구간을 찾습니다.
-   */
-  const findStepByValue = (value: number) => {
-    return colorscale.steps.find((step) => step.from <= value && value < step.to);
-  };
-
-  /**
-   * 값에 해당하는 구간의 스타일을 반환합니다.
-   */
-  const getColorScaleStyle = (value: number) => {
-    const step = findStepByValue(value);
-
-    return step ? step.style : colorscale.nullStyle;
-  };
-
-  /**
-   * 값에 해당하는 구간의 호버 스타일을 반환합니다.
-   */
-  const getColorScaleHoverStyle = (value: number) => {
-    const step = findStepByValue(value);
-
-    return step?.hoverStyle;
-  };
-
-  return { colorscale, getStyle: getColorScaleStyle, getHoverStyle: getColorScaleHoverStyle };
+  return { colorscale };
 }
+
+/**
+ * 값에 해당하는 컬러스케일 구간을 찾습니다.
+ */
+export const findStepByValue = (colorscale: ColorScaleModel, value: number) => {
+  return colorscale.steps.find((step) => step.from <= value && value < step.to);
+};
+
+/**
+ * 값에 해당하는 구간의 스타일을 반환합니다.
+ */
+export const getColorScaleStyle = (colorscale: ColorScaleModel, value: number) => {
+  const step = findStepByValue(colorscale, value);
+
+  return step ? step.style : colorscale.nullStyle;
+};
+
+/**
+ * 값에 해당하는 구간의 호버 스타일을 반환합니다.
+ */
+export const getColorScaleHoverStyle = (colorscale: ColorScaleModel, value: number) => {
+  const step = findStepByValue(colorscale, value);
+
+  return step?.hoverStyle;
+};

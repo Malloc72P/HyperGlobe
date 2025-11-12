@@ -19,14 +19,14 @@ export const ColorScaleStory: Story = {
       {
         to: 200,
         style: {
-          fillColor: Colors.BLUE[2],
+          fillColor: Colors.PINK[2],
         },
       },
       {
         from: 200,
         to: 400,
         style: {
-          fillColor: Colors.BLUE[3],
+          fillColor: Colors.PINK[3],
         },
       },
       {

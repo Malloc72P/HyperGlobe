@@ -3,7 +3,7 @@ export const StorybookConstant = {
     HyperGlobe: {
       id: 'hyperglobe-canvas',
       size: '100%',
-      maxSize: 500,
+      maxSize: 900,
       style: { margin: '0 auto' },
       globeStyle: {
         color: '#f6f6f6',

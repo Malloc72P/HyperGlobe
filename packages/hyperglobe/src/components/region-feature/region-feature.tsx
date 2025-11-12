@@ -6,6 +6,8 @@ import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
 import type { FeatureStyle } from '../../types/feature';
 import { useRegionModel } from './use-region-model';
+import type { ColorScaleModel } from 'src/types/colorscale';
+import { Line } from '@react-three/drei';
 
 export interface RegionFeatureProps<DATA_TYPE = any> {
   /**
@@ -52,6 +54,15 @@ export interface RegionFeatureProps<DATA_TYPE = any> {
    * 피쳐에 연결된 추가 데이터
    */
   data?: DATA_TYPE;
+
+  /**
+   * 컬러스케일.
+   *
+   * - 컬러스케일이 설정되면, 피쳐는 컬러스케일에 따라 색상이 결정됩니다.
+   * - style보다 우선 적용됩니다.
+   * - 주로 데이터 시각화에 사용됩니다.
+   */
+  colorscale?: ColorScaleModel;
 }
 
 /**
@@ -64,11 +75,12 @@ export function RegionFeature<DATA_TYPE = any>({
   feature,
   style = UiConstant.polygonFeature.default.style,
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
+  colorscale,
   data,
   ...polygonFeatureProps
 }: RegionFeatureProps) {
   const [regionModel] = useRegionModel<DATA_TYPE>({ feature, data });
-  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle });
+  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle, colorscale });
 
   /**
    * 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
@@ -111,12 +123,9 @@ export function RegionFeature<DATA_TYPE = any>({
       points.push(...pointArray);
     }
 
-    const borderlineGeometry = new THREE.BufferGeometry();
-    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
-
     return {
       geometry,
-      borderlineGeometry,
+      points,
     };
   }, [meshSource, feature]);
 
@@ -130,17 +139,20 @@ export function RegionFeature<DATA_TYPE = any>({
             transparent
             side={THREE.DoubleSide}
             color={appliedStyle.fillColor}
-            opacity={appliedStyle.fillOpacity}
+            opacity={appliedStyle.fillOpacity ?? 1}
             wireframe={polygonFeatureProps.wireframe}
             roughness={polygonFeatureProps.roughness}
             metalness={polygonFeatureProps.metalness}
           />
         </mesh>
       )}
-      {regionFeatureGeometry?.borderlineGeometry && (
-        <lineSegments geometry={regionFeatureGeometry.borderlineGeometry}>
-          <lineBasicMaterial color={appliedStyle.color} linewidth={appliedStyle.lineWidth} />
-        </lineSegments>
+      {regionFeatureGeometry?.points && (
+        <Line
+          points={regionFeatureGeometry.points} // 3. geometry 대신 'points' prop에 지오메트리 전달
+          segments={true} // 4. <lineSegments>를 사용했으므로 'segments' prop 추가
+          color={appliedStyle.color}
+          lineWidth={appliedStyle.lineWidth} // 5. 'linewidth'가 아닌 'lineWidth' (W가 대문자)
+        />
       )}
     </group>
   );

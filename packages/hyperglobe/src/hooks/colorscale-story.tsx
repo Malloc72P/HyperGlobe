@@ -15,7 +15,7 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
-  const { colorscale, getStyle, getHoverStyle } = useColorScale(colorScaleOptions);
+  const { colorscale } = useColorScale(colorScaleOptions);
 
   useEffect(() => {
     setLoading(true);
@@ -41,6 +41,11 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
           <RegionFeature
             key={feature.id}
             feature={feature}
+            colorscale={colorscale}
+            hoverStyle={{
+              fillOpacity: 0.7,
+              lineWidth: 2,
+            }}
             data={{
               value: (index + 1) * 10,
             }}
