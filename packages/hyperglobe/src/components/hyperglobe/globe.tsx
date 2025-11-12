@@ -1,4 +1,5 @@
 import { findRegionByVector } from '@hyperglobe/tools';
+import { UiConstant } from 'src/constants';
 import { useThrottle } from 'src/hooks/use-throttle';
 import { useMainStore } from 'src/store';
 
@@ -53,11 +54,6 @@ export interface GlobeProps extends GlobeStyle {
    * wireframe 여부
    */
   wireframe?: boolean;
-  /**
-   * 상위 컴포넌트에서 사용한 그룹에 대한 rotation
-   * 이걸로 globe를 회전시키지 않으니 주의.
-   */
-  rotation: [number, number, number];
 }
 
 /**
@@ -83,7 +79,6 @@ export interface GlobeProps extends GlobeStyle {
  */
 export function Globe({
   wireframe,
-  rotation,
   position = [0, 0, 0],
   segments = [64, 32],
   color = '#0077be',
@@ -99,7 +94,7 @@ export function Globe({
 
       const foundRegion = findRegionByVector({
         rTree,
-        rotation,
+        rotation: UiConstant.globe.rotation,
         vector: point,
       });
 

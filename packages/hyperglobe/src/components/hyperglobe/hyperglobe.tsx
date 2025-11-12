@@ -10,6 +10,7 @@ import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
 import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
+import { UiConstant } from 'src/constants';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -37,10 +38,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
    */
   wireframe?: boolean;
   /**
-   * 지구본의 초기 회전 각도 (라디안 단위)
-   */
-  rotation?: [number, number, number];
-  /**
    * Canvas 요소에 적용할 스타일 객체
    */
   style?: React.CSSProperties;
@@ -62,16 +59,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
  * **WEBGL 기반 지구본 컴포넌트.**
  *
  * - HyperGlobe 컴포넌트의 루트 컴포넌트입니다.
+ * - 해당 컴포넌트만 사용하면 빈 지구본이 렌더링됩니다.
+ * - 지구본의 스타일은 globeStyle prop을 통해 설정할 수 있습니다.
  * - 해당 컴포넌트를 통해 지구본을 랜더링하고 다양한 3D 피쳐들을 자식 컴포넌트로 추가할 수 있습니다.
- * - 피쳐를 추가하려면 RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가하면 됩니다
- *
- * ### 예시
- *
- * ```tsx
- * <HyperGlobe>
- *     <Graticule />
- * </HyperGlobe>
- * ```
+ * - RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가할 수 있습니다.
  *
  * ### import
  *
@@ -87,12 +78,6 @@ export function HyperGlobe({
   maxSize,
   wireframe,
   children,
-  /**
-   * 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다.
-   *
-   * y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다.
-   */
-  rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
   tooltipOptions,
@@ -196,8 +181,9 @@ export function HyperGlobe({
         />
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
-        <group rotation={rotation}>
-          <Globe wireframe={wireframe} rotation={rotation} {...globeStyle} />
+        {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
+        <group rotation={UiConstant.globe.rotation}>
+          <Globe wireframe={wireframe} {...globeStyle} />
 
           {/* Children */}
           {children}
