@@ -1,21 +1,13 @@
-import type {
-  Coordinate,
-  FeaturePolygons,
-  HGMFeature,
-  VectorCoordinate,
-} from '@hyperglobe/interfaces';
-import { useMemo, useState } from 'react';
+import type { HGMFeature } from '@hyperglobe/interfaces';
+import { useMemo } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
-import type { RegionModel } from '@hyperglobe/interfaces';
-import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
-import { UseRegionModel } from './use-region-model';
+import { useRegionModel } from './use-region-model';
 
-export interface RegionFeatureProps {
+export interface RegionFeatureProps<DATA_TYPE = any> {
   /**
    * 지역의 피쳐 정보(GeoJson 형식).
    *
@@ -55,6 +47,11 @@ export interface RegionFeatureProps {
    * - 범위: 0 ~ 1
    */
   metalness?: number;
+
+  /**
+   * 피쳐에 연결된 추가 데이터
+   */
+  data?: DATA_TYPE;
 }
 
 /**
@@ -63,13 +60,14 @@ export interface RegionFeatureProps {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature({
+export function RegionFeature<DATA_TYPE = any>({
   feature,
   style = UiConstant.polygonFeature.default.style,
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
+  data,
   ...polygonFeatureProps
 }: RegionFeatureProps) {
-  const [regionModel] = UseRegionModel({ feature });
+  const [regionModel] = useRegionModel<DATA_TYPE>({ feature, data });
   const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle });
 
   /**

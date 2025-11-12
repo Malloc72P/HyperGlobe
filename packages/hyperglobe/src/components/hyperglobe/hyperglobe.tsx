@@ -8,7 +8,7 @@ import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
-import { Tooltip, type TooltipProps } from '../tooltip';
+import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
 
 /**
@@ -51,7 +51,7 @@ export interface HyperGlobeProps extends PropsWithChildren {
   /**
    * 툴팁 옵션
    */
-  tooltipOption?: TooltipProps;
+  tooltipOptions?: TooltipOptions;
   /**
    * FPS(초당 프레임 수) 카운터 표시 여부
    */
@@ -95,7 +95,7 @@ export function HyperGlobe({
   rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
-  tooltipOption,
+  tooltipOptions,
   showFpsCounter = true,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
@@ -107,7 +107,7 @@ export function HyperGlobe({
   const cleanMainStore = useMainStore((s) => s.clean);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-    const tooltipOffset = 10;
+    const tooltipOffset = 6;
     const rootElement = rootElementRef.current;
 
     if (!rootElement || !tooltipElement) return null;
@@ -209,7 +209,7 @@ export function HyperGlobe({
         {/* 툴팁 */}
       </Canvas>
 
-      <Tooltip {...tooltipOption} />
+      <Tooltip {...tooltipOptions} />
       {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
   );

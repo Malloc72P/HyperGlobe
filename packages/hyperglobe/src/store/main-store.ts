@@ -32,6 +32,8 @@ export interface MainStore {
   registerTooltipRef: (ref: RefObject<HTMLDivElement | null>) => void;
   // 리젼피쳐 호버링 설정
   setHoveredRegion: (regionModel: RegionModel | null) => void;
+  // ID로 리젼 모델 찾기
+  findRegionModelById: (id: string) => RegionModel | null;
   // 리젼 BBox 등록
   insertRegionModel: (RegionModel: RegionModel) => void;
   // 리젼 BBox 제거
@@ -56,6 +58,11 @@ export const useMainStore = create<MainStore>()((set, get) => ({
   },
   registerTooltipRef: (ref) => set({ tooltipRef: ref }),
   setHoveredRegion: (regionModel) => set({ hoveredRegion: regionModel }),
+  findRegionModelById: (id) => {
+    const { tree } = get();
+
+    return tree.all().find((region) => region.id === id) || null;
+  },
   insertRegionModel: (bbox) => {
     const tree = get().tree;
 

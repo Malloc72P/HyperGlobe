@@ -91,5 +91,5 @@ export function useColorScale({ nullStyle, steps: stepOptions }: ColorScaleOptio
     return step?.hoverStyle;
   };
 
-  return { colorscale, getColorScaleStyle, getColorScaleHoverStyle };
+  return { colorscale, getStyle: getColorScaleStyle, getHoverStyle: getColorScaleHoverStyle };
 }

@@ -24,7 +24,7 @@
   /* Border */
   border-radius: 4px;
 
-  &::before {
+  /* &::before {
     content: '';
     position: absolute;
     left: 50%;
@@ -33,5 +33,5 @@
     border-width: 8px;
     border-style: solid;
     border-color: white transparent transparent transparent;
-  }
+  } */
 }
