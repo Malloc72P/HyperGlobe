@@ -1,3 +1,4 @@
+import { MathConstants } from '@hyperglobe/tools';
 import { Colors } from 'src/lib';
 import type { FeatureStyle } from 'src/types/feature';
 
@@ -13,8 +14,8 @@ export const DefaultFeatureHoverStyle: FeatureStyle = {
 
 export const UiConstant = {
   feature: {
-    strokeRadius: 1.005,
-    fillRadius: 1.004,
+    strokeRadius: MathConstants.FEATURE_STROKE_Z_INDEX,
+    fillRadius: MathConstants.FEATURE_FILL_Z_INDEX,
   },
   polygonFeature: {
     default: {

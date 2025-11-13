@@ -2,6 +2,7 @@ import { findRegionByVector } from '@hyperglobe/tools';
 import { UiConstant } from 'src/constants';
 import { useThrottle } from 'src/hooks/use-throttle';
 import { useMainStore } from 'src/store';
+import type { OnHoverChangedFn } from 'src/types/events';
 
 /**
  * 지구본 스타일
@@ -33,6 +34,10 @@ export interface GlobeStyle {
    * @default 0
    */
   metalness?: number;
+  /**
+   * 호버된 지역이 변경될 때 호출되는 콜백 함수
+   */
+  onHoverChanged?: OnHoverChangedFn;
 }
 
 export interface GlobeProps extends GlobeStyle {
@@ -73,12 +78,10 @@ export interface GlobeProps extends GlobeStyle {
  * ### 세로 세그먼트
  * - 세로 세그먼트(heightSegments)는 구체를 가로로 자르는 선의 개수를 의미한다.
  * - 값이 클수록 구체의 세로 방향이 더 부드럽게 표현된다.
- *
- * @param param0 GlobeProps
- * @returns JSX.Element
  */
 export function Globe({
   wireframe,
+  onHoverChanged,
   position = [0, 0, 0],
   segments = [64, 32],
   color = '#0077be',
@@ -99,6 +102,9 @@ export function Globe({
       });
 
       setHoveredRegion(foundRegion);
+      onHoverChanged?.({
+        hoveredRegion: foundRegion,
+      });
     },
     delay: 50,
   });

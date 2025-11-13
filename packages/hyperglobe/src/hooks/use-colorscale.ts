@@ -57,6 +57,7 @@ export function useColorScale({ nullStyle, steps: stepOptions }: ColorScaleOptio
       nullStyle,
       steps: stepOptions.map((stepOption, index) => ({
         id: `cs-step-${index}`,
+        index,
         label: stepOption.label || '',
         from: stepOption.from || -Infinity,
         to: stepOption.to || Infinity,

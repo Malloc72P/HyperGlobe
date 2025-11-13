@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HyperGlobe, RegionFeature } from 'src/components';
+import { ColorScaleBar, HyperGlobe, RegionFeature } from 'src/components';
 import { StorybookConstant } from 'src/constants';
 import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
@@ -29,25 +29,29 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
   }, []);
 
   return (
-    <HyperGlobe
-      {...StorybookConstant.props.HyperGlobe}
-      loading={loading}
-      tooltipOptions={{
-        distance: 12,
-        text: (region: RegionModel<{ value: number }>) => `${region.name}(${region.data?.value})`,
-      }}
-    >
-      {hgm &&
-        hgm.features.map((feature, index) => (
-          <RegionFeature
-            key={feature.id}
-            feature={feature}
-            colorscale={colorscale}
-            data={{
-              value: (index + 1) * 10,
-            }}
-          />
-        ))}
-    </HyperGlobe>
+    <div>
+      <HyperGlobe
+        {...StorybookConstant.props.HyperGlobe}
+        loading={loading}
+        tooltipOptions={{
+          distance: 12,
+          text: (region: RegionModel<{ value: number }>) => `${region.name}(${region.data?.value})`,
+        }}
+      >
+        {hgm &&
+          hgm.features.map((feature, index) => (
+            <RegionFeature
+              key={feature.id}
+              feature={feature}
+              colorscale={colorscale}
+              data={{
+                value: (index + 1) * 10,
+              }}
+            />
+          ))}
+      </HyperGlobe>
+
+      <ColorScaleBar colorScale={colorscale} />
+    </div>
   );
 }

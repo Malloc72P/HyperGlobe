@@ -11,6 +11,7 @@ import { LoadingUI } from '../loading-ui';
 import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
 import { UiConstant } from 'src/constants';
+import type { OnHoverChangedFn } from 'src/types/events';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -53,6 +54,10 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * FPS(초당 프레임 수) 카운터 표시 여부
    */
   showFpsCounter?: boolean;
+  /**
+   * 호버된 지역이 변경될 때 호출되는 콜백 함수
+   */
+  onHoverChanged?: OnHoverChangedFn;
 }
 
 /**
@@ -82,6 +87,7 @@ export function HyperGlobe({
   style,
   tooltipOptions,
   showFpsCounter = true,
+  onHoverChanged,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
@@ -182,7 +188,7 @@ export function HyperGlobe({
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
         <group rotation={UiConstant.globe.rotation}>
-          <Globe wireframe={wireframe} {...globeStyle} />
+          <Globe wireframe={wireframe} onHoverChanged={onHoverChanged} {...globeStyle} />
 
           {/* Children */}
           {children}
