@@ -15,6 +15,11 @@ export interface UseFeatureStyleProps<DATA_TYPE = any> {
   colorscale?: ColorScaleModel;
 }
 
+/**
+ * 리젼 피쳐의 스타일을 계산하는 훅
+ *
+ * - 우선순위: 기본 스타일 < colorscale 스타일 < 호버 스타일
+ */
 export function useFeatureStyle<DATA_TYPE = any>({
   regionModel,
   style,
@@ -29,18 +34,22 @@ export function useFeatureStyle<DATA_TYPE = any>({
   );
 
   const appliedStyle = useMemo<FeatureStyle>(() => {
-    let _style: FeatureStyle = {};
+    // 기본 스타일 및 style 병합
+    let _style: FeatureStyle = {
+      ...UiConstant.polygonFeature.default.style,
+      ...style,
+    };
 
+    // 컬러스케일 스타일 추가 적용
     if (colorscale && regionModel && regionModel.data) {
-      const csStyle = getColorScaleStyle(colorscale, regionModel.data.value) || {};
+      const colorscaleStyle = getColorScaleStyle(colorscale, regionModel.data.value) || {};
 
-      _style = { ...UiConstant.polygonFeature.default.style, ...csStyle };
-    } else {
-      _style = { ...style };
+      _style = { ..._style, ...colorscaleStyle };
     }
 
+    // 호버 스타일 추가 적용
     if (isHoveredRegion) {
-      _style = { ..._style, ...hoverStyle };
+      _style = { ..._style, ...UiConstant.polygonFeature.default.hoverStyle, ...hoverStyle };
     }
 
     return _style;

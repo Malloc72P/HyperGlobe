@@ -33,24 +33,6 @@ export interface RegionFeatureProps<DATA_TYPE = any> {
   wireframe?: boolean;
 
   /**
-   * 재질의 거칠기
-   *
-   * - 값이 클수록 표면이 거칠어집니다.
-   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
-   * - 범위: 0 ~ 1
-   */
-  roughness?: number;
-
-  /**
-   * 재질의 금속성
-   *
-   * - 값이 클수록 금속성 효과가 강해집니다.
-   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
-   * - 범위: 0 ~ 1
-   */
-  metalness?: number;
-
-  /**
    * 피쳐에 연결된 추가 데이터
    */
   data?: DATA_TYPE;
@@ -135,14 +117,12 @@ export function RegionFeature<DATA_TYPE = any>({
     <group>
       {regionFeatureGeometry?.geometry && (
         <mesh geometry={regionFeatureGeometry.geometry}>
-          <meshStandardMaterial
+          <meshBasicMaterial
             transparent
             side={THREE.DoubleSide}
             color={appliedStyle.fillColor}
-            opacity={appliedStyle.fillOpacity ?? 1}
+            opacity={appliedStyle.fillOpacity}
             wireframe={polygonFeatureProps.wireframe}
-            roughness={polygonFeatureProps.roughness}
-            metalness={polygonFeatureProps.metalness}
           />
         </mesh>
       )}

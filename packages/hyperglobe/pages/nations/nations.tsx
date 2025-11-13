@@ -90,14 +90,14 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
 
   const styles = useMemo(
     () => ({
-      globeColor: gray[0],
+      globeColor: 'white',
       regionStrokeWidth: 1.3,
       hoverRegionStrokeWidth: 2,
       regionFill: color[4],
       hoverRegionFill: color[5],
       regionColor: color[7],
       metalness: 0,
-      roughness: 0.5,
+      roughness: 0,
     }),
     [theme]
   );
@@ -139,8 +139,6 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
               lineWidth: styles.hoverRegionStrokeWidth,
               fillColor: styles.hoverRegionFill,
             }}
-            metalness={styles.metalness}
-            roughness={styles.roughness}
           />
         ))}
     </HyperGlobe>

@@ -8,7 +8,7 @@ export const StorybookConstant = {
       globeStyle: {
         color: '#f6f6f6',
         metalness: 0,
-        roughness: 0.5,
+        roughness: 0,
       },
     },
   },

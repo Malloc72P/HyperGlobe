@@ -1,3 +1,16 @@
+import { Colors } from 'src/lib';
+import type { FeatureStyle } from 'src/types/feature';
+
+export const DefaultFeatureStyle: FeatureStyle = {
+  lineWidth: 1.2,
+  fillOpacity: 1,
+  color: Colors.BLUE[7],
+  fillColor: Colors.BLUE[5],
+};
+export const DefaultFeatureHoverStyle: FeatureStyle = {
+  lineWidth: 2,
+};
+
 export const UiConstant = {
   feature: {
     strokeRadius: 1.005,
@@ -5,14 +18,8 @@ export const UiConstant = {
   },
   polygonFeature: {
     default: {
-      style: {
-        lineWidth: 1.2,
-        color: '#3a5dbb',
-        fillColor: '#78a9e2',
-      },
-      hoverStyle: {
-        lineWidth: 2,
-      },
+      style: DefaultFeatureStyle,
+      hoverStyle: DefaultFeatureHoverStyle,
     },
   },
   globe: {

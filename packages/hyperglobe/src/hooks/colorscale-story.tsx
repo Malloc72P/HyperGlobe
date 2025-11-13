@@ -33,6 +33,7 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
       {...StorybookConstant.props.HyperGlobe}
       loading={loading}
       tooltipOptions={{
+        distance: 12,
         text: (region: RegionModel<{ value: number }>) => `${region.name}(${region.data?.value})`,
       }}
     >
@@ -42,10 +43,6 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
             key={feature.id}
             feature={feature}
             colorscale={colorscale}
-            hoverStyle={{
-              fillOpacity: 0.7,
-              lineWidth: 2,
-            }}
             data={{
               value: (index + 1) * 10,
             }}

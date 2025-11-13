@@ -49,9 +49,9 @@ export function Graticule({
   lineColor = '#808080',
   equatorColor = '#808080',
   primeMeridianColor = '#808080',
-  equatorLineWidth = 3,
-  primeMeridianLineWidth = 3,
-  lineWidth = 2,
+  equatorLineWidth = 1.2,
+  primeMeridianLineWidth = 1.2,
+  lineWidth = 1.2,
 }: GraticuleProps) {
   return (
     <group>

@@ -5,12 +5,25 @@ import { classnames } from '../../lib/css';
 import type { RegionModel } from '@hyperglobe/interfaces';
 
 export interface TooltipOptions {
+  /**
+   * 툴팁의 최상위 div 스타일
+   */
   style?: React.CSSProperties;
+  /**
+   * 툴팁의 세부 요소 스타일
+   */
   styles?: {
     rootStyle?: React.CSSProperties;
     idStyle?: React.CSSProperties;
     nameStyle?: React.CSSProperties;
   };
+  /**
+   * 툴팁과 마우스 커서 사이의 거리 (픽셀 단위)
+   */
+  distance?: number;
+  /**
+   * 툴팁에 표시할 텍스트
+   */
   text?: string | ((model: RegionModel) => string);
 }
 
