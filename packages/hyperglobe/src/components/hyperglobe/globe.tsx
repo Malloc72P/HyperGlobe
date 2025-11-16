@@ -125,7 +125,7 @@ export function Globe({
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}
-      <meshBasicMaterial
+      <meshStandardMaterial
         wireframe={wireframe}
         color={color}
         // roughness={roughness} // 매끄러운 표면

@@ -167,8 +167,8 @@ export function HyperGlobe({
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
         {/* 기본 조명 설정 */}
-        {/* <ambientLight intensity={1} />
-        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={1} /> */}
+        <ambientLight intensity={2} />
+        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={2} />
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
           enableZoom={true}
