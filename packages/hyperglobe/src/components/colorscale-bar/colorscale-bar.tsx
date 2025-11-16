@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
 import classes from './colorscale-bar.module.css';
 import { useMainStore } from 'src/store';
-import { isSafeNumber } from '@hyperglobe/tools';
+import { isSafeNumber, resolveNumber } from '@hyperglobe/tools';
+import { findStepByValue } from 'src/hooks/use-colorscale';
 
 export type ColorScaleLabelFormatter = (value: number) => string;
 
@@ -28,21 +29,33 @@ export function ColorScaleBar({
   colorScale,
   formatLabel = (value) => value.toFixed(0),
 }: ColorScaleBarProps) {
+  const { minValue, maxValue } = colorScale;
+  const rootRef = useRef<HTMLDivElement>(null);
   const hoveredRegion = useMainStore((s) => s.hoveredRegion);
   const markerPosition = useMemo(() => {
-    const { minValue, maxValue } = colorScale;
     let position = 0;
     const value = hoveredRegion?.data?.value;
+    const step = findStepByValue(colorScale, value);
 
-    if (!isSafeNumber(value)) return 0;
+    if (!isSafeNumber(value) || !step) return 0;
 
-    const clampedValue = Math.min(Math.max(value, minValue), maxValue);
-    position = ((clampedValue - minValue) / (maxValue - minValue)) * 100;
+    // 각 스텝의 from, to 값 계산. from/to가 무한대일 수 있으므로. 이 경우 minValue/maxValue로 대체
+    const from = resolveNumber(step.from, minValue);
+    const to = resolveNumber(step.to, maxValue);
+    // 스텝 너비 비율, 시작 위치 비율 계산
+    const stepWidth = 1 / colorScale.steps.length;
+    const startPosition = step.index / colorScale.steps.length;
+    // 스텝 내부에서의 상대적 위치 계산. 값이 해당 구간에서 몇 퍼센트 위치에 있는지를 계산한다.
+    const stepRange = to - from; // 스텝 구간 길이
+    const relativePosition = (value - from) / stepRange; // 구간 내부에서의 상대적 위치 (0~1 사이)
+    // 시작 위치에서 해당 구간에서의 상대적 위치를 더하여 최종 위치 계산
+    position = startPosition + relativePosition * stepWidth;
 
-    return position;
+    return Math.max(0, Math.min(100, position * 100));
   }, [hoveredRegion, colorScale]);
+
   return (
-    <div className={classes.root} style={style}>
+    <div ref={rootRef} className={classes.root} style={style}>
       {/* 마커 & 마커 컨테이너 */}
       <div className={classes.markerContainer}>
         <div className={classes.marker} style={{ left: `${markerPosition}%` }}></div>

@@ -1,5 +1,5 @@
 export function resolveNumber(number: number | null | undefined, fallback: number): number {
-  if (number === undefined || number === null) {
+  if (number === undefined || number === null || !Number.isFinite(number)) {
     return fallback;
   }
 
