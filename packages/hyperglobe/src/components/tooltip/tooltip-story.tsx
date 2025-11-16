@@ -4,6 +4,8 @@ import { RegionFeature } from '../region-feature';
 import { useEffect, useState } from 'react';
 import { useHGM } from '../../hooks/use-hgm';
 import type { TooltipOptions } from './tooltip';
+import { Colors } from 'src/lib';
+import { Graticule } from '../graticule';
 
 /**
  * 툴팁 컴포넌트
@@ -31,9 +33,13 @@ export function TooltipStoryComponent(tooltipProps: TooltipOptions) {
   return (
     <HyperGlobe
       {...StorybookConstant.props.HyperGlobe}
+      globeStyle={{
+        color: Colors.BLUE[1],
+      }}
       tooltipOptions={{ ...tooltipProps }}
       loading={loading}
     >
+      <Graticule />
       {hgm && hgm.features.map((feature) => <RegionFeature key={feature.id} feature={feature} />)}
     </HyperGlobe>
   );

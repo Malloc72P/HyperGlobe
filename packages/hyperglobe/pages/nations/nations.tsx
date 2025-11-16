@@ -90,7 +90,7 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
 
   const styles = useMemo(
     () => ({
-      globeColor: gray[1],
+      globeColor: blue[0],
       regionStrokeWidth: 1,
       hoverRegionStrokeWidth: 2,
       regionFill: color[3],
