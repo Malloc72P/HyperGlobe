@@ -73,7 +73,6 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
         colorScale={colorscale}
         style={{
           paddingTop: 10,
-          overflow: 'hidden',
           maxWidth: '70%',
           margin: '0 auto',
           fontSize: 12,

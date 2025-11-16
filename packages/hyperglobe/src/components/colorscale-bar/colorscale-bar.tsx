@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
 import classes from './colorscale-bar.module.css';
+import { useMainStore } from 'src/store';
+import { isSafeNumber } from '@hyperglobe/tools';
 
 export type ColorScaleLabelFormatter = (value: number) => string;
 
@@ -26,8 +28,27 @@ export function ColorScaleBar({
   colorScale,
   formatLabel = (value) => value.toFixed(0),
 }: ColorScaleBarProps) {
+  const hoveredRegion = useMainStore((s) => s.hoveredRegion);
+  const markerPosition = useMemo(() => {
+    const { minValue, maxValue } = colorScale;
+    let position = 0;
+    const value = hoveredRegion?.data?.value;
+
+    if (!isSafeNumber(value)) return 0;
+
+    const clampedValue = Math.min(Math.max(value, minValue), maxValue);
+    position = ((clampedValue - minValue) / (maxValue - minValue)) * 100;
+
+    return position;
+  }, [hoveredRegion, colorScale]);
   return (
     <div className={classes.root} style={style}>
+      {/* 마커 & 마커 컨테이너 */}
+      <div className={classes.markerContainer}>
+        <div className={classes.marker} style={{ left: `${markerPosition}%` }}></div>
+      </div>
+
+      {/* 스텝 & 레이블 */}
       {colorScale.steps.map((step) => (
         <ColorScaleStep
           key={step.id}

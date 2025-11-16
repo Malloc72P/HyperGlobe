@@ -113,8 +113,6 @@ export function useColorScale({
       maxValue: isSafeNumber(maxValue) ? maxValue : Infinity,
     };
 
-    console.log(colorScaleModel);
-
     return colorScaleModel;
   }, [nullStyle, stepOptions, data]);
 
