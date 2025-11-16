@@ -156,12 +156,19 @@ export function HyperGlobe({
       <Canvas
         id={id}
         gl={{
+          /**
+           * 색상 값을 그대로 출력하기 위해 톤 매핑 비활성화.
+           * HDR을 모니터가 표현할 수 있는 범위로 압축하는게 톤매핑인데, 지정한 색상이 그대로 나와야 하므로 비활성화함.
+           * 추후에 옵션을 통해 설정할 수 있도록 개선할 수도 있음.
+           */
           toneMapping: NoToneMapping,
-          outputColorSpace: SRGBColorSpace,
         }}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
+        {/* 기본 조명 설정 */}
+        {/* <ambientLight intensity={1} />
+        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={1} /> */}
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
           enableZoom={true}

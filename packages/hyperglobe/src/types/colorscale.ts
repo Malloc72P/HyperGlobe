@@ -17,6 +17,10 @@ export interface ColorScaleStepModel {
    */
   id: string;
   /**
+   * 전체 스텝 개수
+   */
+  stepTotal: number;
+  /**
    * 스텝의 순서
    */
   index: number;

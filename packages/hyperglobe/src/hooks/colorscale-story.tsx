@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ColorScaleBar, HyperGlobe, RegionFeature } from 'src/components';
+import { ColorScaleBar, Graticule, HyperGlobe, RegionFeature } from 'src/components';
 import { StorybookConstant } from 'src/constants';
 import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
@@ -49,9 +49,16 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
               }}
             />
           ))}
+        <Graticule />
       </HyperGlobe>
 
-      <ColorScaleBar colorScale={colorscale} />
+      <ColorScaleBar
+        colorScale={colorscale}
+        style={{
+          maxWidth: '70%',
+          margin: '0 auto',
+        }}
+      />
     </div>
   );
 }
