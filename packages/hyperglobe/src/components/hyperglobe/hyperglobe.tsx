@@ -3,7 +3,7 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import type { DirectionalLight } from 'three';
+import { LinearSRGBColorSpace, NoToneMapping, SRGBColorSpace, type DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
@@ -155,13 +155,13 @@ export function HyperGlobe({
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
+        gl={{
+          toneMapping: NoToneMapping,
+          outputColorSpace: SRGBColorSpace,
+        }}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
-        {/* 기본 조명 설정 */}
-        <ambientLight intensity={2} />
-        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={2} />
-
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
           enableZoom={true}
