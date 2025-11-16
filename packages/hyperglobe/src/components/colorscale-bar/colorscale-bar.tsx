@@ -4,7 +4,7 @@ import classes from './colorscale-bar.module.css';
 
 export type ColorScaleLabelFormatter = (value: number) => string;
 
-export interface ColorscaleBarProps {
+export interface ColorScaleBarProps {
   /**
    * 컬러스케일 모델
    *
@@ -25,7 +25,7 @@ export function ColorScaleBar({
   style,
   colorScale,
   formatLabel = (value) => value.toFixed(0),
-}: ColorscaleBarProps) {
+}: ColorScaleBarProps) {
   return (
     <div className={classes.root} style={style}>
       {colorScale.steps.map((step) => (

@@ -118,12 +118,6 @@ export function useColorScale({
     return colorScaleModel;
   }, [nullStyle, stepOptions, data]);
 
-  /**
-   * 피쳐에 해당하는 데이터를 찾아 반환하는 함수
-   *
-   * - 반환되는 데이터는 { value: number | null } 형태입니다.
-   * - 값이 null인 피쳐에 대한 스타일을 지정하려면 colorscale.nullStyle를 사용하세요.
-   */
   const resolveFeatureData = useCallback(
     (feature: HGMFeature) => {
       const foundItem = data?.find((dataItem) => itemResolver(feature, dataItem));
@@ -136,7 +130,23 @@ export function useColorScale({
     [data, itemResolver, valueResolver]
   );
 
-  return { colorscale, resolveFeatureData };
+  return {
+    /**
+     * 컬러스케일 모델.
+     *
+     * - 모델을 RegionFeature에 전달하면, 값에 따라 스타일이 자동으로 적용됩니다.
+     * - 적용되는 스타일은 컬러스케일 규칙을 따릅니다.
+     * - 컬러스케일 규칙은 colorscale.steps에서 정의한 정보에 따라 결정됩니다.
+     */
+    colorscale,
+    /**
+     * 피쳐에 해당하는 데이터를 찾아 반환하는 함수
+     *
+     * - 반환되는 데이터는 { value: number | null } 형태입니다.
+     * - 값이 null인 피쳐에 대한 스타일을 지정하려면 colorscale.nullStyle를 사용하세요.
+     */
+    resolveFeatureData,
+  };
 }
 
 /**
