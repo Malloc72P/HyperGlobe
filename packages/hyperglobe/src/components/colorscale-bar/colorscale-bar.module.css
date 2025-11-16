@@ -1,0 +1,99 @@
+.root {
+  /* Sizing */
+  display: flex;
+  position: relative;
+
+  /* Font */
+  font-size: 0.9rem;
+
+  .markerContainer {
+    position: absolute;
+    left: 0;
+    width: 100%;
+
+    .marker {
+      position: absolute;
+      top: 0;
+      transition: 0.2s;
+      transform: translate(-50%, -100%);
+      /* width: 24px;
+      height: 24px; */
+      /* border-top-width: 0; */
+      border-top-width: 12px;
+      border-left-width: 8px;
+      border-right-width: 8px;
+      border-bottom-width: 0;
+      border-style: solid;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-top-color: #454545;
+
+      z-index: 2;
+    }
+  }
+
+  /* 스텝 루트(막대 + 레이블) */
+  .step {
+    /* Sizing */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: 0.2s;
+    flex-shrink: 0;
+
+    /* 컬러스케일 스텝(막대 한칸) */
+    .stepBar {
+      position: relative;
+      min-height: 18px;
+      background-color: aqua;
+      flex-shrink: 0;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    .labelContainer {
+      /* Position */
+      position: relative;
+
+      /* Sizing */
+      display: flex;
+      justify-content: space-between;
+
+      /* from 레이블 */
+      .pointLabel {
+        /* Position */
+        position: relative;
+        z-index: 1;
+
+        /* Sizing */
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+
+        /* Font */
+        color: #000;
+        line-height: 1;
+
+        /* from 레이블 */
+        &[data-label-type='from'] {
+          left: 0;
+          &:not([data-step-index='0']) {
+            transform: translateX(-50%);
+          }
+        }
+
+        /* to 레이블 */
+        &[data-label-type='to'] {
+          right: 0;
+          &:not([data-step-index='last']) {
+            transform: translateX(50%);
+          }
+        }
+      }
+    }
+  }
+}

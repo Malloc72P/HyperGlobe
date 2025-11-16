@@ -1,14 +1,16 @@
+import { Colors } from 'src/lib';
+
 export const StorybookConstant = {
   props: {
     HyperGlobe: {
       id: 'hyperglobe-canvas',
       size: '100%',
-      maxSize: 500,
+      maxSize: 900,
       style: { margin: '0 auto' },
       globeStyle: {
-        color: '#f6f6f6',
+        color: Colors.GRAY[0],
         metalness: 0,
-        roughness: 0.5,
+        roughness: 0,
       },
     },
   },

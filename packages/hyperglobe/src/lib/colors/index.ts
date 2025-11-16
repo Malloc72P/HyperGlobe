@@ -1,4 +1,4 @@
-export const pink = [
+const pink = [
   '#fff1f3',
   '#ffe3e7',
   '#ffc0cb',
@@ -11,7 +11,7 @@ export const pink = [
   '#8a113c',
   '#4d041c',
 ];
-export const blue = [
+const blue = [
   '#f2f6fc',
   '#e0ebf9',
   '#c9dcf4',
@@ -25,7 +25,7 @@ export const blue = [
   '#212a4a',
 ];
 
-export const gray = [
+const gray = [
   '#f6f6f6',
   '#e7e7e7',
   '#d1d1d1',
@@ -38,3 +38,9 @@ export const gray = [
   '#3d3d3d',
   '#262626',
 ];
+
+export class Colors {
+  public static PINK = pink;
+  public static BLUE = blue;
+  public static GRAY = gray;
+}

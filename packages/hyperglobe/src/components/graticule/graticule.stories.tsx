@@ -8,22 +8,7 @@ const meta = {
   component: Graticule,
   tags: ['autodocs'],
   decorators: [
-    (Story) => (
-      <HyperGlobe
-        {...StorybookConstant.props.HyperGlobe}
-        // coordinateSystemVisible
-        // wireframe
-        // globeVisible={false}
-        textureEnabled={false}
-        globeStyle={{
-          color: 'white',
-          metalness: 0.4,
-          roughness: 0.3,
-        }}
-      >
-        {Story()}
-      </HyperGlobe>
-    ),
+    (Story) => <HyperGlobe {...StorybookConstant.props.HyperGlobe}>{Story()}</HyperGlobe>,
   ],
 } satisfies Meta<typeof Graticule>;
 

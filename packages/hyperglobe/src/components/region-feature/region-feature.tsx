@@ -1,21 +1,15 @@
-import type {
-  Coordinate,
-  FeaturePolygons,
-  HGMFeature,
-  VectorCoordinate,
-} from '@hyperglobe/interfaces';
-import { useMemo, useState } from 'react';
+import type { HGMFeature } from '@hyperglobe/interfaces';
+import { useMemo } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { useMainStore } from '../../store';
 import type { FeatureStyle } from '../../types/feature';
-import type { RegionModel } from '@hyperglobe/interfaces';
-import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
-import { UseRegionModel } from './use-region-model';
+import { useRegionModel } from './use-region-model';
+import type { ColorScaleModel } from 'src/types/colorscale';
+import { Line } from '@react-three/drei';
 
-export interface RegionFeatureProps {
+export interface RegionFeatureProps<DATA_TYPE = any> {
   /**
    * 지역의 피쳐 정보(GeoJson 형식).
    *
@@ -39,22 +33,18 @@ export interface RegionFeatureProps {
   wireframe?: boolean;
 
   /**
-   * 재질의 거칠기
-   *
-   * - 값이 클수록 표면이 거칠어집니다.
-   * - 0은 매끄러운 표면, 1은 매우 거친 표면을 의미합니다.
-   * - 범위: 0 ~ 1
+   * 피쳐에 연결된 추가 데이터
    */
-  roughness?: number;
+  data?: DATA_TYPE;
 
   /**
-   * 재질의 금속성
+   * 컬러스케일.
    *
-   * - 값이 클수록 금속성 효과가 강해집니다.
-   * - 0은 비금속성, 1은 완전한 금속성을 의미합니다.
-   * - 범위: 0 ~ 1
+   * - 컬러스케일이 설정되면, 피쳐는 컬러스케일에 따라 색상이 결정됩니다.
+   * - style보다 우선 적용됩니다.
+   * - 주로 데이터 시각화에 사용됩니다.
    */
-  metalness?: number;
+  colorscale?: ColorScaleModel;
 }
 
 /**
@@ -63,14 +53,16 @@ export interface RegionFeatureProps {
  * - GeoJSON 형식의 피쳐 데이터를 받아 다각형을 그립니다.
  * - 멀티폴리곤과 싱글폴리곤을 모두 지원합니다.
  */
-export function RegionFeature({
+export function RegionFeature<DATA_TYPE = any>({
   feature,
   style = UiConstant.polygonFeature.default.style,
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
+  colorscale,
+  data,
   ...polygonFeatureProps
 }: RegionFeatureProps) {
-  const [regionModel] = UseRegionModel({ feature });
-  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle });
+  const [regionModel] = useRegionModel<DATA_TYPE>({ feature, data });
+  const [appliedStyle] = useFeatureStyle({ regionModel, style, hoverStyle, colorscale });
 
   /**
    * 면 렌더링을 위한 geometry 생성 (Delaunay 삼각분할)
@@ -113,12 +105,9 @@ export function RegionFeature({
       points.push(...pointArray);
     }
 
-    const borderlineGeometry = new THREE.BufferGeometry();
-    borderlineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
-
     return {
       geometry,
-      borderlineGeometry,
+      points,
     };
   }, [meshSource, feature]);
 
@@ -128,21 +117,22 @@ export function RegionFeature({
     <group>
       {regionFeatureGeometry?.geometry && (
         <mesh geometry={regionFeatureGeometry.geometry}>
-          <meshStandardMaterial
+          <meshBasicMaterial
             transparent
             side={THREE.DoubleSide}
             color={appliedStyle.fillColor}
             opacity={appliedStyle.fillOpacity}
             wireframe={polygonFeatureProps.wireframe}
-            roughness={polygonFeatureProps.roughness}
-            metalness={polygonFeatureProps.metalness}
           />
         </mesh>
       )}
-      {regionFeatureGeometry?.borderlineGeometry && (
-        <lineSegments geometry={regionFeatureGeometry.borderlineGeometry}>
-          <lineBasicMaterial color={appliedStyle.color} linewidth={appliedStyle.lineWidth} />
-        </lineSegments>
+      {regionFeatureGeometry?.points && (
+        <Line
+          points={regionFeatureGeometry.points} // 3. geometry 대신 'points' prop에 지오메트리 전달
+          segments={true} // 4. <lineSegments>를 사용했으므로 'segments' prop 추가
+          color={appliedStyle.color}
+          lineWidth={appliedStyle.lineWidth} // 5. 'linewidth'가 아닌 'lineWidth' (W가 대문자)
+        />
       )}
     </group>
   );

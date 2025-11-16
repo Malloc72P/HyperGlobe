@@ -3,13 +3,15 @@
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import type { DirectionalLight } from 'three';
+import { LinearSRGBColorSpace, NoToneMapping, SRGBColorSpace, type DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
-import { Tooltip, type TooltipProps } from '../tooltip';
+import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
+import { UiConstant } from 'src/constants';
+import type { OnHoverChangedFn } from 'src/types/events';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -37,10 +39,6 @@ export interface HyperGlobeProps extends PropsWithChildren {
    */
   wireframe?: boolean;
   /**
-   * 지구본의 초기 회전 각도 (라디안 단위)
-   */
-  rotation?: [number, number, number];
-  /**
    * Canvas 요소에 적용할 스타일 객체
    */
   style?: React.CSSProperties;
@@ -51,27 +49,25 @@ export interface HyperGlobeProps extends PropsWithChildren {
   /**
    * 툴팁 옵션
    */
-  tooltipOption?: TooltipProps;
+  tooltipOptions?: TooltipOptions;
   /**
    * FPS(초당 프레임 수) 카운터 표시 여부
    */
   showFpsCounter?: boolean;
+  /**
+   * 호버된 지역이 변경될 때 호출되는 콜백 함수
+   */
+  onHoverChanged?: OnHoverChangedFn;
 }
 
 /**
  * **WEBGL 기반 지구본 컴포넌트.**
  *
  * - HyperGlobe 컴포넌트의 루트 컴포넌트입니다.
+ * - 해당 컴포넌트만 사용하면 빈 지구본이 렌더링됩니다.
+ * - 지구본의 스타일은 globeStyle prop을 통해 설정할 수 있습니다.
  * - 해당 컴포넌트를 통해 지구본을 랜더링하고 다양한 3D 피쳐들을 자식 컴포넌트로 추가할 수 있습니다.
- * - 피쳐를 추가하려면 RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가하면 됩니다
- *
- * ### 예시
- *
- * ```tsx
- * <HyperGlobe>
- *     <Graticule />
- * </HyperGlobe>
- * ```
+ * - RegionFeature, Graticule등의 컴포넌트를 자식 컴포넌트로 추가할 수 있습니다.
  *
  * ### import
  *
@@ -87,16 +83,11 @@ export function HyperGlobe({
   maxSize,
   wireframe,
   children,
-  /**
-   * 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다.
-   *
-   * y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다.
-   */
-  rotation = [0, -Math.PI / 2, 0],
   globeStyle,
   style,
-  tooltipOption,
+  tooltipOptions,
   showFpsCounter = true,
+  onHoverChanged,
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
@@ -107,7 +98,7 @@ export function HyperGlobe({
   const cleanMainStore = useMainStore((s) => s.clean);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-    const tooltipOffset = 10;
+    const tooltipOffset = tooltipOptions?.distance || 10;
     const rootElement = rootElementRef.current;
 
     if (!rootElement || !tooltipElement) return null;
@@ -164,14 +155,20 @@ export function HyperGlobe({
       <LoadingUI loading={loading} />
       <Canvas
         id={id}
-        // frameloop="demand"
+        gl={{
+          /**
+           * 색상 값을 그대로 출력하기 위해 톤 매핑 비활성화.
+           * HDR을 모니터가 표현할 수 있는 범위로 압축하는게 톤매핑인데, 지정한 색상이 그대로 나와야 하므로 비활성화함.
+           * 추후에 옵션을 통해 설정할 수 있도록 개선할 수도 있음.
+           */
+          toneMapping: NoToneMapping,
+        }}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
         camera={{ position: [0, 0, 5], fov: 25 }}
       >
         {/* 기본 조명 설정 */}
-        <ambientLight intensity={2} />
-        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={1} />
-
+        {/* <ambientLight intensity={1} />
+        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={1} /> */}
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
           enableZoom={true}
@@ -196,8 +193,9 @@ export function HyperGlobe({
         />
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
-        <group rotation={rotation}>
-          <Globe wireframe={wireframe} rotation={rotation} {...globeStyle} />
+        {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
+        <group rotation={UiConstant.globe.rotation}>
+          <Globe wireframe={wireframe} onHoverChanged={onHoverChanged} {...globeStyle} />
 
           {/* Children */}
           {children}
@@ -209,7 +207,7 @@ export function HyperGlobe({
         {/* 툴팁 */}
       </Canvas>
 
-      <Tooltip {...tooltipOption} />
+      <Tooltip {...tooltipOptions} />
       {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Graticule, HyperGlobe, RegionFeature, useHGM } from '../src';
+import { Graticule, HyperGlobe, RegionFeature, useHGM } from '../../src';
 
 const pink = [
   '#fff1f3',
@@ -90,14 +90,14 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
 
   const styles = useMemo(
     () => ({
-      globeColor: gray[0],
-      regionStrokeWidth: 1.3,
+      globeColor: gray[1],
+      regionStrokeWidth: 1,
       hoverRegionStrokeWidth: 2,
-      regionFill: color[4],
-      hoverRegionFill: color[5],
+      regionFill: color[3],
+      hoverRegionFill: color[4],
       regionColor: color[7],
       metalness: 0,
-      roughness: 0.5,
+      roughness: 0,
     }),
     [theme]
   );
@@ -139,8 +139,6 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
               lineWidth: styles.hoverRegionStrokeWidth,
               fillColor: styles.hoverRegionFill,
             }}
-            metalness={styles.metalness}
-            roughness={styles.roughness}
           />
         ))}
     </HyperGlobe>

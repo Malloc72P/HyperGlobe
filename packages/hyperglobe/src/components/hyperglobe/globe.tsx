@@ -1,6 +1,8 @@
 import { findRegionByVector } from '@hyperglobe/tools';
+import { UiConstant } from 'src/constants';
 import { useThrottle } from 'src/hooks/use-throttle';
 import { useMainStore } from 'src/store';
+import type { OnHoverChangedFn } from 'src/types/events';
 
 /**
  * 지구본 스타일
@@ -32,6 +34,10 @@ export interface GlobeStyle {
    * @default 0
    */
   metalness?: number;
+  /**
+   * 호버된 지역이 변경될 때 호출되는 콜백 함수
+   */
+  onHoverChanged?: OnHoverChangedFn;
 }
 
 export interface GlobeProps extends GlobeStyle {
@@ -53,11 +59,6 @@ export interface GlobeProps extends GlobeStyle {
    * wireframe 여부
    */
   wireframe?: boolean;
-  /**
-   * 상위 컴포넌트에서 사용한 그룹에 대한 rotation
-   * 이걸로 globe를 회전시키지 않으니 주의.
-   */
-  rotation: [number, number, number];
 }
 
 /**
@@ -77,13 +78,10 @@ export interface GlobeProps extends GlobeStyle {
  * ### 세로 세그먼트
  * - 세로 세그먼트(heightSegments)는 구체를 가로로 자르는 선의 개수를 의미한다.
  * - 값이 클수록 구체의 세로 방향이 더 부드럽게 표현된다.
- *
- * @param param0 GlobeProps
- * @returns JSX.Element
  */
 export function Globe({
   wireframe,
-  rotation,
+  onHoverChanged,
   position = [0, 0, 0],
   segments = [64, 32],
   color = '#0077be',
@@ -99,11 +97,14 @@ export function Globe({
 
       const foundRegion = findRegionByVector({
         rTree,
-        rotation,
+        rotation: UiConstant.globe.rotation,
         vector: point,
       });
 
       setHoveredRegion(foundRegion);
+      onHoverChanged?.({
+        hoveredRegion: foundRegion,
+      });
     },
     delay: 50,
   });
@@ -117,15 +118,18 @@ export function Globe({
        * - 지구 반대편 리젼 피쳐가 호버되지 않도록, 글로브에서 이벤트 전파를 막는다.
        */
       onPointerMove={onPointerMove}
+      onPointerLeave={() => {
+        setHoveredRegion(null);
+      }}
     >
       {/* 구체 지오메트리: 반지름 1, 가로 세그먼트, 세로 세그먼트 */}
       <sphereGeometry args={[1, segments[0], segments[1]]} />
       {/* 지구 텍스처가 적용된 재질 */}
-      <meshStandardMaterial
+      <meshBasicMaterial
         wireframe={wireframe}
         color={color}
-        roughness={roughness} // 매끄러운 표면
-        metalness={metalness} // 약간의 금속성으로 반사효과
+        // roughness={roughness} // 매끄러운 표면
+        // metalness={metalness} // 약간의 금속성으로 반사효과
       />
     </mesh>
   );

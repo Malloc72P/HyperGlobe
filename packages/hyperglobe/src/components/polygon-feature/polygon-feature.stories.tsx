@@ -40,7 +40,6 @@ export const PolygonFeatureStory: Story = {
       [0, -5],
       [-5, -5],
     ],
-    fill: true,
     style: {
       color: 'orange',
       fillColor: 'red',

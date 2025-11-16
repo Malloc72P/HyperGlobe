@@ -13,6 +13,7 @@
 
   /* Interaction */
   pointer-events: none;
+  user-select: none;
 
   /* Color */
   background: white;
@@ -23,15 +24,4 @@
 
   /* Border */
   border-radius: 4px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: -15px;
-    transform: translateX(-50%);
-    border-width: 8px;
-    border-style: solid;
-    border-color: white transparent transparent transparent;
-  }
 }
