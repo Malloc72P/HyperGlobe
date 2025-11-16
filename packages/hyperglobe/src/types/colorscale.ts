@@ -9,6 +9,14 @@ export interface ColorScaleModel {
    * 컬러스케일 구간 목록
    */
   steps: ColorScaleStepModel[];
+  /**
+   * 컬러스케일의 최소값
+   */
+  minValue: number;
+  /**
+   * 컬러스케일의 최대값
+   */
+  maxValue: number;
 }
 
 export interface ColorScaleStepModel {

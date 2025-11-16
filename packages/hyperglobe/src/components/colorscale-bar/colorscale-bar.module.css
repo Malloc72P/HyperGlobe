@@ -13,13 +13,14 @@
     flex-direction: column;
     gap: 3px;
     transition: 0.2s;
+    flex-shrink: 0;
 
     /* 컬러스케일 스텝(막대 한칸) */
     .stepBar {
       position: relative;
-      min-width: 100px;
       min-height: 18px;
       background-color: aqua;
+      flex-shrink: 0;
 
       &:last-child {
         border-right: none;

@@ -106,6 +106,7 @@ function toReionModel<DATA_TYPE = any>(
         }, [] as FeaturePolygons)
       ),
       bboxSize: width * height,
+      properties: feature.properties,
       ...feature.bbox,
     };
 

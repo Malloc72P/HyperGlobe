@@ -16,32 +16,15 @@ export const ColorScaleStory: Story = {
   tags: ['autodocs'],
   args: {
     steps: [
-      {
-        to: 200,
-        style: {
-          fillColor: Colors.PINK[2],
-        },
-      },
-      {
-        from: 200,
-        to: 400,
-        style: {
-          fillColor: Colors.PINK[3],
-        },
-      },
-      {
-        from: 400,
-        to: 800,
-        style: {
-          fillColor: Colors.BLUE[4],
-        },
-      },
-      {
-        from: 800,
-        style: {
-          fillColor: Colors.BLUE[5],
-        },
-      },
+      { to: -10, style: { fillColor: '#ff5757' } },
+      { from: -10, to: 0, style: { fillColor: '#ffc0c0' } },
+      { from: 0, to: 1, style: { fillColor: '#f2f6fc' } },
+      { from: 1, to: 3, style: { fillColor: '#c9dcf4' } },
+      { from: 3, to: 5, style: { fillColor: '#a4c6ec' } },
+      { from: 5, style: { fillColor: '#78a9e2' } },
     ],
+    nullStyle: {
+      fillColor: Colors.GRAY[3],
+    },
   },
 };

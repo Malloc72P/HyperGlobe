@@ -5,6 +5,11 @@ import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
 import type { RegionModel } from '@hyperglobe/interfaces';
 
+interface GdpGrowth {
+  id: string;
+  data: { year: number; value: number }[];
+}
+
 /**
  * 컬러스케일
  *
@@ -15,17 +20,27 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
-  const { colorscale } = useColorScale(colorScaleOptions);
+  const [gdpData, setGdpData] = useState<GdpGrowth[]>([]);
+  const { colorscale, resolveFeatureData } = useColorScale({
+    ...colorScaleOptions,
+    data: gdpData,
+    itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
+  });
 
   useEffect(() => {
     setLoading(true);
 
-    fetch(`/maps/nations-mid.hgm`)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setRawHgmBlob(blob);
-        setTimeout(() => setLoading(false), 300);
-      });
+    (async function () {
+      const [hgmBlob, gdpGrowth] = await Promise.all([
+        await fetch('/maps/nations-mid.hgm').then((res) => res.blob()),
+        await fetch('/data/gdp-growth.json').then((res) => res.json() as Promise<GdpGrowth[]>),
+      ]);
+
+      setRawHgmBlob(hgmBlob);
+      setGdpData(gdpGrowth);
+
+      setTimeout(() => setLoading(false), 300);
+    })();
   }, []);
 
   return (
@@ -35,18 +50,20 @@ export function TooltipStoryComponent(colorScaleOptions: ColorScaleOptions) {
         loading={loading}
         tooltipOptions={{
           distance: 12,
-          text: (region: RegionModel<{ value: number }>) => `${region.name}(${region.data?.value})`,
+          text: (region: RegionModel<{ value: number }>) => {
+            const value = region.data?.value;
+
+            return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
+          },
         }}
       >
         {hgm &&
-          hgm.features.map((feature, index) => (
+          hgm.features.map((feature) => (
             <RegionFeature
               key={feature.id}
               feature={feature}
               colorscale={colorscale}
-              data={{
-                value: (index + 1) * 10,
-              }}
+              data={resolveFeatureData(feature)}
             />
           ))}
         <Graticule />

@@ -7,4 +7,5 @@ export interface RegionModel<DATA_TYPE = any> extends BoundingBox {
   bboxSize: number;
   polygons: FeaturePolygons[];
   data?: DATA_TYPE;
+  properties: Record<string, any>;
 }
