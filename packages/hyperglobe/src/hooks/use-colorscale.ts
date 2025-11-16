@@ -1,5 +1,6 @@
+import type { RegionModel } from '@hyperglobe/interfaces';
 import { useMemo } from 'react';
-import type { ColorScaleModel } from 'src/types/colorscale';
+import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
 import type { FeatureStyle } from 'src/types/feature';
 
 export interface ColorScaleStepOptions {
@@ -76,6 +77,10 @@ export function useColorScale({ nullStyle, steps: stepOptions }: ColorScaleOptio
  */
 export const findStepByValue = (colorscale: ColorScaleModel, value: number) => {
   return colorscale.steps.find((step) => step.from <= value && value < step.to);
+};
+
+export const isCurrentStep = (step: ColorScaleStepModel, value: any) => {
+  return step.from <= value && value < step.to;
 };
 
 /**

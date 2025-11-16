@@ -15,8 +15,8 @@ export function GraticuleLine({
   color = 'yellow',
   lineWidth = 3,
 }: GraticuleLineProps) {
-  const points = Array.from({ length: 65 }, (_, i) => {
-    const angle = (i / 64) * Math.PI * 2;
+  const points = Array.from({ length: 91 }, (_, i) => {
+    const angle = (i / 90) * Math.PI * 2;
     const radius = Math.sqrt(1 - y * y) + 0.001;
 
     return [Math.cos(angle) * radius, Math.sin(angle) * radius, 0] as const;

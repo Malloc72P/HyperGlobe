@@ -1,7 +1,8 @@
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
 import classes from './colorscale-bar.module.css';
-import { getColorScaleStyle } from 'src/hooks/use-colorscale';
+import { getColorScaleStyle, isCurrentStep } from 'src/hooks/use-colorscale';
 import { useMainStore } from 'src/store';
+import { useMemo } from 'react';
 
 export interface ColorscaleBarProps {
   colorScale: ColorScaleModel;
@@ -36,7 +37,7 @@ function ColorScaleStep({ step }: ColorScaleStepProps) {
       />
       {/* 컬러스케일 레이블 */}
       <div className={classes.labelContainer}>
-        <ColorScaleStepLabel step={step} target="from" />
+        {step.index === 0 ? <ColorScaleStepLabel step={step} target="from" /> : <div />}
         <ColorScaleStepLabel step={step} target="to" />
       </div>
     </div>
@@ -49,20 +50,23 @@ interface ColorScaleStepLabelProps {
 }
 
 function ColorScaleStepLabel({ step, target }: ColorScaleStepLabelProps) {
+  const label = useMemo(() => {
+    const value = target === 'to' ? step.to : step.from;
+
+    if (!Number.isFinite(value)) {
+      return '';
+    }
+
+    return value;
+  }, [target, step]);
+
   return (
     <p
       className={classes.pointLabel}
       data-label-type={target}
       data-step-index={step.index === step.stepTotal - 1 ? 'last' : step.index}
-      data-infinity={target === 'to' ? step.to === Infinity : step.from === -Infinity}
     >
-      {target === 'to'
-        ? step.to === Infinity
-          ? '∞'
-          : step.to
-        : step.from === -Infinity
-          ? '-∞'
-          : step.from}
+      {label}
     </p>
   );
 }
