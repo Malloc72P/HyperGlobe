@@ -128,10 +128,10 @@ export function RegionFeature<DATA_TYPE = any>({
       )}
       {regionFeatureGeometry?.points && (
         <Line
-          points={regionFeatureGeometry.points} // 3. geometry 대신 'points' prop에 지오메트리 전달
-          segments={true} // 4. <lineSegments>를 사용했으므로 'segments' prop 추가
+          points={regionFeatureGeometry.points}
+          segments={true}
           color={appliedStyle.color}
-          lineWidth={appliedStyle.lineWidth} // 5. 'linewidth'가 아닌 'lineWidth' (W가 대문자)
+          lineWidth={appliedStyle.lineWidth}
         />
       )}
     </group>

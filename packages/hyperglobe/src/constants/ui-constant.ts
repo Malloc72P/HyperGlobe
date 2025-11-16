@@ -3,7 +3,7 @@ import { Colors } from 'src/lib';
 import type { FeatureStyle } from 'src/types/feature';
 
 export const DefaultFeatureStyle: FeatureStyle = {
-  lineWidth: 1.2,
+  lineWidth: 1.5,
   fillOpacity: 1,
   color: Colors.BLUE[7],
   fillColor: Colors.BLUE[5],
