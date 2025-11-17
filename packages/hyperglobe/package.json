@@ -10,8 +10,7 @@
     "lint": "eslint .",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
-    "check-types": "tsc --noEmit",
-    "sync:snippets": "tsx scripts/sync-story-snippets.ts"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
