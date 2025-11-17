@@ -8,6 +8,8 @@ import type { FeatureStyle } from '../../types/feature';
 import { useRegionModel } from './use-region-model';
 import type { ColorScaleModel } from 'src/types/colorscale';
 import { Line } from '@react-three/drei';
+import { createSideGeometry } from '../../lib/geometry';
+import { Colors } from 'src/lib';
 
 export interface RegionFeatureProps<DATA_TYPE = any> {
   /**
@@ -45,6 +47,22 @@ export interface RegionFeatureProps<DATA_TYPE = any> {
    * - 주로 데이터 시각화에 사용됩니다.
    */
   colorscale?: ColorScaleModel;
+
+  /**
+   * 측면(extrusion) 옵션.
+   *
+   * - 폴리곤의 측면을 렌더링하여 입체감을 줍니다.
+   * - z-fighting을 방지하기 위해 폴리곤이 구 표면에서 약간 떠있는 경우,
+   *   측면을 추가하면 더 자연스러운 시각 효과를 얻을 수 있습니다.
+   */
+  extrusion?: {
+    /**
+     * 측면의 색상 (기본값: fillColor와 동일)
+     *
+     * - 지정하지 않으면 상단 면과 동일한 색상을 사용합니다.
+     */
+    color?: string;
+  };
 }
 
 /**
@@ -59,6 +77,9 @@ export function RegionFeature<DATA_TYPE = any>({
   hoverStyle = UiConstant.polygonFeature.default.hoverStyle,
   colorscale,
   data,
+  extrusion = {
+    color: Colors.GRAY[8],
+  },
   ...polygonFeatureProps
 }: RegionFeatureProps) {
   const [regionModel] = useRegionModel<DATA_TYPE>({ feature, data });
@@ -111,10 +132,23 @@ export function RegionFeature<DATA_TYPE = any>({
     };
   }, [meshSource, feature]);
 
+  /**
+   * 측면 geometry 생성 (선택적)
+   */
+  const sideGeometry = useMemo(() => {
+    if (!extrusion || !feature) return null;
+
+    return createSideGeometry({
+      borderLines: feature.borderLines,
+      extrusionDepth: UiConstant.feature.extrusionDepth,
+    });
+  }, [feature, extrusion]);
+
   if (!feature || !regionFeatureGeometry) return;
 
   return (
     <group>
+      {/* 상단 면 */}
       {regionFeatureGeometry?.geometry && (
         <mesh geometry={regionFeatureGeometry.geometry}>
           <meshBasicMaterial
@@ -126,6 +160,20 @@ export function RegionFeature<DATA_TYPE = any>({
           />
         </mesh>
       )}
+
+      {/* 측면 */}
+      {sideGeometry && (
+        <mesh geometry={sideGeometry}>
+          <meshBasicMaterial
+            transparent
+            side={THREE.DoubleSide}
+            color={extrusion?.color ?? 'black'}
+            opacity={1}
+          />
+        </mesh>
+      )}
+
+      {/* 외곽선 */}
       {regionFeatureGeometry?.points && (
         <Line
           points={regionFeatureGeometry.points}

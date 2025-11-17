@@ -40,7 +40,16 @@ export function TooltipStoryComponent(tooltipProps: TooltipOptions) {
       loading={loading}
     >
       <Graticule />
-      {hgm && hgm.features.map((feature) => <RegionFeature key={feature.id} feature={feature} />)}
+      {hgm &&
+        hgm.features.map((feature) => (
+          <RegionFeature
+            key={feature.id}
+            feature={feature}
+            hoverStyle={{
+              fillColor: Colors.BLUE[4],
+            }}
+          />
+        ))}
     </HyperGlobe>
   );
 }

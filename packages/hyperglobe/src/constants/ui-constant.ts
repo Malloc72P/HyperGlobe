@@ -6,7 +6,7 @@ export const DefaultFeatureStyle: FeatureStyle = {
   lineWidth: 1.5,
   fillOpacity: 1,
   color: Colors.BLUE[7],
-  fillColor: Colors.BLUE[5],
+  fillColor: Colors.BLUE[3],
 };
 export const DefaultFeatureHoverStyle: FeatureStyle = {
   lineWidth: 2,
@@ -16,6 +16,7 @@ export const UiConstant = {
   feature: {
     strokeRadius: MathConstants.FEATURE_STROKE_Z_INDEX,
     fillRadius: MathConstants.FEATURE_FILL_Z_INDEX,
+    extrusionDepth: 0.007,
   },
   polygonFeature: {
     default: {

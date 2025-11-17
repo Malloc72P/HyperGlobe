@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ColorScaleOptions } from './use-colorscale';
-import { TooltipStoryComponent } from './colorscale-story';
+import { ColorScaleStoryComponent } from './colorscale-story';
 import { Colors } from '../lib';
+import { snippets } from './use-colorscale-snippets';
 
 const meta = {
   title: 'Hooks/useColorScale',
-  component: TooltipStoryComponent,
+  component: ColorScaleStoryComponent,
 } satisfies Meta<ColorScaleOptions>;
 
 export default meta;
@@ -27,4 +28,5 @@ export const ColorScaleStory: Story = {
       fillColor: Colors.GRAY[3],
     },
   },
+  parameters: { docs: { source: { code: snippets } } },
 };

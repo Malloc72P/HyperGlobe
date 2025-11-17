@@ -1,0 +1,494 @@
+# 수학 및 지오메트리 라이브러리
+
+## 개요
+
+HyperGlobe는 지리 데이터를 3D로 시각화하기 위해 다양한 수학 및 지오메트리 라이브러리를 사용합니다. 이 문서는 프로젝트에서 사용하는 주요 라이브러리와 함수들을 정리합니다.
+
+## @hyperglobe/tools 패키지
+
+HyperGlobe 프로젝트 내부에서 개발한 수학 및 지오메트리 유틸리티 패키지입니다.
+
+### 수학 유틸리티 (math/)
+
+#### toRadian(degree)
+도(degree)를 라디안(radian)으로 변환합니다.
+
+```typescript
+import { toRadian } from '@hyperglobe/tools';
+
+toRadian(90);   // π/2 ≈ 1.5708
+toRadian(180);  // π ≈ 3.1416
+toRadian(360);  // 2π ≈ 6.2832
+```
+
+**사용처:**
+- 삼각함수 계산
+- 회전 변환
+- 구면 좌표 계산
+
+#### magnitude3D(vector)
+3차원 벡터의 크기(길이)를 계산합니다.
+
+```typescript
+import { magnitude3D } from '@hyperglobe/tools';
+
+magnitude3D([3, 4, 0]);     // 5
+magnitude3D([1, 1, 1]);     // √3 ≈ 1.732
+```
+
+**공식:** `√(x² + y² + z²)`
+
+**사용처:**
+- 벡터 정규화
+- 거리 계산
+- 크기 비교
+
+#### distance2D(p1, p2)
+2차원 평면에서 두 점 사이의 거리를 계산합니다.
+
+```typescript
+import { distance2D } from '@hyperglobe/tools';
+
+distance2D([0, 0], [3, 4]);  // 5
+```
+
+**공식:** `√((x₂-x₁)² + (y₂-y₁)²)`
+
+**사용처:**
+- Delaunay 삼각분할
+- 경계 상자 계산
+
+#### roundCoordinate(coord)
+좌표를 반올림하여 부동소수점 오차를 제거합니다.
+
+```typescript
+import { roundCoordinate } from '@hyperglobe/tools';
+
+roundCoordinate([127.123456789, 37.987654321]);
+// [127.1235, 37.9877] (소수점 4자리)
+```
+
+**사용처:**
+- 좌표 비교
+- 중복 제거
+- 정밀도 제한
+
+### 투영 변환 (projections/)
+
+#### OrthographicProj.project(coordinate, radius)
+경위도 좌표를 3D 직교좌표계로 변환합니다.
+
+```typescript
+import { OrthographicProj } from '@hyperglobe/tools';
+
+// 경도 0도, 위도 0도 (아프리카 기니만)
+OrthographicProj.project([0, 0]);
+// → [1, 0, 0]
+
+// 경도 90도, 위도 0도
+OrthographicProj.project([90, 0]);
+// → [0, 0, 1]
+
+// 북극점
+OrthographicProj.project([0, 90]);
+// → [0, 1, 0]
+```
+
+**변환 공식:**
+```
+x = cos(φ) * cos(λ) * radius
+y = sin(φ) * radius
+z = cos(φ) * sin(λ) * radius
+
+여기서:
+  φ (phi): 위도 (라디안)
+  λ (lambda): 경도 (라디안)
+```
+
+**사용처:**
+- GeoJSON → 3D 메시 변환
+- 지구본 표면 좌표 계산
+
+#### OrthographicProj.unproject(vector, radius)
+3D 직교좌표를 경위도로 역변환합니다.
+
+```typescript
+OrthographicProj.unproject([1, 0, 0]);
+// → [0, 0] (경도 0도, 위도 0도)
+```
+
+**사용처:**
+- 마우스 피킹 결과 변환
+- 3D 위치 → 지리 좌표
+
+### 폴리곤 처리 (polygon/)
+
+#### delaunayTriangulate(polygon)
+폴리곤을 Delaunay 삼각분할합니다. 내부적으로 `delaunator` 라이브러리를 사용합니다.
+
+```typescript
+import { delaunayTriangulate } from '@hyperglobe/tools';
+
+const polygon = [
+  [127.0, 37.5],
+  [128.0, 37.5],
+  [128.0, 38.5],
+  [127.0, 38.5]
+];
+
+const result = delaunayTriangulate(polygon);
+// {
+//   vertices: Float32Array,  // 3D 좌표 [x,y,z,x,y,z,...]
+//   indices: Uint32Array     // 삼각형 인덱스
+// }
+```
+
+**특징:**
+- 2D 폴리곤을 3D 구면으로 투영
+- 홀(hole) 처리 지원
+- 최적화된 삼각분할
+
+**사용처:**
+- RegionFeature의 메시 생성
+- 복잡한 폴리곤 렌더링
+
+#### triangulatePolygon(polygon)
+일반적인 폴리곤 삼각분할을 수행합니다.
+
+**사용처:**
+- 단순 폴리곤 처리
+- Delaunay가 필요 없는 경우
+
+#### isPointInPolygon(point, polygon)
+점이 폴리곤 내부에 있는지 판정합니다. Ray-casting 알고리즘을 사용합니다.
+
+```typescript
+import { isPointInPolygon } from '@hyperglobe/tools';
+
+const point = [127.5, 37.5];
+const polygon = [
+  [127.0, 37.0],
+  [128.0, 37.0],
+  [128.0, 38.0],
+  [127.0, 38.0]
+];
+
+isPointInPolygon(point, polygon);  // true
+```
+
+**알고리즘:** Ray-casting
+- 점에서 무한대로 광선을 쏘아 교차 횟수 확인
+- 홀수 번 교차 → 내부
+- 짝수 번 교차 → 외부
+
+**사용처:**
+- 마우스 호버 감지
+- 지역 찾기
+
+#### findRegionByVector(vector, regions)
+3D 벡터(마우스 피킹 결과)에 해당하는 지역을 찾습니다.
+
+```typescript
+import { findRegionByVector } from '@hyperglobe/tools';
+
+const vector = [0.5, 0.5, 0.7];
+const region = findRegionByVector(vector, allRegions);
+```
+
+**사용처:**
+- 마우스 인터랙션
+- 클릭/호버 이벤트 처리
+
+### 지오메트리 유틸리티 (geo/)
+
+#### getBoundingBox(coordinates)
+좌표 배열에서 경계 상자(Bounding Box)를 계산합니다.
+
+```typescript
+import { getBoundingBox } from '@hyperglobe/tools';
+
+const coords = [
+  [127.0, 37.0],
+  [128.0, 37.5],
+  [127.5, 38.0]
+];
+
+getBoundingBox(coords);
+// {
+//   min: { x: 127.0, y: 37.0 },
+//   max: { x: 128.0, y: 38.0 }
+// }
+```
+
+**사용처:**
+- 뷰포트 계산
+- 충돌 감지 최적화
+- 가시성 판정
+
+#### toRegionBBox(region)
+지역 객체에서 경계 상자를 추출합니다.
+
+**사용처:**
+- 지역 단위 경계 계산
+- 카메라 포커스
+
+### 안전한 값 처리 (safe-value/)
+
+#### isSafeNumber(value)
+값이 안전한 숫자인지 확인합니다 (NaN, Infinity 제외).
+
+```typescript
+import { isSafeNumber } from '@hyperglobe/tools';
+
+isSafeNumber(42);        // true
+isSafeNumber(NaN);       // false
+isSafeNumber(Infinity);  // false
+isSafeNumber(null);      // false
+```
+
+**사용처:**
+- 컬러스케일 값 검증
+- 데이터 유효성 검사
+
+#### resolveNumber(value, fallback)
+값이 유효하지 않으면 fallback을 반환합니다.
+
+```typescript
+import { resolveNumber } from '@hyperglobe/tools';
+
+resolveNumber(42, 0);        // 42
+resolveNumber(NaN, 0);       // 0
+resolveNumber(Infinity, 0);  // 0
+resolveNumber(null, 100);    // 100
+```
+
+**사용처:**
+- 기본값 설정
+- 안전한 계산
+
+## Three.js 라이브러리
+
+### 지오메트리 클래스
+
+#### BufferGeometry
+최적화된 지오메트리 표현 방식입니다. 정점 데이터를 GPU 메모리에 직접 저장합니다.
+
+```typescript
+import * as THREE from 'three';
+
+const geometry = new THREE.BufferGeometry();
+
+// 정점 위치 설정
+const vertices = new Float32Array([
+  0, 0, 0,  // 정점 1
+  1, 0, 0,  // 정점 2
+  0, 1, 0   // 정점 3
+]);
+geometry.setAttribute('position', 
+  new THREE.Float32BufferAttribute(vertices, 3)
+);
+
+// 인덱스 설정 (삼각형 정의)
+geometry.setIndex([0, 1, 2]);
+
+// 법선 벡터 자동 계산
+geometry.computeVertexNormals();
+```
+
+**장점:**
+- 메모리 효율적
+- 렌더링 속도 빠름
+- GPU 친화적
+
+**사용처:**
+- RegionFeature 메시
+- 모든 3D 오브젝트
+
+#### mergeGeometries(geometries)
+여러 지오메트리를 하나로 병합합니다. 드로우콜을 줄여 성능을 크게 향상시킵니다.
+
+```typescript
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
+const geo1 = createGeometry1();
+const geo2 = createGeometry2();
+const geo3 = createGeometry3();
+
+const merged = mergeGeometries([geo1, geo2, geo3]);
+// 드로우콜 3회 → 1회로 감소
+```
+
+**사용처:**
+- 여러 지역을 하나의 메시로 병합
+- RegionFeature의 폴리곤 병합
+
+### 버퍼 어트리뷰트
+
+#### Float32BufferAttribute
+32비트 부동소수점 배열을 BufferGeometry의 속성으로 사용합니다.
+
+```typescript
+// 정점 위치 (x, y, z)
+const positions = new THREE.Float32BufferAttribute(vertices, 3);
+geometry.setAttribute('position', positions);
+
+// 법선 벡터 (nx, ny, nz)
+const normals = new THREE.Float32BufferAttribute(normalData, 3);
+geometry.setAttribute('normal', normals);
+```
+
+**매개변수:**
+- 첫 번째: TypedArray (Float32Array 등)
+- 두 번째: itemSize (요소당 값 개수)
+
+### 법선 계산
+
+#### computeVertexNormals()
+정점 법선 벡터를 자동으로 계산합니다. 라이팅(조명) 계산에 필수적입니다.
+
+```typescript
+geometry.computeVertexNormals();
+```
+
+**작동 원리:**
+1. 각 삼각형의 면 법선 계산
+2. 정점을 공유하는 면들의 법선을 평균화
+3. 정규화 (길이 1로 만듦)
+
+**사용처:**
+- 모든 3D 메시
+- 라이팅 효과
+
+## 외부 라이브러리
+
+### Delaunator
+
+고성능 2D Delaunay 삼각분할 라이브러리입니다.
+
+```typescript
+import Delaunator from 'delaunator';
+
+const points = [
+  [0, 0], [1, 0], [1, 1], [0, 1]
+];
+
+// 좌표를 flat 배열로 변환
+const coords = points.flatMap(p => p);  // [0,0,1,0,1,1,0,1]
+
+const delaunay = Delaunator.from(points);
+const triangles = delaunay.triangles;
+// [0, 1, 2, 0, 2, 3] (삼각형 2개)
+```
+
+**특징:**
+- 매우 빠름 (평균 O(n log n))
+- 최적화된 삼각형 생성
+- 품질 보장 (가늘고 긴 삼각형 최소화)
+
+**사용처:**
+- `delaunayTriangulate` 함수 내부
+- 복잡한 폴리곤 렌더링
+
+## HyperGlobe 내부 구현
+
+### createSideGeometry(options)
+
+폴리곤의 측면(extrusion) 지오메트리를 생성합니다.
+
+```typescript
+import { createSideGeometry } from 'hyperglobe/lib/geometry';
+
+const sideGeometry = createSideGeometry({
+  borderLines: feature.borderLines,
+  extrusionDepth: 0.001
+});
+```
+
+**옵션:**
+- `borderLines`: 외곽선 정보
+- `extrusionDepth`: 측면 높이 (기본값: 0.001)
+
+**작동 원리:**
+1. 외곽선의 각 선분마다 사각형 생성
+2. 위쪽 정점: 폴리곤 높이
+3. 아래쪽 정점: 구 표면까지 내림
+4. 모든 사각형을 하나의 BufferGeometry로 병합
+
+**사용처:**
+- RegionFeature의 입체감 표현
+- z-fighting 방지
+
+## 좌표계 및 변환
+
+### HyperGlobe 좌표계
+
+**원점:** 지구 중심
+
+**축 방향:**
+- x축: 본초자오선(경도 0°) + 적도(위도 0°)
+- y축: 북극 방향
+- z축: 동경 90° 방향
+
+### 변환 체인
+
+```
+GeoJSON (경위도)
+    ↓ OrthographicProj.project()
+3D 직교좌표
+    ↓ BufferGeometry
+GPU 메모리
+    ↓ WebGL
+화면
+```
+
+## 성능 최적화 기법
+
+### 드로우콜 최소화
+- `mergeGeometries`로 여러 지오메트리 병합
+- 하나의 메시로 렌더링
+
+### 메모이제이션
+- React의 `useMemo`로 불필요한 재계산 방지
+- 데이터가 변경될 때만 재생성
+
+### TypedArray 사용
+- Float32Array, Uint32Array 사용
+- 일반 배열보다 메모리 효율적
+- GPU 전송 최적화
+
+### 정밀도 제한
+- `roundCoordinate`로 불필요한 정밀도 제거
+- 파일 크기 감소
+- 비교 연산 최적화
+
+## 수학 공식 참조
+
+### 구면 → 직교 좌표 변환
+```
+x = R × cos(φ) × cos(λ)
+y = R × sin(φ)
+z = R × cos(φ) × sin(λ)
+```
+
+### 직교 → 구면 좌표 변환
+```
+R = √(x² + y² + z²)
+φ = arcsin(y / R)
+λ = arctan2(z, x)
+```
+
+### 벡터 크기
+```
+|v| = √(x² + y² + z²)
+```
+
+### 정규화
+```
+v̂ = v / |v|
+```
+
+## 관련 문서
+- [HyperGlobe 컴포넌트](./hyperglobe-component.md)
+- [RegionFeature 컴포넌트](./region-feature.md)
+- [Graticule 컴포넌트](./graticule.md)
+- [ColorScale 시스템](./colorscale.md)
