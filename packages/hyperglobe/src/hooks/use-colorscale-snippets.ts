@@ -1,10 +1,4 @@
-import { useState, useEffect } from 'react';
-import { ColorScaleBar, Graticule, HyperGlobe, RegionFeature } from 'src/components';
-import { StorybookConstant } from 'src/constants';
-import { useHGM } from './use-hgm';
-import { useColorScale, type ColorScaleOptions } from './use-colorscale';
-import type { RegionModel } from '@hyperglobe/interfaces';
-
+export const snippets = `
 interface GdpGrowth {
   id: string;
   data: { year: number; value: number }[];
@@ -53,7 +47,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           text: (region: RegionModel<{ value: number }>) => {
             const value = region.data?.value;
 
-            return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
+            return \`\${region.name}(\${!value ? 'No Data' : value?.toFixed(2) + '%'})\`;
           },
         }}
       >
@@ -81,3 +75,4 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
     </div>
   );
 }
+`;
