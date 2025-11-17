@@ -1,4 +1,3 @@
-+#!/usr/bin/env tsx
 /**
  * Storybook 스토리의 render 함수 내용을 code-snippets 파일로 동기화하는 스크립트
  *
@@ -12,28 +11,47 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname, basename } from 'path';
 
-interface StoryExport {
-  name: string;
-  renderContent: string;
-  snippetName: string;
-}
-
 /**
  * render 함수의 본문을 추출합니다.
  */
 function extractRenderContent(fileContent: string, storyName: string): string | null {
-  // export const {StoryName}: Story = { ... } 패턴 찾기
-  const storyRegex = new RegExp(
-    `export\\s+const\\s+${storyName}\\s*:\\s*Story\\s*=\\s*\\{[^}]*render\\s*:\\s*\\([^)]*\\)\\s*=>\\s*\\{([\\s\\S]*?)\\}\\s*,`,
-    'g'
-  );
+  // export const {StoryName}: Story = { ... render: (args) => { ... } ... } 패턴 찾기
+  // 중첩된 중괄호를 처리하기 위해 수동으로 파싱
+  const storyStartPattern = new RegExp(`export\\s+const\\s+${storyName}\\s*:\\s*Story\\s*=\\s*\\{`);
 
-  const match = storyRegex.exec(fileContent);
-  if (!match || !match[1]) {
+  const startMatch = fileContent.match(storyStartPattern);
+  if (!startMatch) {
     return null;
   }
 
-  let content = match[1].trim();
+  const startIndex = startMatch.index! + startMatch[0].length;
+
+  // render 함수 찾기
+  const renderPattern = /render\s*:\s*\([^)]*\)\s*=>\s*\{/;
+  const renderMatch = fileContent.slice(startIndex).match(renderPattern);
+
+  if (!renderMatch || renderMatch.index === undefined) {
+    return null;
+  }
+
+  const renderStartIndex = startIndex + renderMatch.index + renderMatch[0].length;
+
+  // 중괄호 매칭으로 render 함수의 끝 찾기
+  let braceCount = 1;
+  let renderEndIndex = renderStartIndex;
+
+  while (braceCount > 0 && renderEndIndex < fileContent.length) {
+    const char = fileContent[renderEndIndex];
+    if (char === '{') braceCount++;
+    if (char === '}') braceCount--;
+    renderEndIndex++;
+  }
+
+  if (braceCount !== 0) {
+    return null;
+  }
+
+  let content = fileContent.slice(renderStartIndex, renderEndIndex - 1).trim();
 
   // 주석 제거 및 정리
   content = content
@@ -48,29 +66,26 @@ function extractRenderContent(fileContent: string, storyName: string): string | 
   // {...args} 제거
   content = content.replace(/\{\s*\.\.\.args\s*\}/g, '');
 
+  // 공백 여러 개를 하나로
+  content = content.replace(/\s+colorScale=/g, ' colorScale=');
+
   // 불필요한 빈 줄 제거
   content = content
     .split('\n')
     .filter((line) => line.trim() !== '')
     .join('\n');
 
-  return content.trim();
-}
-
-/**
- * 코드 스니펫을 포맷팅합니다.
- */
-function formatSnippet(content: string, description: string): string {
+  // 들여쓰기 정규화 (최소 들여쓰기를 0으로)
   const lines = content.split('\n');
-  const formattedLines = lines.map((line) => {
-    // 이미 들여쓰기가 있는 경우 유지
-    return line;
-  });
+  const minIndent = Math.min(
+    ...lines
+      .filter((line) => line.trim().length > 0)
+      .map((line) => line.match(/^(\s*)/)?.[1].length || 0)
+  );
 
-  return `/**
- * ${description}
- */
-export const snippet = \`${formattedLines.join('\n')}\`;`;
+  content = lines.map((line) => line.slice(minIndent)).join('\n');
+
+  return content.trim();
 }
 
 /**
