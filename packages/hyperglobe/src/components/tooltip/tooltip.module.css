@@ -24,4 +24,13 @@
 
   /* Border */
   border-radius: 4px;
+
+  .id {
+    font-size: 12px;
+  }
+
+  .name {
+    font-size: 18px;
+    font-weight: 400;
+  }
 }

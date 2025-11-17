@@ -29,22 +29,13 @@ export default defineConfig({
       name: 'HyperGlobe',
       // 출력 파일 이름 설정
       fileName: (format) => `hyperglobe.${format}.js`,
-      // 지원하는 모듈 형식. 근데 umd는 뺴도 될 듯 하다.
-      formats: ['es', 'umd'],
+      cssFileName: 'hyperglobe',
+      // 지원하는 모듈 형식.
+      formats: ['es'],
     },
     rollupOptions: {
       // 외부화 처리할 모듈들 (번들에 포함하지 않음)
       external: ['react', 'react-dom', 'three', '@react-three/fiber', '@react-three/drei'],
-      // UMD 빌드 시 전역 변수 이름 매핑. umd 지원 안하게 되면 이것도 뺴도 될 듯
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-          three: 'THREE',
-          '@react-three/fiber': 'ReactThreeFiber',
-          '@react-three/drei': 'Drei',
-        },
-      },
     },
   },
 });

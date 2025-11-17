@@ -70,8 +70,12 @@ export function Tooltip({ text, style, styles }: TooltipOptions) {
         visibility: hoveredRegion ? 'visible' : 'hidden',
       }}
     >
-      <div style={{ ...styles?.idStyle }}>{hoveredRegion?.id}</div>
-      <div style={{ fontSize: 18, ...styles?.nameStyle }}>{tooltipLabel}</div>
+      <div className={classes.id} style={{ ...styles?.idStyle }}>
+        {hoveredRegion?.id}
+      </div>
+      <div className={classes.name} style={{ ...styles?.nameStyle }}>
+        {tooltipLabel}
+      </div>
     </div>
   );
 }

@@ -8,3 +8,14 @@ export type {
 
 export * from './hooks/use-hgm';
 export * from './hooks/use-colorscale';
+
+export type {
+  RegionModel,
+  HGM,
+  HGMFeature,
+  RawHGMFeature,
+  RawHGMFile,
+  Coordinate,
+} from '@hyperglobe/interfaces';
+
+export { Colors } from 'src/lib';

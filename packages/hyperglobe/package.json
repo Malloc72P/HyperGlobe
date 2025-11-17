@@ -1,8 +1,15 @@
 {
-  "name": "hyperglobe",
+  "name": "@hyperglobe/core",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/hyperglobe.es.js",
+      "types": "./dist/hyperglobe.es.d.ts"
+    },
+    "./hyperglobe.css": "./dist/hyperglobe.css"
+  },
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "tsc && vite build",

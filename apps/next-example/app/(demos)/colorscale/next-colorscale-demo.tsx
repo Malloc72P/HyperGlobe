@@ -1,23 +1,21 @@
-import { useState, useEffect } from 'react';
-import { ColorScaleBar, Graticule, HyperGlobe, RegionFeature } from 'src/components';
-import { StorybookConstant } from 'src/constants';
-import { useHGM } from './use-hgm';
-import { useColorScale, type ColorScaleOptions } from './use-colorscale';
-import type { RegionModel } from '@hyperglobe/interfaces';
-import { Colors } from 'src/lib/colors';
+import {
+  ColorScaleBar,
+  Graticule,
+  HyperGlobe,
+  RegionFeature,
+  RegionModel,
+  useColorScale,
+  useHGM,
+  Colors,
+} from '@hyperglobe/core';
+import { useEffect, useState } from 'react';
 
 interface GdpGrowth {
   id: string;
   data: { year: number; value: number }[];
 }
 
-/**
- * 컬러스케일
- *
- * - 컬러스케일은 지도 데이터의 값에 따라 스타일을 다르게 적용할 수 있는 기능입니다.
- * - 이 예제에서는 useColorScale 훅을 사용하여 컬러스케일을 적용하는 방법을 보여줍니다.
- */
-export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
+export function ColorScaleDemo() {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
@@ -57,8 +55,10 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
   return (
     <div>
       <HyperGlobe
-        {...StorybookConstant.props.HyperGlobe}
         loading={loading}
+        globeStyle={{
+          color: Colors.GRAY[0],
+        }}
         tooltipOptions={{
           distance: 12,
           text: (region: RegionModel<{ value: number }>) => {
@@ -69,7 +69,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
         }}
       >
         {hgm &&
-          hgm.features.map((feature) => (
+          hgm.features.map((feature: any) => (
             <RegionFeature
               key={feature.id}
               feature={feature}
