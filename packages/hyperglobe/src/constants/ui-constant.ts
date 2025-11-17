@@ -16,6 +16,7 @@ export const UiConstant = {
   feature: {
     strokeRadius: MathConstants.FEATURE_STROKE_Z_INDEX,
     fillRadius: MathConstants.FEATURE_FILL_Z_INDEX,
+    extrusionDepth: 0.007,
   },
   polygonFeature: {
     default: {

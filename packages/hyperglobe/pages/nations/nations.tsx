@@ -96,6 +96,7 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
       regionFill: color[3],
       hoverRegionFill: color[4],
       regionColor: color[7],
+      regionExtrusionColor: color[8],
       metalness: 0,
       roughness: 0,
     }),
@@ -138,6 +139,9 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
             hoverStyle={{
               lineWidth: styles.hoverRegionStrokeWidth,
               fillColor: styles.hoverRegionFill,
+            }}
+            extrusion={{
+              color: styles.regionExtrusionColor,
             }}
           />
         ))}

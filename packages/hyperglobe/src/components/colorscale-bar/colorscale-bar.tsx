@@ -7,6 +7,11 @@ import { findStepByValue } from 'src/hooks/use-colorscale';
 
 export type ColorScaleLabelFormatter = (value: number) => string;
 
+/**
+ * 컬러스케일 바 컴포넌트
+ *
+ * - 컬러스케일 모델을 시각적으로 표시하는 막대 컴포넌트입니다.
+ */
 export interface ColorScaleBarProps {
   /**
    * 컬러스케일 모델
