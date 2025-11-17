@@ -67,4 +67,7 @@
 - **Storybook 작성 가이드**: `docs/hyperglobe/storybook-guide.md`
   - 스토리 파일 작성 규칙, 컴포넌트 타입별 템플릿, StorybookConstant 활용법
 
+- **메인 스토어**: `docs/hyperglobe/main-store.md`
+  - Zustand 기반 전역 상태 관리, 호버 상태, R-Tree 공간 인덱싱, 툴팁 관리
+
 각 컴포넌트의 구현 원리, 사용 예시, 기술 세부사항에 대해 알고 싶다면 해당 문서를 참고하세요.
