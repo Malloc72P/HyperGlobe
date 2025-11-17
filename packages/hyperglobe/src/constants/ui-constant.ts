@@ -6,7 +6,7 @@ export const DefaultFeatureStyle: FeatureStyle = {
   lineWidth: 1.5,
   fillOpacity: 1,
   color: Colors.BLUE[7],
-  fillColor: Colors.BLUE[5],
+  fillColor: Colors.BLUE[3],
 };
 export const DefaultFeatureHoverStyle: FeatureStyle = {
   lineWidth: 2,
