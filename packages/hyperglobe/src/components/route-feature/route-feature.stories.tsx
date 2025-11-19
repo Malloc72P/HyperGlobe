@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { HyperGlobe, RouteFeature } from '../..';
-import { StorybookConstant } from '../../constants';
+import { RouteStoryComponent } from './route-feature-story';
+import { RouteFeature } from './route-feature';
+import { Colors } from '../..';
 
 const meta = {
   title: 'Components/RouteFeature',
@@ -22,23 +23,17 @@ export const SeoulToLondon: Story = {
     from: [126.978, 37.5665], // 서울
     to: [-0.1278, 51.5074], // 런던
     minHeight: 0.01,
-    maxHeight: 0.3,
-    lineWidth: 0.02,
-    minWidth: 0.006,
+    maxHeight: 0.1,
+    lineWidth: 0.008,
+    minWidth: 0.005,
     segments: 50,
-    thickness: 0.01,
+    thickness: 0.004,
     style: {
-      color: '#4A90E2',
+      color: Colors.BLUE[6],
       fillOpacity: 1,
     },
   },
-  render: (args: typeof SeoulToLondon.args) => (
-    <div>
-      <HyperGlobe {...StorybookConstant.props.HyperGlobe}>
-        <RouteFeature {...args} />
-      </HyperGlobe>
-    </div>
-  ),
+  render: RouteStoryComponent,
 };
 
 // /**
