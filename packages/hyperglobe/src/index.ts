@@ -1,8 +1,9 @@
-export { HyperGlobe, Graticule, RegionFeature, ColorScaleBar } from './components';
+export { HyperGlobe, Graticule, RegionFeature, RouteFeature, ColorScaleBar } from './components';
 export type {
   HyperGlobeProps,
   GraticuleProps,
   RegionFeatureProps,
+  RouteFeatureProps,
   ColorScaleBarProps,
 } from './components';
 

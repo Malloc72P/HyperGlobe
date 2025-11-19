@@ -219,35 +219,37 @@ bottomPoint = topPoint.clone().multiplyScalar(1 - thickness)
 
 #### 1단계: 기본 구조 및 인터페이스
 - [x] RouteFeature 컴포넌트 파일 생성
-- [ ] Props 인터페이스 완성
-- [ ] 기본값 설정 (minWidth, segments, thickness)
+- [x] Props 인터페이스 완성
+- [x] 기본값 설정 (minWidth, segments, thickness)
 
 #### 2단계: 대권항로 생성
-- [ ] from → to 대권항로 생성
-- [ ] SLERP 구현 확인 (@hyperglobe/tools에 있는지 조사)
-- [ ] segments 개수만큼 경로 점 P 생성
+- [x] from → to 대권항로 생성
+- [x] SLERP 구현 (Three.js lerpVectors 사용)
+- [x] segments 개수만큼 경로 점 P 생성
 
 #### 3단계: 높이 프로필 적용
-- [ ] 삼각형 높이 프로필 계산 (선형 증가 → 선형 감소)
-- [ ] 중간점 인덱스 계산
-- [ ] 각 점에 반지름 방향으로 높이 적용
+- [x] 삼각형 높이 프로필 계산 (선형 증가 → 선형 감소)
+- [x] 중간점 인덱스 계산
+- [x] 각 점에 반지름 방향으로 높이 적용
 
 #### 4단계: 너비 프로필 및 가장자리 생성
-- [ ] 선형 너비 증가 계산
-- [ ] 각 점에서 진행 방향(tangent) 계산
-- [ ] 법선 벡터(normal) 계산 - cross(tangent, radial)
-- [ ] 좌우 가장자리 점 L, R 생성
-- [ ] 닫힌 폴리곤 구성
+- [x] 선형 너비 증가 계산
+- [x] 각 점에서 진행 방향(tangent) 계산
+- [x] 법선 벡터(normal) 계산 - cross(tangent, radial)
+- [x] 좌우 가장자리 점 L, R 생성
+- [x] 닫힌 폴리곤 구성
 
 #### 5단계: 3D 지오메트리 생성
-- [ ] 윗면 폴리곤 삼각분할
-  - [ ] 3D → 2D 투영 방법 결정
-  - [ ] Delaunator 또는 earcut 사용
-- [ ] 아랫면 생성 (thickness 오프셋)
-- [ ] RegionFeature extrusion 로직 조사 및 재활용
-- [ ] BufferGeometry 구성
+- [x] 윗면 폴리곤 삼각분할 (임시: fan triangulation)
+- [x] 아랫면 생성 (thickness 오프셋)
+- [x] 측면 생성 (직접 구현)
+- [x] BufferGeometry 구성
 
 #### 6단계: 렌더링 및 검증
+- [x] Three.js Mesh 생성
+- [x] 기본 머티리얼 적용
+- [x] Storybook 스토리 작성
+- [ ] 실제 렌더링 테스트 및 버그 수정
 - [ ] Three.js Mesh 생성
 - [ ] 기본 머티리얼 적용
 - [ ] 테스트 데이터로 렌더링 검증
