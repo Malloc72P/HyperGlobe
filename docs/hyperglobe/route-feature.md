@@ -116,25 +116,71 @@ L1 → L2 → ... → Ln → (화살촉) → Rn → ... → R2 → R1 → (닫�
 
 이렇게 생성된 완전히 닫힌 단일 폴리곤은 Delaunator 또는 earcut로 삼각분할할 수 있습니다.
 
-### 5. 화살촉 생성 (향후 구현)
+### 5. 화살촉 생성
 
-경로의 마지막 구간 일부를 화살촉으로 변환합니다:
+경로의 마지막 구간 일부를 화살촉으로 변환합니다.
 
+#### 구현 방식: 세그먼트 대체 방식 (Phase 2)
+
+```typescript
+// 1. arrowLength에 해당하는 세그먼트 개수 계산
+const totalArcLength = calculateArcLength(from, to)
+const segmentsForArrow = Math.ceil((arrowLength / totalArcLength) * segments)
+
+// 2. 경로를 두 부분으로 나눔
+const bodySegments = segments - segmentsForArrow  // 경로 본체
+const arrowSegments = segmentsForArrow             // 화살촉 영역
+
+// 3. 경로 본체 생성 (P1 ~ Pk)
+const bodyPoints = pathPoints.slice(0, bodySegments + 1)
+// bodyPoints에 대해 좌우 가장자리 생성 (L1~Lk, R1~Rk)
+
+// 4. 화살촉 시작점과 끝점
+const arrowStart = pathPoints[bodySegments]  // 화살촉 시작점 (Pk)
+const arrowEnd = pathPoints[segments]         // 화살촉 끝점 (Pn)
+
+// 5. 화살촉 시작점에서의 법선 벡터
+const arrowTangent = normalize(arrowEnd - arrowStart)
+const arrowRadial = normalize(arrowStart)
+const arrowNormal = cross(arrowTangent, arrowRadial)
+
+// 6. 화살촉 베이스 점들
+const arrowLeftBase = arrowStart + arrowNormal * (arrowWidth / 2)
+const arrowRightBase = arrowStart - arrowNormal * (arrowWidth / 2)
+const arrowTip = arrowEnd  // Pn
+
+// 7. 닫힌 폴리곤 결합
+const polygon = [
+  ...bodyLeftEdge,           // L1 → L2 → ... → Lk
+  arrowLeftBase,             // 화살촉 왼쪽 베이스
+  arrowTip,                  // Pn (화살촉 끝)
+  arrowRightBase,            // 화살촉 오른쪽 베이스
+  ...bodyRightEdge.reverse() // Rk → ... → R2 → R1
+]
+```
+
+#### 화살촉 구조
+
+```
+위에서 본 모습:
+    
+    Lk -------- arrowLeftBase
+     |              \
+     |               \
+     |                arrowTip (Pn)
+     |               /
+     |              /
+    Rk -------- arrowRightBase
+```
+
+**특징**:
 - **화살촉 끝점**: Pn (경로의 실제 도착점)
-- **화살촉 시작점**: Pn에서 `arrowLength`만큼 뒤로 이동한 지점
-- **화살촉 너비**: `arrowWidth` (양쪽으로 확장)
-- 삼각형 형태로 닫힌 폴리곤의 마지막 부분을 수정
+- **화살촉 베이스**: arrowWidth 너비를 가짐
+- **삼각형 형태**: 3개 점(왼쪽 베이스, 끝점, 오른쪽 베이스)으로 구성
 
-```
-화살촉 구조:
-- 화살촉 시작점의 좌우 너비: arrowWidth / 2
-- 화살촉 끝점: Pn (폭 0으로 수렴, 삼각형 꼭지점)
-```
-
-**구현 전략**:
-1. 기본 경로 완성 후 별도로 구현
-2. 마지막 N개 세그먼트를 화살촉 폴리곤으로 대체
-3. 경로 본체와 화살촉의 연결점에서 너비 매칭 필요
+**주의사항**:
+- 경로 본체의 마지막 너비(Lk-Rk 간격)와 arrowWidth가 다를 경우 불연속 발생 가능
+- 이는 Phase 3에서 하이브리드 방식으로 개선 가능
 
 ### 6. 3D 지오메트리
 
@@ -209,19 +255,39 @@ bottomPoint = topPoint.clone().multiplyScalar(1 - thickness)
 
 ### Phase 2: 화살촉 구현
 
-#### 7단계: 화살촉 추가
-- [ ] arrowLength 기반 화살촉 영역 계산
-- [ ] 화살촉 시작점 위치 결정
-- [ ] 마지막 구간 폴리곤을 삼각형으로 변환
-- [ ] 경로 본체와 매끄럽게 연결
+#### 7단계: 화살촉 추가 (세그먼트 대체 방식)
+- [ ] 전체 대권 호장 길이 계산
+- [ ] arrowLength에 해당하는 세그먼트 개수 계산
+- [ ] 경로를 본체와 화살촉 영역으로 분리
+- [ ] 화살촉 시작점에서 법선 벡터 계산
+- [ ] 화살촉 베이스 점 생성 (arrowWidth 적용)
+- [ ] 화살촉 끝점 (Pn) 추가
+- [ ] 경로 본체와 화살촉을 결합하여 닫힌 폴리곤 구성
+- [ ] 삼각분할 및 렌더링 검증
+
+#### 8단계: 화살촉 높이 처리
+- [ ] 화살촉 영역의 높이 프로필 결정
+  - 화살촉 시작점 높이
+  - 화살촉 끝점 높이 (minHeight로 유지)
+- [ ] 화살촉 베이스 점들에 높이 적용
+- [ ] 3D 지오메트리 업데이트
 
 ### Phase 3: 고도화
 
-#### 8단계: 스타일링 및 최적화
+#### 9단계: 스타일링 및 최적화
 - [ ] FeatureStyle 통합
 - [ ] useMemo로 지오메트리 캐싱
 - [ ] 성능 테스트 및 최적화
-- [ ] 문서화 및 예제 작성
+
+#### 10단계: 화살촉 개선 (선택사항)
+- [ ] 하이브리드 방식으로 전환 (부드러운 너비 전환)
+- [ ] 경로 본체와 화살촉 간 너비 불연속 해결
+- [ ] 화살촉 형태 커스터마이징 옵션 추가
+
+#### 11단계: 문서화 및 예제
+- [ ] Storybook 스토리 작성
+- [ ] 사용 예제 추가
+- [ ] API 문서 작성
 
 ## 기술적 고려사항
 
