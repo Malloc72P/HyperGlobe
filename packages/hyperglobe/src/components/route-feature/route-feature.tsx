@@ -201,7 +201,7 @@ function createGreatCirclePath(
 }
 
 /**
- * 높이 프로필 적용 (삼각형 프로필: 선형 증가 → 선형 감소)
+ * 높이 프로필 적용 (부드러운 포물선 프로필)
  */
 function applyHeightProfile(
   pathPoints: THREE.Vector3[],
@@ -209,18 +209,13 @@ function applyHeightProfile(
   maxHeight: number,
   segments: number
 ): void {
-  const midIndex = Math.floor(segments / 2);
-
   for (let i = 0; i < pathPoints.length; i++) {
-    let heightFactor: number;
+    // 0 ~ 1로 정규화
+    const t = i / segments;
 
-    if (i <= midIndex) {
-      // 전반부: 0 → 1 (선형 증가)
-      heightFactor = i / midIndex;
-    } else {
-      // 후반부: 1 → 0 (선형 감소)
-      heightFactor = (segments - i) / (segments - midIndex);
-    }
+    // Sin 함수로 부드러운 포물선 (0 → 1 → 0)
+    // sin(πt)는 0에서 시작해서 0.5에서 최대값 1, 1에서 다시 0
+    const heightFactor = Math.sin(t * Math.PI);
 
     const height = minHeight + (maxHeight - minHeight) * heightFactor;
     const currentRadius = pathPoints[i].length();
@@ -335,7 +330,38 @@ function createBottomSurface(
   const bottomLeft = leftEdge.map((p) => p.clone().multiplyScalar(1 - thickness));
   const bottomRight = rightEdge.map((p) => p.clone().multiplyScalar(1 - thickness));
 
-  return createTopSurface(bottomLeft, bottomRight);
+  // 아랫면은 winding order를 반대로 해야 함
+  const vertices: number[] = [];
+  const indices: number[] = [];
+
+  // 모든 정점 추가
+  for (let i = 0; i < bottomLeft.length; i++) {
+    vertices.push(bottomLeft[i].x, bottomLeft[i].y, bottomLeft[i].z);
+  }
+  for (let i = 0; i < bottomRight.length; i++) {
+    vertices.push(bottomRight[i].x, bottomRight[i].y, bottomRight[i].z);
+  }
+
+  const leftCount = bottomLeft.length;
+
+  // 윗면과 반대 방향으로 삼각형 생성 (아래에서 봤을 때 반시계방향)
+  for (let i = 0; i < leftCount - 1; i++) {
+    const l1 = i;
+    const l2 = i + 1;
+    const r1 = leftCount + i;
+    const r2 = leftCount + i + 1;
+
+    // 윗면과 순서를 반대로
+    indices.push(l1, r1, l2);
+    indices.push(l2, r1, r2);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  return geometry;
 }
 
 /**

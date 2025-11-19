@@ -29,7 +29,7 @@ export const SeoulToLondon: Story = {
     thickness: 0.01,
     style: {
       color: '#4A90E2',
-      fillOpacity: 0.8,
+      fillOpacity: 1,
     },
   },
   render: (args: typeof SeoulToLondon.args) => (
