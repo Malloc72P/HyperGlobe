@@ -7,7 +7,6 @@ import type { Coordinate } from '@hyperglobe/interfaces';
 import { FeatureStyle } from 'src/types/feature';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from 'src/store';
-import { min } from 'three/tsl';
 
 export interface RouteFeatureProps {
   /**
