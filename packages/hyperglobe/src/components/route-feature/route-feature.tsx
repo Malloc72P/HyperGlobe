@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import { OrthographicProj } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { FeatureStyle } from 'src/types/feature';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
+import { useMainStore } from 'src/store';
 
 export interface RouteFeatureProps {
   /**
@@ -41,15 +43,23 @@ export interface RouteFeatureProps {
    * 스타일
    */
   style?: FeatureStyle;
+
+  /**
+   * 애니메이션 활성화 여부 (기본값: false)
+   */
+  animated?: boolean;
+
+  /**
+   * 애니메이션 지속 시간 (초 단위, 기본값: 2)
+   */
+  animationDuration?: number;
+
+  /**
+   * 애니메이션 시작 딜레이 (초 단위, 기본값: 0)
+   */
+  animationDelay?: number;
 }
 
-/**
- * RouteFeature - drei의 Line을 사용한 단순한 경로 렌더링
- *
- * - 대권항로(Great Circle)를 따라 경로 생성
- * - 높이 프로필 적용 (포물선 형태)
- * - 선 굵기는 일정
- */
 export function RouteFeature({
   from,
   to,
@@ -58,22 +68,73 @@ export function RouteFeature({
   lineWidth,
   segments = 50,
   style,
+  animated = true,
+  animationDuration = 2,
+  animationDelay = 0,
 }: RouteFeatureProps) {
+  const loading = useMainStore((s) => s.loading);
   const [appliedStyle] = useFeatureStyle({ style });
 
-  const pathPoints = useMemo(() => {
-    // 1. 대권항로 생성
+  // 1. 전체 경로를 미리 계산 (절대 state로 자르지 마세요!)
+  const fullPathPoints = useMemo(() => {
     const points = createGreatCirclePath(from, to, segments);
-
-    // 2. 높이 프로필 적용
     applyHeightProfile(points, minHeight, maxHeight, segments);
-
     return points;
   }, [from, to, minHeight, maxHeight, segments]);
 
+  const lineRef = useRef<any>(null);
+
+  // 초기화: 애니메이션 활성화 시, 화면에 그릴 세그먼트 개수를 0으로 설정
+  useLayoutEffect(() => {
+    if (animated && lineRef.current) {
+      // Drei Line(Line2)은 InstancedMesh 기술을 사용한다.
+      // instanceCount를 0으로 하면 아무것도 안 그려진다.
+      lineRef.current.geometry.instanceCount = 0;
+    }
+  }, [animated, fullPathPoints]); // 경로가 바뀌면 다시 0으로 초기화
+
+  // 애니메이션 상태 관리
+  const animationState = useRef({
+    startTime: 0,
+    hasStarted: false,
+  });
+
+  useFrame((state) => {
+    if (!animated || !lineRef.current || loading) return;
+
+    const { startTime = 0, hasStarted } = animationState.current;
+
+    // 딜레이 처리
+    if (!hasStarted) {
+      if (startTime === null) {
+        animationState.current.startTime = state.clock.elapsedTime;
+        return;
+      }
+      const delayElapsed = state.clock.elapsedTime - startTime;
+      if (delayElapsed < animationDelay) return;
+
+      animationState.current.hasStarted = true;
+      animationState.current.startTime = state.clock.elapsedTime;
+      return;
+    }
+
+    // 진행률 계산
+    const elapsed = state.clock.elapsedTime - startTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
+
+    // 현재 프레임에 그릴 세그먼트 개수 계산. 전체 점이 N개면, 선분(세그먼트)은 N-1개임에 주의
+    const totalSegments = fullPathPoints.length - 1;
+    const visibleSegments = Math.floor(totalSegments * progress);
+
+    // geometry의 instanceCount만 조절하면 그릴 선분 개수를 제어할 수 있다.
+    lineRef.current.geometry.instanceCount = Math.max(0, visibleSegments);
+  });
+
   return (
     <Line
-      points={pathPoints}
+      ref={lineRef}
+      // 중요: 전체 경로를 처음부터 다 전달해서 버퍼를 풀 사이즈로 확보한다.
+      points={fullPathPoints}
       color={appliedStyle.color}
       lineWidth={lineWidth}
       opacity={appliedStyle.fillOpacity}

@@ -24,6 +24,8 @@ export interface MainStore {
   getTooltipPosition: UpdateTooltipPositionFn | null;
   // R-Tree
   tree: RBush<RegionModel>;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   /**
    * Mutations
    */
@@ -49,6 +51,8 @@ export const useMainStore = create<MainStore>()((set, get) => ({
   tooltipRef: null,
   getTooltipPosition: null,
   tree: new RBush<RegionModel>(),
+  loading: true,
+  setLoading: (loading: boolean) => set({ loading }),
   init: () => {
     const { tree, clearRTree } = get();
 

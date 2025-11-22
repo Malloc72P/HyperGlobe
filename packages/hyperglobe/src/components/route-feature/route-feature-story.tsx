@@ -14,7 +14,7 @@ import { RouteFeature, RouteFeatureProps } from './route-feature';
  * - 지정된 경로(RouteFeature)를 지구본에 렌더링합니다.
  */
 export function RouteStoryComponent(routeProps: RouteFeatureProps) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
 

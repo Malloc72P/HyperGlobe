@@ -30,7 +30,10 @@ export const SeoulToLondon: Story = {
     minHeight: 0.01,
     maxHeight: 0.3,
     lineWidth: 5,
-    segments: 100,
+    segments: 300,
+    animated: true,
+    animationDuration: 5,
+    animationDelay: 0.5,
     style: {
       color: '#4A90E2',
       fillOpacity: 0.9,

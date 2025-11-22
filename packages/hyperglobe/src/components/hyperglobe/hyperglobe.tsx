@@ -93,9 +93,10 @@ export function HyperGlobe({
   const lightRef = useRef<DirectionalLight>(null);
   const [fps, setFps] = useState(0);
 
-  //   store
+  // store
   const tooltipRef = useMainStore((s) => s.tooltipRef);
   const cleanMainStore = useMainStore((s) => s.clean);
+  const setLoading = useMainStore((s) => s.setLoading);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
     const tooltipOffset = tooltipOptions?.distance || 10;
@@ -145,6 +146,10 @@ export function HyperGlobe({
       cleanMainStore();
     };
   }, []);
+
+  useEffect(() => {
+    setLoading(loading);
+  }, [loading]);
 
   return (
     <div
