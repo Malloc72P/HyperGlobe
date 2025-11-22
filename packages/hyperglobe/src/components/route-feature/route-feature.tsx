@@ -7,6 +7,7 @@ import type { Coordinate } from '@hyperglobe/interfaces';
 import { FeatureStyle } from 'src/types/feature';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from 'src/store';
+import { min } from 'three/tsl';
 
 export interface RouteFeatureProps {
   /**
@@ -97,12 +98,13 @@ export function RouteFeature({
   const animationState = useRef({
     startTime: 0,
     hasStarted: false,
+    hasFinished: false,
   });
 
   useFrame((state) => {
-    if (!animated || !lineRef.current || loading) return;
+    const { startTime = 0, hasStarted, hasFinished } = animationState.current;
 
-    const { startTime = 0, hasStarted } = animationState.current;
+    if (hasFinished || !animated || !lineRef.current || loading) return;
 
     // 딜레이 처리
     if (!hasStarted) {
@@ -128,7 +130,20 @@ export function RouteFeature({
 
     // geometry의 instanceCount만 조절하면 그릴 선분 개수를 제어할 수 있다.
     lineRef.current.geometry.instanceCount = Math.max(0, visibleSegments);
+
+    if (progress >= 1) {
+      // 애니메이션 완료
+      animationState.current.hasFinished = true;
+    }
   });
+
+  useEffect(() => {
+    animationState.current = {
+      startTime: 0,
+      hasStarted: false,
+      hasFinished: false,
+    };
+  }, [minHeight, maxHeight, segments, from, to]);
 
   return (
     <Line

@@ -18,6 +18,7 @@ const meta = {
 } satisfies Meta<typeof RouteStoryComponent>;
 
 export default meta;
+1;
 type Story = StoryObj<typeof meta>;
 
 /**
