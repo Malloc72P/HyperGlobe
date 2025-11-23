@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { OrthographicProj } from '@hyperglobe/tools';
+import { applyHeight, createGreatCirclePath, OrthographicProj } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { FeatureStyle } from 'src/types/feature';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
@@ -58,6 +58,16 @@ export interface RouteFeatureProps {
    * 애니메이션 시작 딜레이 (초 단위, 기본값: 0)
    */
   animationDelay?: number;
+
+  /**
+   * 애니메이션 중 경로 끝에 표시할 도형 타입 (기본값: 'arrow')
+   */
+  objectShape?: 'arrow' | 'plane';
+
+  /**
+   * 도형 크기 스케일 (기본값: 1)
+   */
+  objectScale?: number;
 }
 
 export function RouteFeature({
@@ -71,14 +81,31 @@ export function RouteFeature({
   animated = true,
   animationDuration = 2,
   animationDelay = 0,
+  objectShape = 'arrow',
+  objectScale = 1,
 }: RouteFeatureProps) {
   const loading = useMainStore((s) => s.loading);
   const [appliedStyle] = useFeatureStyle({ style });
 
+  const objectRef = useRef<THREE.Mesh>(null);
+
+  const objectGeometry = useMemo(() => {
+    let geo: THREE.BufferGeometry;
+    if (objectShape === 'plane') {
+      geo = createPlaneGeometry();
+    } else {
+      // Default arrow
+      geo = new THREE.ConeGeometry(0.02, 0.06, 8);
+      // lookAt은 -Z축을 바라보게 하므로, 뿔이 -Z를 향하도록 회전
+      geo.rotateX(-Math.PI / 2);
+    }
+    return geo;
+  }, [objectShape]);
+
   // 1. 전체 경로를 미리 계산 (절대 state로 자르지 마세요!)
   const fullPathPoints = useMemo(() => {
     const points = createGreatCirclePath(from, to, segments);
-    applyHeightProfile(points, minHeight, maxHeight, segments);
+    applyHeight(points, minHeight, maxHeight, segments);
     return points;
   }, [from, to, minHeight, maxHeight, segments]);
 
@@ -103,7 +130,10 @@ export function RouteFeature({
   useFrame((state) => {
     const { startTime = 0, hasStarted, hasFinished } = animationState.current;
 
-    if (hasFinished || !animated || !lineRef.current || loading) return;
+    if (hasFinished || !animated || !lineRef.current || loading) {
+      if (objectRef.current) objectRef.current.visible = false;
+      return;
+    }
 
     // 딜레이 처리
     if (!hasStarted) {
@@ -130,9 +160,29 @@ export function RouteFeature({
     // geometry의 instanceCount만 조절하면 그릴 선분 개수를 제어할 수 있다.
     lineRef.current.geometry.instanceCount = Math.max(0, visibleSegments);
 
+    // 도형 위치 및 회전 업데이트
+    if (objectRef.current) {
+      objectRef.current.visible = true;
+      objectRef.current.scale.setScalar(objectScale);
+
+      const tipIndex = Math.min(visibleSegments, fullPathPoints.length - 1);
+      const currentPoint = fullPathPoints[tipIndex];
+      objectRef.current.position.copy(currentPoint);
+
+      if (tipIndex < fullPathPoints.length - 1) {
+        objectRef.current.lookAt(fullPathPoints[tipIndex + 1]);
+      } else if (tipIndex > 0) {
+        const prevPoint = fullPathPoints[tipIndex - 1];
+        const dir = new THREE.Vector3().subVectors(currentPoint, prevPoint).normalize();
+        const target = new THREE.Vector3().addVectors(currentPoint, dir);
+        objectRef.current.lookAt(target);
+      }
+    }
+
     if (progress >= 1) {
       // 애니메이션 완료
       animationState.current.hasFinished = true;
+      if (objectRef.current) objectRef.current.visible = false;
     }
   });
 
@@ -145,87 +195,74 @@ export function RouteFeature({
   }, [minHeight, maxHeight, segments, from, to]);
 
   return (
-    <Line
-      ref={lineRef}
-      // 중요: 전체 경로를 처음부터 다 전달해서 버퍼를 풀 사이즈로 확보한다.
-      points={fullPathPoints}
-      color={appliedStyle.color}
-      lineWidth={lineWidth}
-      opacity={appliedStyle.fillOpacity}
-      transparent={appliedStyle.fillOpacity !== undefined && appliedStyle.fillOpacity < 1}
-    />
+    <group>
+      <Line
+        ref={lineRef}
+        // 중요: 전체 경로를 처음부터 다 전달해서 버퍼를 풀 사이즈로 확보한다.
+        points={fullPathPoints}
+        color={appliedStyle.color}
+        lineWidth={lineWidth}
+        opacity={appliedStyle.fillOpacity}
+        transparent={appliedStyle.fillOpacity !== undefined && appliedStyle.fillOpacity < 1}
+      />
+      {animated && (
+        <mesh ref={objectRef} geometry={objectGeometry} visible={false}>
+          <meshBasicMaterial color={appliedStyle.color} side={THREE.DoubleSide} />
+        </mesh>
+      )}
+    </group>
   );
 }
 
-/**
- * 대권항로 생성 (SLERP 사용)
- */
-function createGreatCirclePath(
-  from: Coordinate,
-  to: Coordinate,
-  segments: number
-): THREE.Vector3[] {
-  const globeRadius = 1; // 정규화된 반지름 (Three.js sphere의 기본 반지름)
-  const fromVector = new THREE.Vector3(...OrthographicProj.project(from, globeRadius));
-  const toVector = new THREE.Vector3(...OrthographicProj.project(to, globeRadius));
+function createPlaneGeometry() {
+  const geometry = new THREE.BufferGeometry();
 
-  const pathPoints: THREE.Vector3[] = [];
+  // Simple paper plane
+  // Tip at (0, 0, -0.04) (Forward -Z)
+  // Wings at +/- X
+  const vertices = [
+    // Left Wing
+    0,
+    0,
+    -0.04,
+    -0.03,
+    0,
+    0.03,
+    0,
+    0,
+    0.03,
+    // Right Wing
+    0,
+    0,
+    -0.04,
+    0,
+    0,
+    0.03,
+    0.03,
+    0,
+    0.03,
+    // Vertical Fin (Bottom)
+    0,
+    0,
+    -0.04,
+    0,
+    -0.015,
+    0.03,
+    -0.005,
+    0,
+    0.03, // Left side of fin
+    0,
+    0,
+    -0.04,
+    0.005,
+    0,
+    0.03,
+    0,
+    -0.015,
+    0.03, // Right side of fin
+  ];
 
-  // 정규화
-  fromVector.normalize();
-  toVector.normalize();
-
-  // 두 벡터 사이의 각도 계산
-  const angle = fromVector.angleTo(toVector);
-
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-
-    // SLERP: Spherical Linear Interpolation
-    // slerp(v1, v2, t) = (sin((1-t)*θ) / sin(θ)) * v1 + (sin(t*θ) / sin(θ)) * v2
-    const sinAngle = Math.sin(angle);
-
-    if (sinAngle < 0.001) {
-      // 각도가 너무 작으면 선형 보간 사용
-      const point = new THREE.Vector3().lerpVectors(fromVector, toVector, t);
-      point.normalize().multiplyScalar(globeRadius);
-      pathPoints.push(point);
-    } else {
-      const ratioA = Math.sin((1 - t) * angle) / sinAngle;
-      const ratioB = Math.sin(t * angle) / sinAngle;
-
-      const point = new THREE.Vector3()
-        .addScaledVector(fromVector, ratioA)
-        .addScaledVector(toVector, ratioB)
-        .normalize()
-        .multiplyScalar(globeRadius);
-
-      pathPoints.push(point);
-    }
-  }
-
-  return pathPoints;
-}
-
-/**
- * 높이 프로필 적용 (부드러운 포물선 프로필)
- */
-function applyHeightProfile(
-  pathPoints: THREE.Vector3[],
-  minHeight: number,
-  maxHeight: number,
-  segments: number
-): void {
-  for (let i = 0; i < pathPoints.length; i++) {
-    // 0 ~ 1로 정규화
-    const t = i / segments;
-
-    // Sin 함수로 부드러운 포물선 (0 → 1 → 0)
-    // sin(πt)는 0에서 시작해서 0.5에서 최대값 1, 1에서 다시 0
-    const heightFactor = Math.sin(t * Math.PI);
-
-    const height = minHeight + (maxHeight - minHeight) * heightFactor;
-    const currentRadius = pathPoints[i].length();
-    pathPoints[i].multiplyScalar((currentRadius + height) / currentRadius);
-  }
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.computeVertexNormals();
+  return geometry;
 }
