@@ -46,7 +46,7 @@ export const SeoulToLondon: Story = {
   argTypes: {
     objectShape: {
       control: 'select',
-      options: ['cone', 'arrow'],
+      options: ['cone'],
     },
   },
 };

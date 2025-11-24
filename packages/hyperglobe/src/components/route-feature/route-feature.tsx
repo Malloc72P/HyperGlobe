@@ -65,7 +65,7 @@ export interface RouteFeatureProps {
   animationDelay?: number;
 
   /**
-   * 애니메이션 중 경로 끝에 표시할 도형 타입 (기본값: 'arrow')
+   * 애니메이션 중 경로 끝에 표시할 도형 타입 (기본값: 'cone')
    */
   objectShape?: 'cone' | 'arrow';
 
@@ -86,34 +86,35 @@ export function RouteFeature({
   animated = true,
   animationDuration = 2,
   animationDelay = 0,
-  objectShape = 'arrow',
+  objectShape = 'cone',
   objectScale = 1,
 }: RouteFeatureProps) {
   const loading = useMainStore((s) => s.loading);
   const [appliedStyle] = useFeatureStyle({ style });
 
   const headRef = useRef<THREE.Mesh>(null);
+  const lineRef = useRef<any>(null);
 
   const objectGeometry = useMemo(() => {
     let geo: THREE.BufferGeometry;
-    if (objectShape === 'arrow') {
-      geo = createArrowGeometry();
-    } else {
-      // Default arrow
-      geo = new THREE.ConeGeometry(0.02, 0.06, 8);
-      geo.rotateX(-Math.PI / 2);
+
+    switch (objectShape) {
+      default: {
+        geo = new THREE.ConeGeometry(0.02, 0.06, 8);
+        geo.rotateX(-Math.PI / 2);
+        break;
+      }
     }
+
     return geo;
   }, [objectShape]);
 
-  // 1. 전체 경로를 미리 계산 (절대 state로 자르지 마세요!)
+  // 1. 전체 경로를 미리 계산
   const fullPathPoints = useMemo(() => {
     const points = createGreatCirclePath(from, to, segments);
     applyHeight(points, minHeight, maxHeight, segments);
     return points;
   }, [from, to, minHeight, maxHeight, segments]);
-
-  const lineRef = useRef<any>(null);
 
   // 초기화: 애니메이션 활성화 시, 화면에 그릴 세그먼트 개수를 0으로 설정
   useLayoutEffect(() => {
@@ -241,28 +242,4 @@ export function RouteFeature({
       )}
     </group>
   );
-}
-
-function createArrowGeometry() {
-  const geometry = new THREE.BufferGeometry();
-
-  // Flat Arrow (Plane) - Triangle only
-  // Tip at (0, 0, -0.04) (Forward -Z)
-  // Base width +/- 0.02
-  const vertices = [
-    // Triangle Head
-    0,
-    0,
-    -0.04, // Tip
-    -0.02,
-    0,
-    0, // Left Base
-    0.02,
-    0,
-    0, // Right Base
-  ];
-
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-  geometry.computeVertexNormals();
-  return geometry;
 }
