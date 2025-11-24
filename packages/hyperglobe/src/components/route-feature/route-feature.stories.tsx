@@ -30,7 +30,7 @@ export const SeoulToLondon: Story = {
     // to: [-0.1278, 51.5074], // 런던
     from: [-20, -40],
     to: [40, 35],
-    minHeight: 0.01,
+    // minHeight: 0.01,
     maxHeight: 0.1,
     lineWidth: 5,
     segments: 300,

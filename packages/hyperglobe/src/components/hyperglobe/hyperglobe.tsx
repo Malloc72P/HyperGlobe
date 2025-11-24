@@ -210,7 +210,7 @@ export function HyperGlobe({
         {/* FPS Counter */}
         {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
 
-        <CoordinateSystem />
+        {/* <CoordinateSystem /> */}
       </Canvas>
 
       {/* 툴팁 */}

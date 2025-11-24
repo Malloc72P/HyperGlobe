@@ -12,6 +12,7 @@ import type { Coordinate } from '@hyperglobe/interfaces';
 import { FeatureStyle } from 'src/types/feature';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
 import { useMainStore } from 'src/store';
+import { UiConstant } from 'src/constants';
 
 export interface RouteFeatureProps {
   /**
@@ -27,7 +28,7 @@ export interface RouteFeatureProps {
   /**
    * 최소 높이 (시작점/끝점)
    */
-  minHeight: number;
+  //   minHeight: number;
 
   /**
    * 최대 높이 (중간점)
@@ -78,7 +79,7 @@ export interface RouteFeatureProps {
 export function RouteFeature({
   from,
   to,
-  minHeight,
+  //   minHeight,
   maxHeight,
   lineWidth,
   segments = 50,
@@ -89,6 +90,7 @@ export function RouteFeature({
   objectShape = 'cone',
   objectScale = 1,
 }: RouteFeatureProps) {
+  const minHeight = UiConstant.feature.strokeRadius - 1;
   const loading = useMainStore((s) => s.loading);
   const [appliedStyle] = useFeatureStyle({ style });
 
