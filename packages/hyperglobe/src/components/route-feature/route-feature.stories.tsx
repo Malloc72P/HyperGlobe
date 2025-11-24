@@ -43,4 +43,10 @@ export const SeoulToLondon: Story = {
       fillOpacity: 0.9,
     },
   },
+  argTypes: {
+    objectShape: {
+      control: 'select',
+      options: ['cone', 'arrow'],
+    },
+  },
 };

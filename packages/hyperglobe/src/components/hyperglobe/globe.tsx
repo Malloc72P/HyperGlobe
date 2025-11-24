@@ -85,8 +85,6 @@ export function Globe({
   position = [0, 0, 0],
   segments = [64, 32],
   color = '#0077be',
-  roughness = 0.5,
-  metalness = 0,
 }: GlobeProps) {
   const rTree = useMainStore((s) => s.tree);
   const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);

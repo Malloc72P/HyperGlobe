@@ -12,6 +12,7 @@ import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
 import { UiConstant } from 'src/constants';
 import type { OnHoverChangedFn } from 'src/types/events';
+import { CoordinateSystem } from '../coordinate-system';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -209,9 +210,10 @@ export function HyperGlobe({
         {/* FPS Counter */}
         {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
 
-        {/* 툴팁 */}
+        <CoordinateSystem />
       </Canvas>
 
+      {/* 툴팁 */}
       <Tooltip {...tooltipOptions} />
       {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
