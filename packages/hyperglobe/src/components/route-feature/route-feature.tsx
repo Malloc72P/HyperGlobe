@@ -66,11 +66,6 @@ export interface RouteFeatureProps {
   animationDelay?: number;
 
   /**
-   * 애니메이션 중 경로 끝에 표시할 도형 타입 (기본값: 'cone')
-   */
-  objectShape?: 'cone' | 'arrow';
-
-  /**
    * 도형 크기 스케일 (기본값: 1)
    */
   objectScale?: number;
@@ -87,7 +82,6 @@ export function RouteFeature({
   animated = true,
   animationDuration = 2,
   animationDelay = 0,
-  objectShape = 'cone',
   objectScale = 1,
 }: RouteFeatureProps) {
   const minHeight = UiConstant.feature.strokeRadius - 1;
@@ -100,16 +94,11 @@ export function RouteFeature({
   const objectGeometry = useMemo(() => {
     let geo: THREE.BufferGeometry;
 
-    switch (objectShape) {
-      default: {
-        geo = new THREE.ConeGeometry(0.02, 0.06, 8);
-        geo.rotateX(-Math.PI / 2);
-        break;
-      }
-    }
+    geo = new THREE.ConeGeometry(0.02, 0.06, 8);
+    geo.rotateX(-Math.PI / 2);
 
     return geo;
-  }, [objectShape]);
+  }, []);
 
   // 1. 전체 경로를 미리 계산
   const fullPathPoints = useMemo(() => {
@@ -224,7 +213,7 @@ export function RouteFeature({
       hasStarted: false,
       hasFinished: false,
     };
-  }, [minHeight, maxHeight, segments, from, to, objectShape, objectScale]);
+  }, [minHeight, maxHeight, segments, from, to, objectScale]);
 
   return (
     <group>

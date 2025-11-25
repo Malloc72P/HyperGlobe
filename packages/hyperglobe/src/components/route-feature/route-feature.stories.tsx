@@ -28,8 +28,8 @@ export const SeoulToLondon: Story = {
   args: {
     // from: [126.978, 37.5665], // 서울
     // to: [-0.1278, 51.5074], // 런던
-    from: [-20, -40],
-    to: [40, 35],
+    from: [127, 37],
+    to: [-122, 37.7749],
     // minHeight: 0.01,
     maxHeight: 0.1,
     lineWidth: 5,
@@ -37,16 +37,9 @@ export const SeoulToLondon: Story = {
     animated: true,
     animationDuration: 5,
     animationDelay: 0.5,
-    objectShape: 'arrow',
     style: {
       color: '#4A90E2',
       fillOpacity: 0.9,
-    },
-  },
-  argTypes: {
-    objectShape: {
-      control: 'select',
-      options: ['cone'],
     },
   },
 };

@@ -1,18 +1,19 @@
 'use client';
 
+import { Coordinate } from '@hyperglobe/interfaces';
+import { OrthographicProj } from '@hyperglobe/tools';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { LinearSRGBColorSpace, NoToneMapping, SRGBColorSpace, type DirectionalLight } from 'three';
+import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { UiConstant } from 'src/constants';
+import type { OnHoverChangedFn } from 'src/types/events';
+import { NoToneMapping, type DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
 import { Tooltip, type TooltipOptions } from '../tooltip';
 import { Globe, type GlobeStyle } from './globe';
-import { UiConstant } from 'src/constants';
-import type { OnHoverChangedFn } from 'src/types/events';
-import { CoordinateSystem } from '../coordinate-system';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -59,6 +60,12 @@ export interface HyperGlobeProps extends PropsWithChildren {
    * 호버된 지역이 변경될 때 호출되는 콜백 함수
    */
   onHoverChanged?: OnHoverChangedFn;
+  /**
+   * 카메라 중심의 위치.
+   *
+   * - 경위도 좌표계([경도, 위도])로 지정합니다.
+   */
+  initialCameraPosition?: Coordinate;
 }
 
 /**
@@ -89,6 +96,7 @@ export function HyperGlobe({
   tooltipOptions,
   showFpsCounter = true,
   onHoverChanged,
+  initialCameraPosition = [0, 0],
 }: HyperGlobeProps) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
@@ -98,6 +106,15 @@ export function HyperGlobe({
   const tooltipRef = useMainStore((s) => s.tooltipRef);
   const cleanMainStore = useMainStore((s) => s.clean);
   const setLoading = useMainStore((s) => s.setLoading);
+
+  const cameraVector = useMemo(() => {
+    const adjustedCoordinate: Coordinate = [
+      initialCameraPosition[0] - 90,
+      initialCameraPosition[1],
+    ];
+
+    return OrthographicProj.project(adjustedCoordinate, 5);
+  }, [initialCameraPosition]);
 
   const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
     const tooltipOffset = tooltipOptions?.distance || 10;
@@ -170,15 +187,19 @@ export function HyperGlobe({
           toneMapping: NoToneMapping,
         }}
         style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
-        camera={{ position: [0, 0, 5], fov: 25 }}
+        /**
+         * 카메라 위치는 3차원 벡터로 설정, OrbitControls라서 target이 0,0,0, 즉 지구 중심을 바라본다.
+         */
+        camera={{ position: cameraVector, fov: 25 }}
       >
         {/* 기본 조명 설정 */}
         <ambientLight intensity={2} />
-        <directionalLight ref={lightRef} position={[0, 0, 5]} intensity={2} />
+        <directionalLight ref={lightRef} position={cameraVector} intensity={2} />
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
           enableZoom={true}
           enableRotate={true}
+          enablePan={false}
           /**
            * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
            */
