@@ -84,10 +84,10 @@ function Marker({
     <group position={position}>
       <Html
         center
-        distanceFactor={0.3}
+        // distanceFactor={0.3}
         occlude
         style={{
-          pointerEvents: 'auto',
+          pointerEvents: 'none',
         }}
       >
         <div
