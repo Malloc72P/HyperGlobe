@@ -1,14 +1,11 @@
-export { HyperGlobe, Graticule, RegionFeature, ColorScaleBar } from './components';
-export type {
-  HyperGlobeProps,
-  GraticuleProps,
-  RegionFeatureProps,
-  ColorScaleBarProps,
-} from './components';
+// Components
+export * from './components';
 
+// Hooks
 export * from './hooks/use-hgm';
 export * from './hooks/use-colorscale';
 
+// Types
 export type {
   RegionModel,
   HGM,
@@ -18,4 +15,5 @@ export type {
   Coordinate,
 } from '@hyperglobe/interfaces';
 
+// Utils
 export { Colors } from 'src/lib';
