@@ -26,11 +26,14 @@ type Story = StoryObj<typeof meta>;
  */
 export const SeoulToLondon: Story = {
   args: {
-    // from: [126.978, 37.5665], // 서울
-    // to: [-0.1278, 51.5074], // 런던
-    from: [127, 37],
-    to: [-122, 37.7749],
-    // minHeight: 0.01,
+    from: {
+      coordinate: [127, 37],
+      label: '서울',
+    },
+    to: {
+      coordinate: [-122, 37.7749],
+      label: '샌프란시스코',
+    },
     maxHeight: 0.1,
     lineWidth: 5,
     segments: 300,

@@ -15,17 +15,25 @@ import { useMainStore } from 'src/store';
 import { UiConstant } from 'src/constants';
 import { useRouteAnimation } from './use-route-animation';
 import { useRouteGeometry } from './use-route-geometry';
+import { MarkerData, MarkerFeature, MarkerFeatureProps } from '../marker-feature';
+import { Marker } from '../marker-feature/marker';
+import { useRouteMarker } from './use-route-marker';
+
+export interface RoutePoint {
+  coordinate: Coordinate;
+  label?: string;
+}
 
 export interface RouteFeatureProps {
   /**
-   * 시작점 좌표 [경도, 위도]
+   * 시작점 정보
    */
-  from: Coordinate;
+  from: RoutePoint;
 
   /**
-   * 끝점 좌표 [경도, 위도]
+   * 끝점 정보
    */
-  to: Coordinate;
+  to: RoutePoint;
 
   /**
    * 최소 높이 (시작점/끝점)
@@ -76,7 +84,6 @@ export interface RouteFeatureProps {
 export function RouteFeature({
   from,
   to,
-  //   minHeight,
   maxHeight,
   lineWidth,
   segments = 50,
@@ -89,9 +96,12 @@ export function RouteFeature({
   const minHeight = UiConstant.feature.strokeRadius - 1;
   const [appliedStyle] = useFeatureStyle({ style });
 
+  const [fromMarker] = useRouteMarker({ point: from });
+  const [toMarker] = useRouteMarker({ point: to });
+
   const { fullPathPoints, objectGeometry } = useRouteGeometry({
-    from,
-    to,
+    from: from.coordinate,
+    to: to.coordinate,
     minHeight,
     maxHeight,
     segments,
@@ -101,8 +111,8 @@ export function RouteFeature({
     animationDuration,
     animationDelay,
     objectScale,
-    from,
-    to,
+    from: from.coordinate,
+    to: to.coordinate,
     fullPathPoints,
     minHeight,
     maxHeight,
@@ -126,6 +136,9 @@ export function RouteFeature({
           <meshBasicMaterial color={appliedStyle.color} side={THREE.DoubleSide} />
         </mesh>
       )}
+
+      {from.label && <Marker {...fromMarker} />}
+      {to.label && <Marker {...toMarker} />}
     </group>
   );
 }
