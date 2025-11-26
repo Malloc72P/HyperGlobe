@@ -41,10 +41,10 @@ export const SeoulToLondon: Story = {
     lineWidth: 5,
     segments: 300,
     animated: true,
-    animationDuration: 5,
+    animationDuration: 1,
     animationDelay: 0.5,
     style: {
-      color: Colors.BLUE[7],
+      color: Colors.BLUE[5],
     },
   },
 };

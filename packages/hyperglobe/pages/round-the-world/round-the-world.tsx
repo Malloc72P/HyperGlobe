@@ -12,12 +12,14 @@ import {
 } from '../../src';
 import { StorybookConstant } from '../../src/constants';
 
-export interface AirlineStoryProps {}
+export interface RoundTheWorld {}
 
 /**
+ * 세계일주 데모
  *
+ * - 서울에서 출발하여 샌프란시스코, 토론토, 런던, 상파울루, 요하네스버그, 뭄바이를 거쳐 다시 서울로 돌아오는 항공 경로를 시각화합니다.
  */
-export function AirlineStory(routeProps: AirlineStoryProps) {
+export function RoundTheWorld(routeProps: RoundTheWorld) {
   const [loading, setLoading] = useState(true);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });

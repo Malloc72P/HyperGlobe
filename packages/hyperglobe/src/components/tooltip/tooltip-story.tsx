@@ -33,11 +33,11 @@ export function TooltipStoryComponent(tooltipProps: TooltipOptions) {
   return (
     <HyperGlobe
       {...StorybookConstant.props.HyperGlobe}
-      globeStyle={{
-        color: Colors.BLUE[1],
-      }}
       tooltipOptions={{ ...tooltipProps }}
       loading={loading}
+      globeStyle={{
+        color: 'black',
+      }}
     >
       <Graticule />
       {hgm &&
@@ -45,8 +45,12 @@ export function TooltipStoryComponent(tooltipProps: TooltipOptions) {
           <RegionFeature
             key={feature.id}
             feature={feature}
+            style={{
+              color: Colors.GRAY[2],
+              fillColor: Colors.GRAY[7],
+            }}
             hoverStyle={{
-              fillColor: Colors.BLUE[4],
+              fillColor: Colors.GRAY[6],
             }}
           />
         ))}

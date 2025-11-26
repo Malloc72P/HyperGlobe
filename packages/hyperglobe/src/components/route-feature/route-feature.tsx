@@ -1,22 +1,12 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { Line } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import {
-  applyHeight,
-  calcProgress,
-  createGreatCirclePath,
-  OrthographicProj,
-} from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
-import { FeatureStyle } from 'src/types/feature';
-import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { useMainStore } from 'src/store';
+import { Line } from '@react-three/drei';
 import { UiConstant } from 'src/constants';
+import { FeatureStyle } from 'src/types/feature';
+import * as THREE from 'three';
+import { useFeatureStyle } from '../../hooks/use-feature-style';
+import { Marker } from '../marker-feature/marker';
 import { useRouteAnimation } from './use-route-animation';
 import { useRouteGeometry } from './use-route-geometry';
-import { MarkerData, MarkerFeature, MarkerFeatureProps } from '../marker-feature';
-import { Marker } from '../marker-feature/marker';
 import { useRouteMarker } from './use-route-marker';
 
 export interface RoutePoint {
