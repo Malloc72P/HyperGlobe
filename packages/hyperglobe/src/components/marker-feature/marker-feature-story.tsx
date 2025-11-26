@@ -35,6 +35,7 @@ export function MarkerStoryComponent(markerProps: MarkerFeatureProps) {
       globeStyle={{
         color: Colors.GRAY[1],
       }}
+      initialCameraPosition={[127, 36]}
       loading={loading}
     >
       <Graticule />

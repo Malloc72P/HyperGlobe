@@ -4,7 +4,7 @@ import { UiConstant } from 'src/constants';
 import { FeatureStyle } from 'src/types/feature';
 import * as THREE from 'three';
 import { useFeatureStyle } from '../../hooks/use-feature-style';
-import { Marker } from '../marker-feature/marker';
+import { MarkerFeature } from '../marker-feature/marker-feature';
 import { useRouteAnimation } from './use-route-animation';
 import { useRouteGeometry } from './use-route-geometry';
 import { useRouteMarker } from './use-route-marker';
@@ -129,8 +129,8 @@ export function RouteFeature({
         </mesh>
       )}
 
-      {from.label && <Marker {...fromMarker} />}
-      {to.label && <Marker {...toMarker} />}
+      {from.label && <MarkerFeature {...fromMarker} />}
+      {to.label && <MarkerFeature {...toMarker} />}
     </group>
   );
 }

@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { RoutePoint } from './route-feature';
-import { MarkerProps } from '../marker-feature/marker';
+import { MarkerFeatureProps } from '../marker-feature/marker-feature';
 
 export interface UseRouteMarkerProps {
   point: RoutePoint;
 }
 
 export function useRouteMarker({ point }: UseRouteMarkerProps) {
-  const marker = useMemo<MarkerProps>(() => {
+  const marker = useMemo<MarkerFeatureProps>(() => {
     return {
       marker: {
         position: point.coordinate,

@@ -1,6 +1,7 @@
 import { MathConstants } from '@hyperglobe/tools';
 import { Colors } from 'src/lib';
 import type { FeatureStyle } from 'src/types/feature';
+import { SvgStyle } from 'src/types/svg';
 
 export const DefaultFeatureStyle: FeatureStyle = {
   lineWidth: 1.5,
@@ -10,6 +11,10 @@ export const DefaultFeatureStyle: FeatureStyle = {
 };
 export const DefaultFeatureHoverStyle: FeatureStyle = {
   lineWidth: 2,
+};
+export const DefaultSvgStyle: SvgStyle = {
+  stroke: Colors.GRAY[9],
+  strokeWidth: 1,
 };
 
 export const UiConstant = {
@@ -22,6 +27,11 @@ export const UiConstant = {
     default: {
       style: DefaultFeatureStyle,
       hoverStyle: DefaultFeatureHoverStyle,
+    },
+  },
+  svgFeature: {
+    default: {
+      style: DefaultSvgStyle,
     },
   },
   globe: {

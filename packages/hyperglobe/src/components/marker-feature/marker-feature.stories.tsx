@@ -28,33 +28,13 @@ type Story = StoryObj<typeof meta>;
  */
 export const MajorCities: Story = {
   args: {
-    markers: [
-      {
-        position: [126.978, 37.5665], // 서울
-        label: '서울',
-        color: '#ff5722',
-      },
-      {
-        position: [139.6503, 35.6762], // 도쿄
-        label: '도쿄',
-        color: '#2196f3',
-      },
-      {
-        position: [-0.1278, 51.5074], // 런던
-        label: '런던',
-        color: '#4caf50',
-      },
-      {
-        position: [-74.006, 40.7128], // 뉴욕
-        label: '뉴욕',
-        color: '#ff9800',
-      },
-      {
-        position: [2.3522, 48.8566], // 파리
-        label: '파리',
-        color: '#9c27b0',
-      },
-    ],
+    marker: {
+      position: [126.978, 37.5665], // 서울
+      label: '서울',
+      icon: 'circle',
+      stroke: 'black',
+      fill: '#ff5722',
+    },
     showLabels: true,
     defaultScale: 1,
   },
