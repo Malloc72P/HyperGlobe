@@ -5,32 +5,8 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useMemo, useState } from 'react';
 import { UiConstant } from 'src/constants';
 import * as THREE from 'three';
-
-/**
- * 마커 데이터
- */
-export interface MarkerData {
-  /** 마커 위치 (경도, 위도) */
-  position: Coordinate;
-
-  /** SVG path 문자열 (선택사항) */
-  icon?: string;
-
-  /** 마커 라벨 텍스트 */
-  label?: string;
-
-  /** 마커 fill 색상 */
-  fill?: string;
-
-  /** 마커 stroke 색상 */
-  stroke?: string;
-
-  /** 마커 크기 배율 */
-  scale?: number;
-
-  /** 사용자 정의 데이터 */
-  data?: any;
-}
+import { MarkerData } from './marker-interface';
+import { DEFAULT_ICON } from './marker-constant';
 
 export interface MarkerProps {
   marker: MarkerData;
@@ -41,9 +17,6 @@ export interface MarkerProps {
   onMarkerClick?: (marker: MarkerData) => void;
   onMarkerHover?: (marker: MarkerData | null) => void;
 }
-
-// 기본 아이콘 (원형 마커) - 컴포넌트 외부로 이동하여 재생성 방지
-export const DEFAULT_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z`;
 
 /**
  * 단일 마커 컴포넌트
