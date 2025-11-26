@@ -40,12 +40,6 @@ export function AirlineStory(routeProps: AirlineStoryProps) {
       label: '서울(인천국제공항)',
     };
 
-    // 일본 도쿄 나리타국제공항
-    const tokyo: RoutePoint = {
-      coordinate: [140.3864, 35.7647],
-      label: '도쿄(나리타국제공항)',
-    };
-
     // 인도 뭄바이 차트라파티 시바지 마하라지 국제공항
     const mumbai: RoutePoint = {
       coordinate: [72.8777, 19.0896],
@@ -58,13 +52,7 @@ export function AirlineStory(routeProps: AirlineStoryProps) {
       label: '요하네스버그(O.R.탐보공항)',
     };
 
-    // 유럽 1: 독일 프랑크푸르트 국제공항
-    const frankfurt: RoutePoint = {
-      coordinate: [8.5622, 50.0379],
-      label: '프랑크푸르트(국제공항)',
-    };
-
-    // 유럽 2: 영국 런던 히드로 공항
+    // 영국 런던 히드로 공항
     const london: RoutePoint = {
       coordinate: [-0.4543, 51.47],
       label: '런던(히드로공항)',
@@ -74,6 +62,12 @@ export function AirlineStory(routeProps: AirlineStoryProps) {
     const toronto: RoutePoint = {
       coordinate: [-79.6248, 43.6777],
       label: '토론토(피어슨국제공항)',
+    };
+
+    // 미국 샌프란시스코 국제공항
+    const sanFrancisco: RoutePoint = {
+      coordinate: [-122.3789, 37.6213],
+      label: '샌프란시스코(국제공항)',
     };
 
     // 남미 브라질 상파울루 구아룰류스 국제공항
@@ -88,17 +82,15 @@ export function AirlineStory(routeProps: AirlineStoryProps) {
       label: '시드니(킹스포드스미스공항)',
     };
 
-    // 순회 경로: 서울 → 도쿄 → 인도 → 남아공 → 독일 → 영국 → 캐나다 → 브라질 → 호주 → 서울
+    // 순회 경로: 서울 → 샌프란시스코 → 토론토 → 런던 → 상파울루 → 요하네스버그 → 뭄바이 → 서울
     return [
-      { from: seoul, to: tokyo },
-      { from: tokyo, to: mumbai },
-      { from: mumbai, to: johannesburg },
-      { from: johannesburg, to: frankfurt },
-      { from: frankfurt, to: london },
-      { from: london, to: toronto },
-      { from: toronto, to: saoPaulo },
-      { from: saoPaulo, to: sydney },
-      { from: sydney, to: seoul },
+      { from: seoul, to: sanFrancisco },
+      { from: sanFrancisco, to: toronto },
+      { from: toronto, to: london },
+      { from: london, to: saoPaulo },
+      { from: saoPaulo, to: johannesburg },
+      { from: johannesburg, to: mumbai },
+      { from: mumbai, to: seoul },
     ];
   }, []);
 
@@ -128,8 +120,15 @@ export function AirlineStory(routeProps: AirlineStoryProps) {
             }}
           />
         ))}
-      {routes.map(({ from, to }) => (
-        <RouteFeature from={from} to={to} maxHeight={0.2} lineWidth={5} animationDuration={1.3} />
+      {routes.map(({ from, to }, index) => (
+        <RouteFeature
+          from={from}
+          to={to}
+          maxHeight={0.1}
+          lineWidth={5}
+          animationDuration={1}
+          animationDelay={index}
+        />
       ))}
     </HyperGlobe>
   );
