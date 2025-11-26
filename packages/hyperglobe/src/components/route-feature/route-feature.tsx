@@ -22,6 +22,8 @@ import { useRouteMarker } from './use-route-marker';
 export interface RoutePoint {
   coordinate: Coordinate;
   label?: string;
+  stroke?: string;
+  fill?: string;
 }
 
 export interface RouteFeatureProps {

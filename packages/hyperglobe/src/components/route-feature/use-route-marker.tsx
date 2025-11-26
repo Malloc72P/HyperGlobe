@@ -12,6 +12,8 @@ export function useRouteMarker({ point }: UseRouteMarkerProps) {
       marker: {
         position: point.coordinate,
         label: point.label,
+        stroke: point.stroke,
+        fill: point.fill,
       },
     };
   }, [point]);

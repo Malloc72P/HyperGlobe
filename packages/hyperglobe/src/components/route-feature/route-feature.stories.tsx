@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { RouteStoryComponent } from './route-feature-story';
+import { Colors } from '../../lib';
 
 /**
  * RouteFeature는 drei의 Line을 사용한 단순한 경로 렌더링 컴포넌트입니다.
@@ -29,10 +30,12 @@ export const SeoulToLondon: Story = {
     from: {
       coordinate: [127, 37],
       label: '서울',
+      fill: Colors.BLUE[5],
     },
     to: {
       coordinate: [-122, 37.7749],
       label: '샌프란시스코',
+      fill: Colors.PINK[5],
     },
     maxHeight: 0.1,
     lineWidth: 5,
@@ -41,8 +44,7 @@ export const SeoulToLondon: Story = {
     animationDuration: 5,
     animationDelay: 0.5,
     style: {
-      color: '#4A90E2',
-      fillOpacity: 0.9,
+      color: Colors.BLUE[7],
     },
   },
 };

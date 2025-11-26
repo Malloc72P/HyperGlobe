@@ -19,8 +19,11 @@ export interface MarkerData {
   /** 마커 라벨 텍스트 */
   label?: string;
 
-  /** 마커 색상 */
-  color?: string;
+  /** 마커 fill 색상 */
+  fill?: string;
+
+  /** 마커 stroke 색상 */
+  stroke?: string;
 
   /** 마커 크기 배율 */
   scale?: number;
@@ -31,7 +34,8 @@ export interface MarkerData {
 
 export interface MarkerProps {
   marker: MarkerData;
-  defaultColor?: string;
+  defaultStroke?: string;
+  defaultFill?: string;
   defaultScale?: number;
   showLabels?: boolean;
   onMarkerClick?: (marker: MarkerData) => void;
@@ -46,7 +50,8 @@ export const DEFAULT_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-1
  */
 export function Marker({
   marker,
-  defaultColor = '#ff5722',
+  defaultStroke = 'black',
+  defaultFill = '#ff5722',
   defaultScale = 1,
   showLabels = true,
   onMarkerClick,
@@ -82,8 +87,9 @@ export function Marker({
     setIsVisible(dotProduct > 0.1);
   });
 
-  const color = marker.color || defaultColor;
+  const fill = marker.fill || defaultFill;
   const scale = marker.scale || defaultScale;
+  const stroke = marker.stroke || defaultStroke;
   const iconSize = 24 * scale;
 
   // 마커가 지구 뒤편에 있으면 렌더링하지 않음
@@ -118,7 +124,7 @@ export function Marker({
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
             }}
           >
-            <path d={marker.icon || DEFAULT_ICON} fill={color} />
+            <path d={marker.icon || DEFAULT_ICON} fill={fill} stroke={stroke} />
           </svg>
 
           {/* 라벨 */}
