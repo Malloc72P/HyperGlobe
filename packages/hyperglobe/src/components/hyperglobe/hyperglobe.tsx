@@ -176,6 +176,9 @@ export function HyperGlobe({
       onPointerMove={onPointerMove}
     >
       <LoadingUI loading={loading} />
+      {/* 툴팁 */}
+      <Tooltip {...tooltipOptions} />
+      {showFpsCounter && <FpsDisplay fps={fps} />}
       <Canvas
         id={id}
         gl={{
@@ -233,10 +236,6 @@ export function HyperGlobe({
 
         {/* <CoordinateSystem /> */}
       </Canvas>
-
-      {/* 툴팁 */}
-      <Tooltip {...tooltipOptions} />
-      {showFpsCounter && <FpsDisplay fps={fps} />}
     </div>
   );
 }

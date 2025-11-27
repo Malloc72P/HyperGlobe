@@ -25,11 +25,9 @@ export function MarkerFeature({
   label,
   style,
   scale: _scale,
-  data,
   defaultScale = 1,
   showLabels = true,
   onMarkerClick,
-  onMarkerHover,
 }: MarkerFeatureProps) {
   const { camera } = useThree();
   const [isVisible, setIsVisible] = useState(true);
