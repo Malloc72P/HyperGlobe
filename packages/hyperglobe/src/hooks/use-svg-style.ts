@@ -14,7 +14,7 @@ export interface UseSvgStyleProps {
 export function useSvgStyle({ style }: UseSvgStyleProps) {
   const appliedStyle = useMemo<SvgStyle>(() => {
     // 기본 스타일 및 style 병합
-    let _style: SvgStyle = {
+    const _style: SvgStyle = {
       ...UiConstant.svgFeature.default.style,
       ...style,
     };

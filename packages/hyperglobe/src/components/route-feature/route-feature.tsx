@@ -8,12 +8,12 @@ import { MarkerFeature } from '../marker-feature/marker-feature';
 import { useRouteAnimation } from './use-route-animation';
 import { useRouteGeometry } from './use-route-geometry';
 import { useRouteMarker } from './use-route-marker';
+import { SvgStyle } from 'src/types/svg';
 
 export interface RoutePoint {
   coordinate: Coordinate;
   label?: string;
-  stroke?: string;
-  fill?: string;
+  style?: SvgStyle;
 }
 
 export interface RouteFeatureProps {

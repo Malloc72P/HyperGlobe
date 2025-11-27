@@ -28,10 +28,10 @@ type Story = StoryObj<typeof meta>;
  */
 export const MajorCities: Story = {
   args: {
-    marker: {
-      position: [126.978, 37.5665], // 서울
-      label: '서울',
-      icon: 'circle',
+    coordinate: [126.978, 37.5665], // 서울
+    label: '서울',
+    icon: 'pin',
+    style: {
       stroke: 'black',
       fill: '#ff5722',
     },

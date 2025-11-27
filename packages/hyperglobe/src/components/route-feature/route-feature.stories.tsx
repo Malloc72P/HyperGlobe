@@ -30,12 +30,16 @@ export const SeoulToLondon: Story = {
     from: {
       coordinate: [127, 37],
       label: '서울',
-      fill: Colors.BLUE[5],
+      style: {
+        fill: Colors.BLUE[5],
+      },
     },
     to: {
       coordinate: [-122, 37.7749],
       label: '샌프란시스코',
-      fill: Colors.PINK[5],
+      style: {
+        fill: Colors.PINK[5],
+      },
     },
     maxHeight: 0.1,
     lineWidth: 5,
@@ -44,7 +48,7 @@ export const SeoulToLondon: Story = {
     animationDuration: 1,
     animationDelay: 0.5,
     style: {
-      color: Colors.BLUE[5],
+      fill: Colors.BLUE[5],
     },
   },
 };

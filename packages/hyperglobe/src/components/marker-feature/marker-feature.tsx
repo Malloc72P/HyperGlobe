@@ -6,9 +6,9 @@ import { UiConstant } from 'src/constants';
 import * as THREE from 'three';
 import { MarkerData } from './marker-interface';
 import { useMarkerShape } from './use-marker-shape';
+import { useSvgStyle } from 'src/hooks/use-svg-style';
 
-export interface MarkerFeatureProps {
-  marker: MarkerData;
+export interface MarkerFeatureProps extends MarkerData {
   defaultScale?: number;
   showLabels?: boolean;
   onMarkerClick?: (marker: MarkerData) => void;
@@ -19,7 +19,13 @@ export interface MarkerFeatureProps {
  * 마커 컴포넌트
  */
 export function MarkerFeature({
-  marker,
+  coordinate,
+  icon,
+  iconPath,
+  label,
+  style,
+  scale: _scale,
+  data,
   defaultScale = 1,
   showLabels = true,
   onMarkerClick,
@@ -27,12 +33,13 @@ export function MarkerFeature({
 }: MarkerFeatureProps) {
   const { camera } = useThree();
   const [isVisible, setIsVisible] = useState(true);
-  const [iconShape] = useMarkerShape(marker);
+  const [iconShape] = useMarkerShape({ icon, iconPath });
+  const [appliedStyle] = useSvgStyle({ style });
 
   const position = useMemo(() => {
-    const coords = OrthographicProj.project(marker.position, 1);
+    const coords = OrthographicProj.project(coordinate, 1);
     return new THREE.Vector3(coords[0], coords[1], coords[2]);
-  }, [marker.position]);
+  }, [coordinate]);
 
   // 매 프레임마다 마커의 가시성 체크
   useFrame(() => {
@@ -56,9 +63,7 @@ export function MarkerFeature({
     setIsVisible(dotProduct > 0.1);
   });
 
-  const fill = marker.fill;
-  const stroke = marker.stroke;
-  const scale = marker.scale || defaultScale;
+  const scale = appliedStyle.scale || defaultScale;
   const iconSize = 24 * scale;
 
   // 마커가 지구 뒤편에 있으면 렌더링하지 않음
@@ -80,9 +85,6 @@ export function MarkerFeature({
             cursor: onMarkerClick ? 'pointer' : 'default',
             userSelect: 'none',
           }}
-          onClick={() => onMarkerClick?.(marker)}
-          onMouseEnter={() => onMarkerHover?.(marker)}
-          onMouseLeave={() => onMarkerHover?.(null)}
         >
           {/* SVG 아이콘 */}
           <svg
@@ -94,11 +96,11 @@ export function MarkerFeature({
               transform: `translateY(${iconSize / 2}px)`,
             }}
           >
-            <path d={iconShape} fill={fill} stroke={stroke} />
+            <path d={iconShape} fill={appliedStyle.fill} stroke={appliedStyle.stroke} />
           </svg>
 
           {/* 라벨 */}
-          {showLabels && marker.label && (
+          {showLabels && label && (
             <div
               style={{
                 fontSize: `${12 * scale}px`,
@@ -112,7 +114,7 @@ export function MarkerFeature({
                 transform: `translateY(${iconSize / 2}px)`,
               }}
             >
-              {marker.label}
+              {label}
             </div>
           )}
         </div>

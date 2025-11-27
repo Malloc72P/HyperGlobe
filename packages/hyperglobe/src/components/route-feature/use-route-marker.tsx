@@ -9,12 +9,9 @@ export interface UseRouteMarkerProps {
 export function useRouteMarker({ point }: UseRouteMarkerProps) {
   const marker = useMemo<MarkerFeatureProps>(() => {
     return {
-      marker: {
-        position: point.coordinate,
-        label: point.label,
-        stroke: point.stroke,
-        fill: point.fill,
-      },
+      coordinate: point.coordinate,
+      label: point.label,
+      style: point.style,
     };
   }, [point]);
 
