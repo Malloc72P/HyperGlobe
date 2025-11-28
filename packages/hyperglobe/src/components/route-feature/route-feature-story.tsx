@@ -34,9 +34,6 @@ export function RouteStoryComponent(routeProps: RouteFeatureProps) {
       {...StorybookConstant.props.HyperGlobe}
       // 한국과 미국 서부가 모두 보이도록 카메라 초기 위치 설정
       initialCameraPosition={[183, 37]}
-      globeStyle={{
-        color: Colors.GRAY[1],
-      }}
       loading={loading}
     >
       <Graticule />
@@ -47,7 +44,7 @@ export function RouteStoryComponent(routeProps: RouteFeatureProps) {
             feature={feature}
             style={{
               color: Colors.GRAY[7],
-              fillColor: Colors.GRAY[2],
+              fillColor: Colors.GRAY[3],
             }}
             hoverStyle={{
               color: Colors.GRAY[8],
