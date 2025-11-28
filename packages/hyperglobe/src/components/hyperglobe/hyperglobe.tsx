@@ -4,7 +4,16 @@ import { Coordinate } from '@hyperglobe/interfaces';
 import { OrthographicProj } from '@hyperglobe/tools';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  type PropsWithChildren,
+} from 'react';
 import { UiConstant } from 'src/constants';
 import type { OnHoverChangedFn } from 'src/types/events';
 import { NoToneMapping, type DirectionalLight } from 'three';
@@ -13,6 +22,8 @@ import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
 import { Tooltip, type TooltipOptions } from '../tooltip';
+import type { CameraTransitionOptions, HyperglobeRef, PathPoint } from '../../types/camera';
+import { CameraTransitionController } from '../camera-transition-controller';
 import { Globe, type GlobeStyle } from './globe';
 
 /**
@@ -84,23 +95,62 @@ export interface HyperGlobeProps extends PropsWithChildren {
  * ```
  *
  */
-export function HyperGlobe({
-  id,
-  loading = false,
-  size = '100%',
-  maxSize,
-  wireframe,
-  children,
-  globeStyle,
-  style,
-  tooltipOptions,
-  showFpsCounter = true,
-  onHoverChanged,
-  initialCameraPosition = [0, 0],
-}: HyperGlobeProps) {
+export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function HyperGlobe(
+  {
+    id,
+    loading = false,
+    size = '100%',
+    maxSize,
+    wireframe,
+    children,
+    globeStyle,
+    style,
+    tooltipOptions,
+    showFpsCounter = true,
+    onHoverChanged,
+    initialCameraPosition = [0, 0],
+  },
+  ref
+) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
   const [fps, setFps] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+
+  // camera transition 함수들을 저장할 ref
+  const followPathRef = useRef<
+    ((path: PathPoint[], options?: CameraTransitionOptions) => void) | null
+  >(null);
+  const cancelTransitionRef = useRef<(() => void) | null>(null);
+
+  const handleLockChange = useCallback((locked: boolean) => {
+    setIsLocked(locked);
+  }, []);
+
+  const handleFollowPathReady = useCallback(
+    (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => {
+      followPathRef.current = fn;
+    },
+    []
+  );
+
+  const handleCancelTransitionReady = useCallback((fn: () => void) => {
+    cancelTransitionRef.current = fn;
+  }, []);
+
+  // ref 노출
+  useImperativeHandle(
+    ref,
+    () => ({
+      followPath: (path: PathPoint[], options?: CameraTransitionOptions) => {
+        followPathRef.current?.(path, options);
+      },
+      cancelTransition: () => {
+        cancelTransitionRef.current?.();
+      },
+    }),
+    []
+  );
 
   // store
   const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -200,6 +250,7 @@ export function HyperGlobe({
         <directionalLight ref={lightRef} position={cameraVector} intensity={2} />
         {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
         <OrbitControls
+          enabled={!isLocked}
           enableZoom={true}
           enableRotate={true}
           enablePan={false}
@@ -222,6 +273,13 @@ export function HyperGlobe({
           }}
         />
 
+        {/* 카메라 트랜지션 컨트롤러 */}
+        <CameraTransitionController
+          onLockChange={handleLockChange}
+          onFollowPathReady={handleFollowPathReady}
+          onCancelTransitionReady={handleCancelTransitionReady}
+        />
+
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
         {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
         <group rotation={UiConstant.globe.rotation}>
@@ -238,4 +296,4 @@ export function HyperGlobe({
       </Canvas>
     </div>
   );
-}
+});
