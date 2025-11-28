@@ -16,7 +16,7 @@ import {
 } from 'react';
 import { UiConstant } from 'src/constants';
 import type { OnHoverChangedFn } from 'src/types/events';
-import { NoToneMapping, type DirectionalLight } from 'three';
+import { NoToneMapping, Vector3, type DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
@@ -136,6 +136,14 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function Hy
 
   const handleCancelTransitionReady = useCallback((fn: () => void) => {
     cancelTransitionRef.current = fn;
+  }, []);
+
+  const handleCameraPositionChange = useCallback((position: Vector3) => {
+    const light = lightRef.current;
+    if (!light) return;
+
+    light.position.set(0, 0, 0);
+    light.position.add(position);
   }, []);
 
   // ref 노출
@@ -278,6 +286,7 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function Hy
           onLockChange={handleLockChange}
           onFollowPathReady={handleFollowPathReady}
           onCancelTransitionReady={handleCancelTransitionReady}
+          onCameraPositionChange={handleCameraPositionChange}
         />
 
         {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}

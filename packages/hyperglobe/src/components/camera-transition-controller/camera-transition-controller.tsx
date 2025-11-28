@@ -62,6 +62,8 @@ export interface CameraTransitionControllerProps {
   onFollowPathReady: (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => void;
   /** cancelTransition을 외부에 노출 */
   onCancelTransitionReady: (fn: () => void) => void;
+  /** 카메라 위치가 변경될 때 호출되는 콜백 */
+  onCameraPositionChange?: (position: Vector3) => void;
 }
 
 /**
@@ -74,6 +76,7 @@ export function CameraTransitionController({
   onLockChange,
   onFollowPathReady,
   onCancelTransitionReady,
+  onCameraPositionChange,
 }: CameraTransitionControllerProps) {
   const { camera } = useThree();
 
@@ -233,6 +236,9 @@ export function CameraTransitionController({
         // 카메라가 지구 중심(0,0,0)을 바라보도록 설정
         camera.lookAt(0, 0, 0);
 
+        // 카메라 위치 변경 콜백 호출
+        onCameraPositionChange?.(camera.position);
+
         // 현재 구간 업데이트
         state.currentSegmentIndex = i;
 
@@ -255,6 +261,8 @@ export function CameraTransitionController({
       if (lastSegmentPoints && lastSegmentPoints.length > 0) {
         camera.position.copy(lastSegmentPoints[lastSegmentPoints.length - 1]);
         camera.lookAt(0, 0, 0);
+        // 마지막 위치 콜백 호출
+        onCameraPositionChange?.(camera.position);
       }
 
       state.options.onComplete();
