@@ -43,7 +43,6 @@ export function CameraTransitionDemo() {
       ],
       {
         lockCamera: true,
-        onProgress: (p) => setProgress(Math.round(p)),
         onPathPointReached: (index) => {
           setCurrentPoint(index);
           console.log(`도착: 지점 ${index + 1}`);

@@ -332,6 +332,7 @@ const updateCamera = (deltaTime: number) => {
 2. **이징 함수 캐싱**: 함수 조회를 초기화 시 한 번만 수행
 3. **Vector3 객체 재사용**: `camera.position.lerpVectors()` 직접 호출로 새 객체 생성 최소화
 4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 생성하여 캐시
+5. **onProgress 쓰로틀링**: 100ms 간격으로 제한하여 React 상태 업데이트 빈도 감소
 
 #### segments 수 동적 조정
 ```ts

@@ -41,16 +41,9 @@ export interface CameraTransitionOptions {
   /**
    * 이징 함수 타입
    *
-   * @default 'ease-in-out'
+   * @default 'linear'
    */
   easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
-
-  /**
-   * 애니메이션 진행률 변경 시 호출되는 콜백
-   *
-   * @param progress - 0~100 사이의 진행률
-   */
-  onProgress?: (progress: number) => void;
 
   /**
    * 각 경로 지점에 도착했을 때 호출되는 콜백

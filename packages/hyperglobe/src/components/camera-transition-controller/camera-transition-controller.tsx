@@ -33,7 +33,6 @@ interface TransitionState {
 const DEFAULT_OPTIONS: Required<CameraTransitionOptions> = {
   lockCamera: true,
   easing: 'linear',
-  onProgress: () => {},
   onPathPointReached: () => {},
   onComplete: () => {},
 };
@@ -234,10 +233,6 @@ export function CameraTransitionController({
         // 카메라가 지구 중심(0,0,0)을 바라보도록 설정
         camera.lookAt(0, 0, 0);
 
-        // 전체 진행률 콜백
-        const overallProgress = ((accumulatedTime + segmentElapsed) / totalDuration) * 100;
-        state.options.onProgress(overallProgress);
-
         // 현재 구간 업데이트
         state.currentSegmentIndex = i;
 
@@ -262,7 +257,6 @@ export function CameraTransitionController({
         camera.lookAt(0, 0, 0);
       }
 
-      state.options.onProgress(100);
       state.options.onComplete();
       state.isActive = false;
       onLockChange(false);
