@@ -326,8 +326,22 @@ const updateCamera = (deltaTime: number) => {
 - 트랜지션 완료 또는 취소 시 다시 활성화
 
 ### 성능 고려
-- `createGreatCirclePath`는 각 구간마다 한 번만 호출 (메모이제이션)
-- `useFrame`에서 불필요한 계산 최소화
+
+#### 최적화된 부분
+1. **totalDuration 캐싱**: 매 프레임 재계산 대신 초기화 시 한 번만 계산
+2. **이징 함수 캐싱**: 함수 조회를 초기화 시 한 번만 수행
+3. **Vector3 객체 재사용**: `camera.position.lerpVectors()` 직접 호출로 새 객체 생성 최소화
+4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 생성하여 캐시
+
+#### segments 수 동적 조정
+```ts
+// 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 100)
+const calculateSegments = (distance: number): number => {
+  return Math.min(100, Math.max(10, Math.floor(distance * 20)));
+};
+```
+
+짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
 - segments 수는 경로 길이에 따라 동적 조정 (짧은 거리는 적은 segments)
 
 ### 경로 최적화

@@ -24,6 +24,10 @@ interface TransitionState {
   options: Required<CameraTransitionOptions>;
   /** 마지막으로 onPathPointReached가 호출된 인덱스 */
   lastReachedIndex: number;
+  /** 전체 애니메이션 길이 (캐시) */
+  totalDuration: number;
+  /** 이징 함수 (캐시) */
+  easingFn: (t: number) => number;
 }
 
 const DEFAULT_OPTIONS: Required<CameraTransitionOptions> = {
@@ -82,6 +86,8 @@ export function CameraTransitionController({
     startTime: 0,
     options: DEFAULT_OPTIONS,
     lastReachedIndex: -1,
+    totalDuration: 0,
+    easingFn: (t) => t, // linear
   });
 
   /**
@@ -146,6 +152,15 @@ export function CameraTransitionController({
         previousDistance = targetDistance;
       }
 
+      // totalDuration 계산 (한 번만)
+      let totalDuration = 0;
+      for (const point of path) {
+        totalDuration += point.duration ?? DEFAULT_DURATION;
+      }
+
+      // 이징 함수 캐시
+      const easingFn = getEasingFunction(mergedOptions.easing);
+
       // 상태 초기화
       stateRef.current = {
         isActive: true,
@@ -155,6 +170,8 @@ export function CameraTransitionController({
         startTime: Date.now(),
         options: mergedOptions,
         lastReachedIndex: -1,
+        totalDuration,
+        easingFn,
       };
 
       onLockChange(mergedOptions.lockCamera);
@@ -187,13 +204,8 @@ export function CameraTransitionController({
     if (!state.isActive) return;
 
     const elapsed = Date.now() - state.startTime;
+    const totalDuration = state.totalDuration; // 캐시된 값 사용
     let accumulatedTime = 0;
-    let totalDuration = 0;
-
-    // 전체 duration 계산
-    for (const point of state.path) {
-      totalDuration += point.duration ?? DEFAULT_DURATION;
-    }
 
     // 현재 구간 찾기
     for (let i = 0; i < state.path.length; i++) {
@@ -204,9 +216,8 @@ export function CameraTransitionController({
         const segmentElapsed = elapsed - accumulatedTime;
         const rawProgress = segmentElapsed / segmentDuration;
 
-        // 이징 적용
-        const easingFn = getEasingFunction(state.options.easing);
-        const easedProgress = easingFn(rawProgress);
+        // 이징 적용 (캐시된 함수 사용)
+        const easedProgress = state.easingFn(rawProgress);
 
         // 경로상의 위치 계산
         const segmentPoints = state.segmentPointsCache.get(i);
@@ -218,11 +229,8 @@ export function CameraTransitionController({
         const currentPoint = segmentPoints[pointIndex];
         const nextPoint = segmentPoints[Math.min(pointIndex + 1, segmentPoints.length - 1)];
 
-        // 보간
-        const interpolated = new Vector3().lerpVectors(currentPoint, nextPoint, localProgress);
-
-        // 카메라 위치 업데이트
-        camera.position.copy(interpolated);
+        // 보간 (카메라 position에 직접 lerp 적용하여 객체 생성 최소화)
+        camera.position.lerpVectors(currentPoint, nextPoint, localProgress);
         // 카메라가 지구 중심(0,0,0)을 바라보도록 설정
         camera.lookAt(0, 0, 0);
 
