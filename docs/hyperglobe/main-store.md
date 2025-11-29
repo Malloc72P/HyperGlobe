@@ -26,6 +26,19 @@ hoveredRegion: RegionModel | null
 - 마우스 이동 시 자동으로 감지되어 업데이트
 - R-Tree를 사용하여 효율적으로 지역 찾기
 
+### loading
+```typescript
+loading: boolean
+```
+
+지도 데이터 로딩 상태입니다.
+
+**용도:**
+- 로딩 인디케이터 표시
+- 초기 렌더링 시 로딩 상태 관리
+
+**기본값:** `true`
+
 ### tooltipRef
 ```typescript
 tooltipRef: RefObject<HTMLDivElement | null> | null
@@ -64,10 +77,12 @@ getTooltipPosition: UpdateTooltipPositionFn | null
 
 **시그니처:**
 ```typescript
-type UpdateTooltipPositionFn = (param: {
-  point: Coordinate;        // 툴팁 기본 위치
-  tooltipElement: HTMLDivElement;  // 툴팁 DOM
-}) => Coordinate | null;  // 조정된 위치 또는 null
+interface UpdateTooltipPositionFnParam {
+  point: Coordinate;              // 툴팁을 표시할 좌표
+  tooltipElement: HTMLDivElement; // 툴팁 DOM 요소
+}
+
+type UpdateTooltipPositionFn = (param: UpdateTooltipPositionFnParam) => Coordinate | null;
 ```
 
 **역할:**
@@ -75,6 +90,26 @@ type UpdateTooltipPositionFn = (param: {
 - null 반환 시 툴팁 숨김
 
 ## 주요 액션
+
+### 로딩 상태 관리
+
+#### setLoading
+```typescript
+setLoading: (loading: boolean) => void
+```
+
+로딩 상태를 설정합니다.
+
+**사용 예시:**
+```typescript
+const setLoading = useMainStore((s) => s.setLoading);
+
+// 데이터 로딩 시작
+setLoading(true);
+
+// 데이터 로딩 완료
+setLoading(false);
+```
 
 ### 호버 관리
 
@@ -278,23 +313,24 @@ const hoveredRegion = useMainStore((s) => s.hoveredRegion);
 R-Tree에 저장되는 RegionModel의 구조:
 
 ```typescript
-interface RegionModel<DATA_TYPE = any> {
-  id: string;           // 지역 ID
-  name: string;         // 지역 이름
-  
-  // Bounding Box (R-Tree용)
+interface BoundingBox {
   minX: number;
   minY: number;
   maxX: number;
   maxY: number;
-  
-  // 추가 데이터
-  data?: DATA_TYPE;
-  
-  // 기타 속성
-  properties: Record<string, any>;
+}
+
+interface RegionModel<DATA_TYPE = any> extends BoundingBox {
+  id: string;                      // 지역 ID
+  name: string;                    // 지역 이름
+  bboxSize: number;                // 바운딩 박스 크기 (width * height)
+  polygons: FeaturePolygons[];     // 지역의 폴리곤 좌표 배열
+  data?: DATA_TYPE;                // 추가 데이터 (예: GDP, 인구 등)
+  properties: Record<string, any>; // 기타 속성
 }
 ```
+
+**참고:** `RegionModel`은 `BoundingBox`를 extend하므로 R-Tree에서 직접 사용 가능합니다.
 
 ## 성능 최적화
 
