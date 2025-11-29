@@ -28,11 +28,6 @@ export interface RouteFeatureProps {
   to: RoutePoint;
 
   /**
-   * 최소 높이 (시작점/끝점)
-   */
-  //   minHeight: number;
-
-  /**
    * 최대 높이 (중간점)
    */
   maxHeight: number;
@@ -58,12 +53,12 @@ export interface RouteFeatureProps {
   animated?: boolean;
 
   /**
-   * 애니메이션 지속 시간 (초 단위, 기본값: 2)
+   * 애니메이션 지속 시간 (밀리초, 기본값: 2)
    */
   animationDuration?: number;
 
   /**
-   * 애니메이션 시작 딜레이 (초 단위, 기본값: 0)
+   * 애니메이션 시작 딜레이 (밀리초, 기본값: 0)
    */
   animationDelay?: number;
 
@@ -78,10 +73,10 @@ export function RouteFeature({
   to,
   maxHeight,
   lineWidth,
-  segments = 50,
+  segments = 500,
   style,
   animated = true,
-  animationDuration = 2,
+  animationDuration = 1000,
   animationDelay = 0,
   objectScale = 1,
 }: RouteFeatureProps) {
