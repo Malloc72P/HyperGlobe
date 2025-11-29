@@ -55,6 +55,20 @@ ColorScale은 데이터 값에 따라 지역에 자동으로 색상을 적용하
 // 기본값: (dataItem) => dataItem.value
 ```
 
+### 반환값
+
+#### colorscale
+컬러스케일 모델 (`ColorScaleModel`)
+- RegionFeature에 전달하면 값에 따라 스타일이 자동 적용됩니다.
+
+#### resolveFeatureData
+피쳐에 해당하는 데이터를 찾아 반환하는 함수
+```typescript
+(feature: HGMFeature) => { value: number | null }
+```
+- RegionFeature의 `data` prop에 전달합니다.
+- 값이 null인 피쳐에 대한 스타일은 `nullStyle`로 지정합니다.
+
 ## 사용 예시
 
 ### 기본 사용
@@ -68,7 +82,7 @@ function GDPMap() {
     { id: 'JPN', value: 40000 }
   ];
 
-  const { colorscale } = useColorScale({
+  const { colorscale, resolveFeatureData } = useColorScale({
     steps: [
       { 
         from: 0, 
@@ -101,6 +115,7 @@ function GDPMap() {
           key={feature.id}
           feature={feature}
           colorscale={colorscale}
+          data={resolveFeatureData(feature)}
         />
       ))}
     </HyperGlobe>
@@ -116,12 +131,19 @@ const populationData = [
   { countryCode: 'USA', population: 331000000 }
 ];
 
-const { colorscale } = useColorScale({
+const { colorscale, resolveFeatureData } = useColorScale({
   steps: [...],
   data: populationData,
   itemResolver: (feature, item) => feature.id === item.countryCode,
   valueResolver: (item) => item.population
 });
+
+// RegionFeature에 data prop 전달
+<RegionFeature
+  feature={feature}
+  colorscale={colorscale}
+  data={resolveFeatureData(feature)}
+/>
 ```
 
 ### null 값 처리
@@ -162,15 +184,22 @@ const { colorscale } = useColorScale({
 
 ### 기본 사용
 ```tsx
-import { ColorScaleBar } from 'hyperglobe';
+import { ColorScaleBar, useColorScale } from 'hyperglobe';
 
 function App() {
-  const { colorscale } = useColorScale({...});
+  const { colorscale, resolveFeatureData } = useColorScale({...});
 
   return (
     <div>
       <HyperGlobe>
-        {/* 지도 컴포넌트 */}
+        {features.map(feature => (
+          <RegionFeature
+            key={feature.id}
+            feature={feature}
+            colorscale={colorscale}
+            data={resolveFeatureData(feature)}
+          />
+        ))}
       </HyperGlobe>
       
       <ColorScaleBar colorScale={colorscale} />
@@ -213,21 +242,21 @@ function App() {
 ### 컬러스케일 모델 구조
 ```typescript
 interface ColorScaleModel {
-  nullStyle?: FeatureStyle;
-  steps: ColorScaleStepModel[];
-  minValue: number;    // 데이터 최솟값
-  maxValue: number;    // 데이터 최댓값
+  nullStyle?: FeatureStyle;      // 값이 null인 경우 적용될 스타일
+  steps: ColorScaleStepModel[];  // 컬러스케일 구간 목록
+  minValue: number;              // 데이터 최솟값
+  maxValue: number;              // 데이터 최댓값
 }
 
 interface ColorScaleStepModel {
-  id: string;
-  stepTotal: number;   // 전체 구간 수
-  index: number;       // 현재 구간 인덱스
-  label: string;
-  from: number;
-  to: number;
-  style?: FeatureStyle;
-  hoverStyle?: FeatureStyle;
+  id: string;                    // 구간 고유 ID (자동 생성: "cs-step-{index}")
+  stepTotal: number;             // 전체 구간 수
+  index: number;                 // 현재 구간 인덱스 (0부터 시작)
+  label: string;                 // 구간 레이블
+  from: number;                  // 하한 (포함)
+  to: number;                    // 상한 (미포함)
+  style?: FeatureStyle;          // 적용할 스타일
+  hoverStyle?: FeatureStyle;     // 호버 스타일
 }
 ```
 
@@ -240,21 +269,27 @@ RegionFeature에 컬러스케일이 설정되면, style prop은 무시됩니다.
 
 ### 마커 위치 계산
 
-ColorScaleBar의 마커는 다음 알고리즘으로 위치를 계산합니다:
+ColorScaleBar의 마커는 호버된 지역의 값 위치를 실시간으로 표시합니다:
 
 ```typescript
 // 1. 값이 속한 구간 찾기
 const step = findStepByValue(colorscale, value);
 
-// 2. 구간 내 상대 위치 계산
+// 2. 구간의 from/to 값 계산 (무한대는 minValue/maxValue로 대체)
 const from = resolveNumber(step.from, minValue);
 const to = resolveNumber(step.to, maxValue);
-const relativePosition = (value - from) / (to - from);
 
-// 3. 전체 막대에서의 절대 위치
+// 3. 스텝 너비 및 시작 위치 계산
 const stepWidth = 1 / colorscale.steps.length;
 const startPosition = step.index / colorscale.steps.length;
+
+// 4. 구간 내 상대 위치 계산 (0~1 사이)
+const stepRange = to - from;
+const relativePosition = (value - from) / stepRange;
+
+// 5. 최종 위치 계산 (0~100%)
 const position = startPosition + relativePosition * stepWidth;
+return Math.max(0, Math.min(100, position * 100));
 ```
 
 ### 무한대 처리
@@ -273,6 +308,7 @@ const position = startPosition + relativePosition * stepWidth;
 
 #### 헬퍼 함수
 - `findStepByValue`: 값에 해당하는 구간 찾기
+- `isCurrentStep`: 값이 특정 구간에 속하는지 확인
 - `getColorScaleStyle`: 값에 따른 스타일 반환
 - `getColorScaleHoverStyle`: 값에 따른 호버 스타일 반환
 
