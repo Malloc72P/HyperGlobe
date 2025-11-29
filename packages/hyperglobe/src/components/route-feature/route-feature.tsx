@@ -48,12 +48,12 @@ export interface RouteFeatureProps {
   style?: FeatureStyle;
 
   /**
-   * 애니메이션 활성화 여부 (기본값: false)
+   * 애니메이션 활성화 여부 (기본값: true)
    */
   animated?: boolean;
 
   /**
-   * 애니메이션 지속 시간 (밀리초, 기본값: 2)
+   * 애니메이션 지속 시간 (밀리초, 기본값: 1000)
    */
   animationDuration?: number;
 

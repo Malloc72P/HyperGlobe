@@ -35,7 +35,7 @@ interface RouteFeatureProps {
 
 시작점(from)에서 끝점(to)까지 구면 상의 최단 경로인 대권항로를 따라 경로 점들 `P = [P1, P2, ..., Pn]`을 생성합니다.
 
-- 점의 개수는 `segments` 파라미터로 제어 (기본값: 50)
+- 점의 개수는 `segments` 파라미터로 제어 (기본값: 500)
 - **구면 선형 보간**(Spherical Linear Interpolation, SLERP) 사용
 
 #### SLERP 공식
@@ -190,9 +190,9 @@ const fromVector = new Vector3(
 ### 성능 최적화
 
 ```typescript
-const pathPoints = useMemo(() => {
+const fullPathPoints = useMemo(() => {
   const points = createGreatCirclePath(from, to, segments)
-  applyHeightProfile(points, minHeight, maxHeight, segments)
+  applyHeight(points, minHeight, maxHeight, segments)
   return points
 }, [from, to, minHeight, maxHeight, segments])
 ```
