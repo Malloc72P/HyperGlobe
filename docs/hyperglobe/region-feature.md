@@ -28,12 +28,22 @@
 - `feature`: HGMFeature 객체 (지역의 지오메트리 정보)
 
 ### 선택
-- `style`: 기본 스타일
-- `hoverStyle`: 호버 시 적용될 스타일
-- `colorscale`: 데이터 시각화를 위한 컬러스케일
+- `style`: 기본 스타일 (FeatureStyle)
+- `hoverStyle`: 호버 시 적용될 스타일 (FeatureStyle)
+- `colorscale`: 데이터 시각화를 위한 컬러스케일 (ColorScaleModel)
 - `data`: 피쳐에 연결된 추가 데이터
-- `wireframe`: 와이어프레임 모드
-- `extrusion`: 측면 렌더링 옵션
+- `wireframe`: 와이어프레임 모드 (boolean)
+- `extrusion`: 측면 렌더링 옵션 (기본값: `{ color: Colors.GRAY[8] }`)
+
+### FeatureStyle
+```typescript
+interface FeatureStyle {
+  color?: string;       // 선 색상
+  lineWidth?: number;   // 선 두께
+  fillColor?: string;   // 면 색상
+  fillOpacity?: number; // 면 투명도 (0~1)
+}
+```
 
 ## 사용 예시
 
@@ -90,7 +100,7 @@ function DataVisualization() {
   feature={feature}
   style={{ fillColor: '#3b82f6' }}
   extrusion={{
-    color: '#1e3a8a'
+    color: '#1e3a8a'  // 기본값: Colors.GRAY[8]
   }}
 />
 ```
@@ -101,13 +111,11 @@ function DataVisualization() {
 
 1. **피쳐 데이터 로드**
    - HGM 포맷의 피쳐 데이터를 RegionModel로 변환
+   - HGM 파일은 CLI 도구로 **전처리**되어 삼각분할이 완료된 상태
 
-2. **삼각분할**
-   - 각 폴리곤을 삼각형 메시로 변환
-   - `delaunayTriangulate` 함수 사용 (Delaunator 라이브러리 기반)
-   - 결과: vertices(정점 배열)와 indices(인덱스 배열)
-
-3. **지오메트리 생성**
+2. **지오메트리 생성**
+   - 전처리된 `vertices`(Float32Array)와 `indices`(Uint32Array)를 사용
+   - 런타임에 삼각분할을 수행하지 않음 (성능 최적화)
    ```typescript
    const geometry = new THREE.BufferGeometry();
    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -115,15 +123,15 @@ function DataVisualization() {
    geometry.computeVertexNormals();
    ```
 
-4. **지오메트리 병합**
+3. **지오메트리 병합**
    - `mergeGeometries` 함수로 모든 폴리곤 병합
    - 드로우콜을 1회로 줄여 성능 최적화
 
-5. **외곽선 생성**
+4. **외곽선 생성**
    - `borderLines.pointArrays`에서 외곽선 좌표 추출
    - `Line` 컴포넌트로 렌더링
 
-6. **측면 생성 (선택적)**
+5. **측면 생성 (선택적)**
    - `createSideGeometry` 함수 사용
    - 외곽선 각 선분마다 사각형(2개 삼각형) 생성
    - 상단: 폴리곤 높이, 하단: 구 표면
@@ -144,11 +152,11 @@ function DataVisualization() {
 
 ### 사용된 수학 라이브러리
 
-#### @hyperglobe/tools
-- `delaunayTriangulate`: 폴리곤 삼각분할
+#### @hyperglobe/tools (CLI 전처리 시 사용)
+- `delaunayTriangulate`: 폴리곤 삼각분할 (HGM 파일 생성 시 사용)
 - `OrthographicProj`: 경위도 ↔ 3D 좌표 변환
 
-#### Three.js
+#### Three.js (런타임 렌더링)
 - `BufferGeometry`: 최적화된 지오메트리 표현
 - `mergeGeometries`: 지오메트리 병합
 - `Float32BufferAttribute`: 정점 데이터 저장
@@ -165,13 +173,30 @@ function DataVisualization() {
 ```typescript
 interface HGMFeature {
   id: string;
-  geometries: Array<{
-    vertices: number[];  // [x, y, z, x, y, z, ...]
-    indices: number[];   // 삼각형 인덱스
-  }>;
-  borderLines: {
-    pointArrays: number[][];  // 외곽선 좌표
-  };
+  // 속성 정보
+  properties: Record<string, any>;
+  // 지오메트리 생성을 위한 정보 (삼각분할 완료된 상태)
+  geometries: GeometrySource[];
+  // 외곽선 정보
+  borderLines: BorderlineSource;
+  // 바운딩 박스
+  bbox: BoundingBox;
+}
+
+interface GeometrySource {
+  vertices: Float32Array;  // [x, y, z, x, y, z, ...]
+  indices: Uint32Array;    // 삼각형 인덱스
+}
+
+interface BorderlineSource {
+  pointArrays: Float32Array[];  // 외곽선 좌표
+}
+
+interface BoundingBox {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
 }
 ```
 
