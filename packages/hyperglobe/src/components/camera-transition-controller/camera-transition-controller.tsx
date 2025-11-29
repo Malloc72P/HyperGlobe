@@ -52,7 +52,7 @@ function estimateDistance(from: Vector3, to: Vector3): number {
  * 거리에 따라 적절한 세그먼트 수를 계산합니다
  */
 function calculateSegments(distance: number): number {
-  return Math.min(100, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
+  return Math.min(200, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
 }
 
 export interface CameraTransitionControllerProps {
