@@ -102,19 +102,25 @@ const radian = toRadian(degree);
 
 **선 렌더링**
 - `GraticuleLine` 컴포넌트 사용
-- Three.js Line을 활용한 효율적인 렌더링
+- `@react-three/drei`의 `Line` 컴포넌트를 활용한 효율적인 렌더링
+
+**극점 처리**
+- 위도가 ±90도(극점)인 경우 격자선을 그리지 않음 (점으로 수렴하므로 불필요)
+
+**Z-fighting 방지**
+- 격자선 반지름에 미세한 오프셋(+0.0006)을 추가하여 지구본 표면과의 깜빡임 현상 방지
 
 ## 구현 상세
 
 ### GraticuleLine 컴포넌트
-내부적으로 사용되는 개별 격자선 컴포넌트입니다.
+내부적으로 사용되는 개별 격자선 컴포넌트입니다. `@react-three/drei`의 `Line` 컴포넌트를 래핑합니다.
 
 **Props:**
-- `y`: y 좌표 (위선용)
-- `rotateX`: x축 회전 (위선용)
-- `rotateY`: y축 회전 (경선용)
-- `color`: 선 색상
-- `lineWidth`: 선 두께
+- `y`: y 좌표 (위선용, 기본값: 0)
+- `rotateX`: x축 회전 (위선용, 기본값: 0)
+- `rotateY`: y축 회전 (경선용, 기본값: 0)
+- `color`: 선 색상 (기본값: 'yellow')
+- `lineWidth`: 선 두께 (기본값: 3)
 
 ### 좌표계
 HyperGlobe는 다음 좌표계를 사용합니다:
