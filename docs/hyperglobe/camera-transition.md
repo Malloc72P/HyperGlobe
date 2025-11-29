@@ -30,7 +30,7 @@ function App() {
       ],
       {
         lockCamera: true,
-        easing: 'ease-in-out',
+        easing: 'linear',
         onComplete: () => console.log('투어 완료!')
       }
     );
@@ -82,16 +82,9 @@ interface CameraTransitionOptions {
   /**
    * 이징 함수 타입
    * 
-   * @default 'ease-in-out'
+   * @default 'linear'
    */
   easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
-  
-  /**
-   * 애니메이션 진행률 변경 시 호출되는 콜백
-   * 
-   * @param progress - 0~100 사이의 진행률
-   */
-  onProgress?: (progress: number) => void;
   
   /**
    * 각 경로 지점에 도착했을 때 호출되는 콜백
@@ -130,32 +123,34 @@ interface HyperglobeRef {
 }
 ```
 
-## 구현 계획
+## 구현 상세
 
 ### 1. 타입 정의
-**파일**: `packages/hyperglobe/src/types/camera.ts` (신규)
+**파일**: `packages/hyperglobe/src/types/camera.ts`
 
 - `PathPoint` 인터페이스
 - `CameraTransitionOptions` 인터페이스
-- `HyperglobeRef` 인터페이스 (카메라 관련 메서드만 우선 정의)
+- `HyperglobeRef` 인터페이스
 
-### 2. 카메라 트랜지션 훅
-**파일**: `packages/hyperglobe/src/hooks/use-camera-transition.ts` (신규)
+### 2. 카메라 트랜지션 컨트롤러
+**파일**: `packages/hyperglobe/src/components/camera-transition-controller/camera-transition-controller.tsx`
+
+Canvas 내부에서 카메라 트랜지션을 제어하는 컴포넌트입니다. Canvas 외부에서는 Three.js 컨텍스트에 접근할 수 없으므로, HyperGlobe 컴포넌트 내부에서 렌더링됩니다.
 
 #### 주요 기능:
 - `followPath` 구현
   - 현재 카메라 위치를 시작점으로 사용
-  - `createGreatCirclePath`를 사용하여 각 구간의 경로 생성
+  - `lerpVectors`를 사용하여 각 구간의 경로 생성 (선형 보간)
   - `useFrame`을 활용한 애니메이션 프레임 업데이트
   - 이징 함수 적용
-  - 진행률, 지점 도착, 완료 이벤트 발생
+  - 지점 도착, 완료 이벤트 발생
 
 - `cancelTransition` 구현
   - 애니메이션 상태 초기화
   - OrbitControls 복원
 
 #### 의존성:
-- `@hyperglobe/tools`의 `createGreatCirclePath`
+- `@hyperglobe/tools`의 `OrthographicProj`
 - `@react-three/fiber`의 `useFrame`, `useThree`
 - Three.js의 `Vector3`, `Camera`
 
@@ -165,10 +160,12 @@ interface TransitionState {
   isActive: boolean;
   path: PathPoint[];
   currentSegmentIndex: number;
-  segmentProgress: number; // 0~1
-  segmentPoints: Vector3[]; // 현재 구간의 보간 포인트들
+  segmentPointsCache: Map<number, Vector3[]>;  // 각 구간별 보간 포인트 캐시
   startTime: number;
   options: Required<CameraTransitionOptions>;
+  lastReachedIndex: number;
+  totalDuration: number;    // 전체 애니메이션 길이 (캐시)
+  easingFn: (t: number) => number;  // 이징 함수 (캐시)
 }
 ```
 
@@ -178,7 +175,7 @@ interface TransitionState {
 #### 변경 사항:
 1. `forwardRef`를 사용하여 ref 지원 추가
 2. `HyperglobeRef` 타입 구현
-3. 내부에서 `useCameraTransition` 훅 사용
+3. 내부에서 `CameraTransitionController` 컴포넌트 사용
 4. OrbitControls에 `enabled` prop 바인딩
 5. `useImperativeHandle`로 `followPath`, `cancelTransition` 메서드 노출
 
@@ -187,19 +184,21 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
   function HyperGlobe(props, ref) {
     // ... 기존 코드 ...
     
-    const {
-      followPath,
-      cancelTransition,
-      isLocked
-    } = useCameraTransition();
+    const followPathRef = useRef<...>(null);
+    const cancelTransitionRef = useRef<...>(null);
     
     useImperativeHandle(ref, () => ({
-      followPath,
-      cancelTransition,
+      followPath: (path, options) => followPathRef.current?.(path, options),
+      cancelTransition: () => cancelTransitionRef.current?.(),
     }));
     
     return (
       <Canvas>
+        <CameraTransitionController
+          onLockChange={setIsLocked}
+          onFollowPathReady={(fn) => { followPathRef.current = fn; }}
+          onCancelTransitionReady={(fn) => { cancelTransitionRef.current = fn; }}
+        />
         <OrbitControls
           enabled={!isLocked}
           // ... 기존 props ...
@@ -212,7 +211,7 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
 ```
 
 ### 4. 유틸리티 함수
-**파일**: `packages/hyperglobe/src/lib/easing.ts` (신규)
+**파일**: `packages/hyperglobe/src/lib/easing.ts`
 
 이징 함수 구현:
 ```ts
@@ -233,9 +232,12 @@ export const easingFunctions: Record<string, EasingFunction> = {
 2. 현재 어느 구간에 있는지 판단
 3. 구간 내 진행률 계산
 4. 이징 함수 적용
-5. `createGreatCirclePath`로 생성된 포인트들 사이에서 보간
-6. 카메라 위치 업데이트
+5. `lerpVectors`로 생성된 포인트들 사이에서 보간 (선형 보간)
+6. 카메라 위치 업데이트 및 지구 중심을 바라보도록 설정
 7. distance 값에 따라 카메라 거리 조정
+
+> **참고**: 실제 구현에서는 SLERP(구면 선형 보간) 대신 `lerpVectors`(선형 보간)를 사용합니다. 
+> 짧은 구간에서는 두 방식의 차이가 미미하며, 선형 보간이 더 간단하고 성능상 유리합니다.
 
 ```ts
 // 의사 코드
@@ -253,24 +255,19 @@ const updateCamera = (deltaTime: number) => {
       const segmentElapsed = elapsed - accumulatedTime;
       const rawProgress = segmentElapsed / segmentDuration;
       
-      // 3. 이징 적용
-      const easedProgress = easing(rawProgress);
+      // 3. 이징 적용 (캐시된 함수 사용)
+      const easedProgress = state.easingFn(rawProgress);
       
       // 4. 경로상의 위치 계산
+      const segmentPoints = state.segmentPointsCache.get(i);
       const pointIndex = Math.floor(easedProgress * (segmentPoints.length - 1));
       const localProgress = (easedProgress * (segmentPoints.length - 1)) % 1;
       
-      // 5. 보간
-      const currentPoint = segmentPoints[pointIndex];
-      const nextPoint = segmentPoints[pointIndex + 1];
-      const interpolated = currentPoint.lerp(nextPoint, localProgress);
+      // 5. 보간 (카메라 position에 직접 lerp 적용)
+      camera.position.lerpVectors(currentPoint, nextPoint, localProgress);
       
-      // 6. 카메라 업데이트
-      camera.position.copy(interpolated);
-      
-      // 7. distance 적용
-      const targetDistance = state.path[i].distance || 5;
-      camera.position.normalize().multiplyScalar(targetDistance);
+      // 6. 카메라가 지구 중심을 바라보도록 설정
+      camera.lookAt(0, 0, 0);
       
       break;
     }
@@ -281,14 +278,6 @@ const updateCamera = (deltaTime: number) => {
 ```
 
 ## 테스트 계획
-
-### 단위 테스트
-**파일**: `packages/hyperglobe/src/hooks/use-camera-transition.test.ts`
-
-- 경로 포인트 보간 정확성
-- 이징 함수 적용 확인
-- 진행률 계산 검증
-- 콜백 호출 타이밍 검증
 
 ### 통합 테스트 (Storybook)
 **파일**: `packages/hyperglobe/pages/camera-transition/camera-transition.stories.tsx`
@@ -308,16 +297,16 @@ const updateCamera = (deltaTime: number) => {
 - 취소 기능 동작 확인
 - lockCamera 옵션 동작 확인
 
-## 구현 순서
+## 구현 체크리스트
 
-1. ✅ 타입 정의 작성
-2. ✅ 이징 함수 유틸리티 구현
-3. ✅ `useCameraTransition` 훅 구현
-4. ✅ `HyperGlobe` 컴포넌트에 ref 지원 추가
-5. ✅ Storybook 스토리 작성 및 수동 테스트
-6. ✅ 단위 테스트 작성
-7. ✅ E2E 테스트 작성
-8. ✅ 문서화 업데이트 (README, API 문서)
+- [x] 타입 정의 작성 (`types/camera.ts`)
+- [x] 이징 함수 유틸리티 구현 (`lib/easing.ts`)
+- [x] `CameraTransitionController` 컴포넌트 구현
+- [x] `HyperGlobe` 컴포넌트에 ref 지원 추가
+- [x] Storybook 스토리 작성 및 수동 테스트
+- [ ] 단위 테스트 작성
+- [ ] E2E 테스트 작성
+- [x] 문서화 업데이트
 
 ## 주의사항
 
@@ -331,8 +320,7 @@ const updateCamera = (deltaTime: number) => {
 1. **totalDuration 캐싱**: 매 프레임 재계산 대신 초기화 시 한 번만 계산
 2. **이징 함수 캐싱**: 함수 조회를 초기화 시 한 번만 수행
 3. **Vector3 객체 재사용**: `camera.position.lerpVectors()` 직접 호출로 새 객체 생성 최소화
-4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 생성하여 캐시
-5. **onProgress 쓰로틀링**: 100ms 간격으로 제한하여 React 상태 업데이트 빈도 감소
+4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 생성하여 `segmentPointsCache`에 캐시
 
 #### segments 수 동적 조정
 ```ts
@@ -367,4 +355,4 @@ const calculateSegments = (from: Coordinate, to: Coordinate): number => {
 
 - [HyperGlobe 컴포넌트](./hyperglobe-component.md)
 - [RouteFeature 컴포넌트](./route-feature.md)
-- [수학 라이브러리](./math-libraries.md) - `createGreatCirclePath` 활용
+- [수학 라이브러리](./math-libraries.md) - `OrthographicProj` 활용
