@@ -26,6 +26,22 @@ toRadian(360);  // 2π ≈ 6.2832
 - 회전 변환
 - 구면 좌표 계산
 
+#### magnitude2D(vector)
+2차원 벡터의 크기(길이)를 계산합니다.
+
+```typescript
+import { magnitude2D } from '@hyperglobe/tools';
+
+magnitude2D([3, 4]);  // 5
+magnitude2D([1, 1]);  // √2 ≈ 1.414
+```
+
+**공식:** `√(x² + y²)`
+
+**사용처:**
+- 2D 벡터 정규화
+- 평면 거리 계산
+
 #### magnitude3D(vector)
 3차원 벡터의 크기(길이)를 계산합니다.
 
@@ -73,6 +89,23 @@ roundCoordinate([127.123456789, 37.987654321]);
 - 중복 제거
 - 정밀도 제한
 
+#### calcProgress(elapsedTime, startTime, animationDuration)
+애니메이션 진행률(0~1)을 계산합니다.
+
+```typescript
+import { calcProgress } from '@hyperglobe/tools';
+
+// 1초 경과, 시작 시간 0, 총 2000ms 애니메이션
+calcProgress(1, 0, 2000);  // 0.5
+
+// 3초 경과, 시작 시간 0, 총 2000ms 애니메이션 (최대 1)
+calcProgress(3, 0, 2000);  // 1
+```
+
+**사용처:**
+- 카메라 전환 애니메이션
+- 부드러운 상태 전환
+
 ### 투영 변환 (projections/)
 
 #### OrthographicProj.project(coordinate, radius)
@@ -109,6 +142,18 @@ z = cos(φ) * sin(λ) * radius
 - GeoJSON → 3D 메시 변환
 - 지구본 표면 좌표 계산
 
+#### OrthographicProj.projects(coordinates, radius)
+여러 경위도 좌표를 한 번에 3D 직교좌표계로 변환합니다.
+
+```typescript
+OrthographicProj.projects([[0, 0], [90, 0], [0, 90]]);
+// → [[1, 0, 0], [0, 0, 1], [0, 1, 0]]
+```
+
+**사용처:**
+- 다중 좌표 일괄 변환
+- 폴리곤 경계선 변환
+
 #### OrthographicProj.unproject(vector, radius)
 3D 직교좌표를 경위도로 역변환합니다.
 
@@ -120,6 +165,36 @@ OrthographicProj.unproject([1, 0, 0]);
 **사용처:**
 - 마우스 피킹 결과 변환
 - 3D 위치 → 지리 좌표
+
+#### OrthographicProj.interpolate(start, end, segments, radius)
+두 3D 벡터 사이를 구면을 따라 보간합니다. 선형 보간 후 구 표면에 투영하는 방식입니다.
+
+```typescript
+const start = [1, 0, 0];  // 경도 0도
+const end = [0, 1, 0];    // 북극
+const points = OrthographicProj.interpolate(start, end, 5);
+// 두 점 사이를 5개의 세그먼트로 나눈 점들 반환
+```
+
+**사용처:**
+- 구면 경로 생성
+- 부드러운 곡선 보간
+
+#### OrthographicProj.interpolates(coordinatePairs, segments, radius)
+여러 좌표 쌍에 대해 구면 보간을 수행합니다.
+
+```typescript
+const pairs = [
+  [[1, 0, 0], [0, 1, 0]],
+  [[0, 0, 1], [-1, 0, 0]]
+];
+OrthographicProj.interpolates(pairs, 10);
+// 각 쌍에 대해 보간된 점들의 배열 반환
+```
+
+**사용처:**
+- 다중 경로 일괄 처리
+- 폴리곤 외곽선 보간
 
 ### 폴리곤 처리 (polygon/)
 
@@ -232,10 +307,54 @@ getBoundingBox(coords);
 - 지역 단위 경계 계산
 - 카메라 포커스
 
+#### createGreatCirclePath(from, to, segments)
+두 경위도 좌표 사이의 대권항로(Great Circle Path)를 생성합니다. SLERP(Spherical Linear Interpolation)를 사용하여 구면을 따라 최단 경로를 계산합니다.
+
+```typescript
+import { createGreatCirclePath } from '@hyperglobe/tools';
+
+// 서울에서 뉴욕까지 대권항로 생성
+const seoul = [126.9780, 37.5665];
+const newYork = [-74.0060, 40.7128];
+const path = createGreatCirclePath(seoul, newYork, 100);
+// Vector3[] - 100개의 세그먼트로 이루어진 경로 점들
+```
+
+**특징:**
+- SLERP 알고리즘으로 정확한 구면 보간
+- 두 점이 매우 가까울 경우 선형 보간으로 폴백
+- Three.js Vector3 배열 반환
+
+**사용처:**
+- RouteFeature의 비행 경로 생성
+- 두 지점 간 최단 거리 경로
+
+#### applyHeight(pathPoints, minHeight, maxHeight, segments)
+경로 점들에 높이 프로필을 적용합니다. Sin 함수를 사용하여 부드러운 포물선 형태의 높이를 만듭니다.
+
+```typescript
+import { applyHeight } from '@hyperglobe/tools';
+
+const pathPoints = createGreatCirclePath(seoul, newYork, 100);
+applyHeight(pathPoints, 0.01, 0.1, 100);
+// pathPoints가 in-place로 수정됨
+// 경로 중간이 가장 높고 양 끝이 낮은 포물선 형태
+```
+
+**높이 공식:**
+```
+heightFactor = sin(π × t)  // t: 0~1 진행률
+height = minHeight + (maxHeight - minHeight) × heightFactor
+```
+
+**사용처:**
+- 비행 경로의 고도 표현
+- 부드러운 곡선 경로 생성
+
 ### 안전한 값 처리 (safe-value/)
 
 #### isSafeNumber(value)
-값이 안전한 숫자인지 확인합니다 (NaN, Infinity 제외).
+값이 안전한 숫자인지 확인합니다. `Number.isFinite()`를 사용하여 NaN, Infinity를 제외합니다.
 
 ```typescript
 import { isSafeNumber } from '@hyperglobe/tools';
@@ -244,14 +363,16 @@ isSafeNumber(42);        // true
 isSafeNumber(NaN);       // false
 isSafeNumber(Infinity);  // false
 isSafeNumber(null);      // false
+isSafeNumber('42');      // false (문자열은 숫자가 아님)
 ```
 
 **사용처:**
 - 컬러스케일 값 검증
 - 데이터 유효성 검사
+- 타입 가드
 
 #### resolveNumber(value, fallback)
-값이 유효하지 않으면 fallback을 반환합니다.
+값이 유효하지 않으면 fallback을 반환합니다. `null`, `undefined`, `NaN`, `Infinity`를 모두 처리합니다.
 
 ```typescript
 import { resolveNumber } from '@hyperglobe/tools';
@@ -260,11 +381,31 @@ resolveNumber(42, 0);        // 42
 resolveNumber(NaN, 0);       // 0
 resolveNumber(Infinity, 0);  // 0
 resolveNumber(null, 100);    // 100
+resolveNumber(undefined, 0); // 0
 ```
 
 **사용처:**
 - 기본값 설정
 - 안전한 계산
+
+### 상수 (constants/)
+
+#### MathConstants
+렌더링에 사용되는 Z-인덱스 상수를 제공합니다.
+
+```typescript
+import { MathConstants } from '@hyperglobe/tools';
+
+// 피쳐 외곽선의 Z-인덱스 (구체보다 위, 면보다 위)
+MathConstants.FEATURE_STROKE_Z_INDEX  // 1.0035
+
+// 피쳐 면(메쉬)의 Z-인덱스 (구체보다 위, 외곽선보다 아래)
+MathConstants.FEATURE_FILL_Z_INDEX    // 1.003
+```
+
+**사용처:**
+- Z-fighting 방지
+- 렌더링 순서 제어
 
 ## Three.js 라이브러리
 
