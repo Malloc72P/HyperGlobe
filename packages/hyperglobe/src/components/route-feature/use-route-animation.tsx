@@ -57,6 +57,8 @@ export function useRouteAnimation({
     const line = lineRef.current;
     const head = headRef.current;
 
+    // 로딩중이거나 애니메이션이 끝났거나 비활성화된 경우 처리 중지.
+    // 로딩이 끝나야 라우트 애니메이션을 실행한다.
     if (hasFinished || !animated || !line || loading) {
       if (head) head.visible = false;
       return;
@@ -64,13 +66,20 @@ export function useRouteAnimation({
 
     // 딜레이 처리
     if (!hasStarted) {
+      // 아직 시작하지 않은 경우, 애니메이션에 필요한 컨택스트를 채운다.
       if (startTime === null) {
+        // 시작 시간 설정
         animationState.startTime = state.clock.elapsedTime;
         return;
       }
-      const delayElapsed = state.clock.elapsedTime - startTime;
-      if (delayElapsed < animationDelay) return;
 
+      // 딜레이 시간 경과 확인
+      const delayElapsed = state.clock.elapsedTime - startTime;
+
+      // 딜레이 시간 전이면 처리 중지.
+      if (delayElapsed < animationDelay * 0.001) return;
+
+      // 애니메이션 시작
       animationState.hasStarted = true;
       animationState.startTime = state.clock.elapsedTime;
       return;

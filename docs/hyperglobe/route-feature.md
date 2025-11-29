@@ -7,16 +7,27 @@ RouteFeature는 3D 지구본 위에 시작점부터 끝점까지 대권항로(Gr
 ## 인터페이스
 
 ```typescript
+interface RoutePoint {
+  coordinate: Coordinate;  // 좌표 [경도, 위도]
+  label?: string;          // 마커 라벨 (설정 시 MarkerFeature 렌더링)
+  style?: SvgStyle;        // 마커 스타일
+}
+
 interface RouteFeatureProps {
-  from: Coordinate;        // 시작점 좌표 [경도, 위도]
-  to: Coordinate;          // 끝점 좌표 [경도, 위도]
-  minHeight: number;       // 최소 높이 (시작점/끝점)
-  maxHeight: number;       // 최대 높이 (중간점)
-  lineWidth: number;       // 선 너비
-  segments?: number;       // 경로 보간 개수 (기본값: 50)
-  style?: FeatureStyle;    // 색상, 투명도 등 스타일 옵션
+  from: RoutePoint;              // 시작점 정보
+  to: RoutePoint;                // 끝점 정보
+  maxHeight: number;             // 최대 높이 (중간점)
+  lineWidth: number;             // 선 너비
+  segments?: number;             // 경로 보간 개수 (기본값: 500)
+  style?: FeatureStyle;          // 색상, 투명도 등 스타일 옵션
+  animated?: boolean;            // 애니메이션 활성화 여부 (기본값: true)
+  animationDuration?: number;    // 애니메이션 지속 시간 (밀리초, 기본값: 1000)
+  animationDelay?: number;       // 애니메이션 시작 딜레이 (밀리초, 기본값: 0)
+  objectScale?: number;          // 도형 크기 스케일 (기본값: 1)
 }
 ```
+
+> **참고**: `minHeight`는 내부적으로 `UiConstant.feature.strokeRadius - 1`로 고정되어 있습니다.
 
 ## 주요 기능
 
@@ -95,29 +106,47 @@ for (let i = 0; i < pathPoints.length; i++) {
 - `point * (1 + height)` = 반지름 증가
 - 부드러운 포물선 형태로 자연스러운 곡선 생성
 
-### 3. Line 렌더링
+### 3. Line 렌더링 및 애니메이션
 
-`@react-three/drei`의 `Line` 컴포넌트를 사용하여 경로를 렌더링합니다:
+`@react-three/drei`의 `Line` 컴포넌트를 사용하여 경로를 렌더링하며, 애니메이션이 활성화된 경우 경로를 점진적으로 그립니다:
 
 ```typescript
 <Line
-  points={pathPoints}           // Vector3[] 배열
-  color={appliedStyle.color}    // 선 색상
-  lineWidth={lineWidth}         // 선 너비 (픽셀)
+  ref={lineRef}
+  points={fullPathPoints}           // Vector3[] 배열
+  color={appliedStyle.color}        // 선 색상
+  lineWidth={lineWidth}             // 선 너비 (픽셀)
   opacity={appliedStyle.fillOpacity}
   transparent={appliedStyle.fillOpacity !== undefined && appliedStyle.fillOpacity < 1}
 />
+```
+
+#### 애니메이션 동작 원리
+
+- `Line` 컴포넌트의 `geometry.instanceCount`를 조절하여 그릴 세그먼트 수를 제어합니다.
+- 애니메이션 시작 시 `instanceCount`를 0으로 설정하고, 진행률에 따라 점차 증가시킵니다.
+- 경로의 선두에는 헤드(mesh)가 함께 이동하며, 회전 행렬을 사용해 진행 방향을 바라봅니다.
+
+### 4. MarkerFeature 통합
+
+`from` 또는 `to`에 `label`이 설정된 경우, 해당 지점에 `MarkerFeature`가 자동으로 렌더링됩니다:
+
+```typescript
+{from.label && <MarkerFeature {...fromMarker} />}
+{to.label && <MarkerFeature {...toMarker} />}
 ```
 
 ## 구현 특징
 
 ### 장점
 
-✅ **간결한 코드**: 157줄로 완결된 구현  
+✅ **간결한 코드**: 핵심 로직이 훅으로 분리되어 가독성 높음  
 ✅ **우수한 성능**: Line 컴포넌트 사용으로 가볍고 빠름  
 ✅ **유지보수 용이**: 복잡한 메시 생성 로직 없음  
 ✅ **안정적**: drei의 검증된 컴포넌트 활용  
-✅ **충분한 시각화**: 대부분의 경로 표시 용도에 적합
+✅ **충분한 시각화**: 대부분의 경로 표시 용도에 적합  
+✅ **애니메이션 지원**: 경로를 점진적으로 그리는 애니메이션 내장  
+✅ **마커 통합**: 시작/끝점에 자동 마커 표시
 
 ### 제한사항
 
@@ -177,62 +206,65 @@ const pathPoints = useMemo(() => {
 ### 기본 사용
 
 ```typescript
+const seoul: RoutePoint = {
+  coordinate: [126.9780, 37.5665],
+  label: '서울',
+  style: { fill: '#3B82F6', scale: 1.5 },
+};
+
+const london: RoutePoint = {
+  coordinate: [-0.1278, 51.5074],
+  label: '런던',
+  style: { fill: '#3B82F6', scale: 1.5 },
+};
+
 <RouteFeature
-  from={[126.9780, 37.5665]}  // 서울
-  to={[-0.1278, 51.5074]}     // 런던
-  minHeight={0.01}
+  from={seoul}
+  to={london}
   maxHeight={0.3}
   lineWidth={3}
 />
 ```
 
-### 스타일 커스터마이징
+### 애니메이션 비활성화
 
 ```typescript
 <RouteFeature
-  from={[126.9780, 37.5665]}  // 서울
-  to={[-74.0060, 40.7128]}    // 뉴욕
-  minHeight={0.01}
+  from={seoul}
+  to={newYork}
   maxHeight={0.5}
   lineWidth={5}
-  segments={200}
-  style={{
-    color: '#00CED1',
-    fillOpacity: 0.9,
-  }}
+  animated={false}
 />
 ```
 
-### 낮은 호 (단거리)
+### 애니메이션 타이밍 커스터마이징
 
 ```typescript
 <RouteFeature
-  from={[-122.4194, 37.7749]}  // 샌프란시스코
-  to={[-118.2437, 34.0522]}    // 로스앤젤레스
-  minHeight={0.005}
-  maxHeight={0.05}
-  lineWidth={3}
-  segments={50}
-  style={{
-    color: '#FFA500',
-  }}
-/>
-```
-
-### 높은 호 (장거리)
-
-```typescript
-<RouteFeature
-  from={[151.2093, -33.8688]}  // 시드니
-  to={[2.3522, 48.8566]}       // 파리
-  minHeight={0.01}
+  from={seoul}
+  to={sanFrancisco}
   maxHeight={0.4}
   lineWidth={4}
-  segments={150}
-  style={{
-    color: '#6B5B95',
-    fillOpacity: 0.8,
-  }}
+  animationDuration={2000}   // 2초 동안 그리기
+  animationDelay={500}       // 0.5초 후 시작
+  objectScale={1.2}          // 헤드 도형 1.2배 크기
+/>
+```
+
+### 마커 없이 사용
+
+```typescript
+const seoulCoord: RoutePoint = {
+  coordinate: [126.9780, 37.5665],
+  // label 생략 시 마커 미표시
+};
+
+<RouteFeature
+  from={seoulCoord}
+  to={londonCoord}
+  maxHeight={0.3}
+  lineWidth={3}
 />
 ```
 
@@ -242,19 +274,19 @@ const pathPoints = useMemo(() => {
 
 경로의 부드러움을 결정합니다:
 
-- **50** (기본값): 대부분의 경우 충분
-- **100-150**: 장거리 또는 부드러운 곡선 필요 시
-- **200+**: 매우 긴 경로나 정밀한 시각화
+- **500** (기본값): 부드러운 애니메이션을 위한 기본값
+- **100-200**: 짧은 거리나 성능이 중요한 경우
+- **1000+**: 매우 긴 경로나 극도로 정밀한 시각화
 
-**주의**: 세그먼트가 많을수록 성능 저하
+**주의**: 세그먼트가 많을수록 애니메이션은 부드럽지만 성능에 영향을 줄 수 있습니다.
 
-### minHeight / maxHeight
+### maxHeight
 
-경로의 높이 범위를 결정합니다:
+경로의 최고점 높이를 결정합니다:
 
-- **minHeight**: 0.005 ~ 0.02 (시작/끝점 높이)
-- **maxHeight**: 0.05 ~ 0.5 (중간점 최고 높이)
-- 값이 클수록 경로가 높이 솟아오름
+- **0.05 ~ 0.1**: 낮은 호 (단거리)
+- **0.2 ~ 0.3**: 표준 높이 (중거리)
+- **0.4 ~ 0.5**: 높은 호 (장거리)
 
 **지구 반지름 대비 상대값**:
 - 0.01 = 지구 반지름의 1%
@@ -269,6 +301,39 @@ const pathPoints = useMemo(() => {
 - **6+**: 두꺼운 선 (주요 경로)
 
 **주의**: drei의 Line 컴포넌트는 픽셀 단위 너비 사용
+
+### 애니메이션 관련 파라미터
+
+#### animationDuration (밀리초)
+
+경로를 완전히 그리는데 걸리는 시간:
+
+- **500**: 빠른 애니메이션
+- **1000** (기본값): 표준 속도
+- **2000+**: 느린 애니메이션
+
+#### animationDelay (밀리초)
+
+애니메이션 시작 전 대기 시간. 여러 RouteFeature를 순차적으로 그릴 때 유용:
+
+```typescript
+// 순차적 경로 그리기 예시
+{routes.map((route, index) => (
+  <RouteFeature
+    {...route}
+    animationDuration={1000}
+    animationDelay={(index + 1) * 1000 + 200}  // 각 경로가 순서대로 그려짐
+  />
+))}
+```
+
+#### objectScale
+
+경로 선두에 표시되는 헤드 도형의 크기:
+
+- **0.5**: 작은 헤드
+- **1** (기본값): 표준 크기
+- **1.5 ~ 2**: 큰 헤드
 
 ## 참고 자료
 

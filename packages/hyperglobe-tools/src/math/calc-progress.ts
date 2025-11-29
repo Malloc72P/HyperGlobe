@@ -4,5 +4,6 @@ export function calcProgress(
   animationDuration: number
 ): number {
   const elapsed = elapsedTime - startTime;
-  return Math.min(elapsed / animationDuration, 1);
+  const durationSeconds = animationDuration / 1000;
+  return Math.min(elapsed / durationSeconds, 1);
 }
