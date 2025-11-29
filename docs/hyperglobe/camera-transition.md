@@ -283,12 +283,7 @@ const updateCamera = (deltaTime: number) => {
 **파일**: `packages/hyperglobe/pages/camera-transition/camera-transition.stories.tsx`
 
 #### 스토리 목록:
-1. **BasicTransition**: 간단한 3개 지점 이동
-2. **WithDistanceChange**: 거리 변화를 포함한 이동
-3. **UnlockedCamera**: 사용자 상호작용 허용 모드
-4. **WithCallbacks**: 모든 콜백 동작 확인
-5. **LongPath**: 10개 이상의 지점을 가진 긴 경로
-6. **RoundTheWorldIntegration**: RoundTheWorld 데모와 통합
+1. **CameraTransition**: 카메라 트랜지션 데모
 
 ### E2E 테스트
 **파일**: `apps/e2e/src/camera-transition/*.spec.ts`
@@ -324,9 +319,9 @@ const updateCamera = (deltaTime: number) => {
 
 #### segments 수 동적 조정
 ```ts
-// 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 100)
+// 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
 const calculateSegments = (distance: number): number => {
-  return Math.min(100, Math.max(10, Math.floor(distance * 20)));
+  return Math.min(200, Math.max(10, Math.floor(distance * 20)));
 };
 ```
 
@@ -338,8 +333,8 @@ const calculateSegments = (distance: number): number => {
 // 세그먼트 수 계산 예시
 const calculateSegments = (from: Coordinate, to: Coordinate): number => {
   const distance = getGreatCircleDistance(from, to);
-  // 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 100)
-  return Math.min(100, Math.max(10, Math.floor(distance / 10)));
+  // 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
+  return Math.min(200, Math.max(10, Math.floor(distance / 10)));
 };
 ```
 

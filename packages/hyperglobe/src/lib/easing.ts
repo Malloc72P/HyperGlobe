@@ -40,7 +40,7 @@ export const easingFunctions: Record<string, EasingFunction> = {
  * @returns 해당하는 이징 함수
  */
 export function getEasingFunction(
-  type: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' = 'ease-in-out'
+  type: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' = 'linear'
 ): EasingFunction {
-  return easingFunctions[type] || easingFunctions['ease-in-out'];
+  return easingFunctions[type] || easingFunctions['linear'];
 }
