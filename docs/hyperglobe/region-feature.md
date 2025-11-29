@@ -33,7 +33,7 @@
 - `colorscale`: 데이터 시각화를 위한 컬러스케일
 - `data`: 피쳐에 연결된 추가 데이터
 - `wireframe`: 와이어프레임 모드
-- `extrusion`: 측면 렌더링 옵션
+- `extrusion`: 측면 렌더링 옵션 (기본값: `{ color: Colors.GRAY[8] }` - 기본 활성화)
 
 ## 사용 예시
 
@@ -100,12 +100,14 @@ function DataVisualization() {
 ### 렌더링 파이프라인
 
 1. **피쳐 데이터 로드**
-   - HGM 포맷의 피쳐 데이터를 RegionModel로 변환
+   - HGM 포맷의 피쳐 데이터 사용 (HyperGlobe CLI 도구로 사전 변환됨)
+   - `useRegionModel` 훅으로 RegionModel 생성 (R-Tree 공간 인덱싱 및 호버 감지용)
 
-2. **삼각분할**
-   - 각 폴리곤을 삼각형 메시로 변환
+2. **삼각분할 (CLI 전처리 단계)**
+   - 삼각분할은 **CLI 변환 시 이미 완료**되어 HGM 파일에 저장됨
    - `delaunayTriangulate` 함수 사용 (Delaunator 라이브러리 기반)
    - 결과: vertices(정점 배열)와 indices(인덱스 배열)
+   - 컴포넌트는 전처리된 데이터를 그대로 사용.
 
 3. **지오메트리 생성**
    ```typescript
@@ -145,7 +147,7 @@ function DataVisualization() {
 ### 사용된 수학 라이브러리
 
 #### @hyperglobe/tools
-- `delaunayTriangulate`: 폴리곤 삼각분할
+- `delaunayTriangulate`: 폴리곤 삼각분할 (CLI 전처리 단계에서 사용)
 - `OrthographicProj`: 경위도 ↔ 3D 좌표 변환
 
 #### Three.js
@@ -165,12 +167,23 @@ function DataVisualization() {
 ```typescript
 interface HGMFeature {
   id: string;
+  // 속성 정보 (국가명, ISO 코드 등)
+  properties: Record<string, any>;
+  // 지오메트리 생성을 위한 정보 (삼각분할 결과)
   geometries: Array<{
-    vertices: number[];  // [x, y, z, x, y, z, ...]
-    indices: number[];   // 삼각형 인덱스
+    vertices: Float32Array;  // [x, y, z, x, y, z, ...]
+    indices: Uint32Array;    // 삼각형 인덱스
   }>;
+  // 외곽선 정보
   borderLines: {
-    pointArrays: number[][];  // 외곽선 좌표
+    pointArrays: Float32Array[];  // 외곽선 좌표
+  };
+  // 바운딩 박스
+  bbox: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
   };
 }
 ```
