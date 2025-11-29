@@ -16,26 +16,60 @@ MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨*
 - HTML/CSS로 스타일링
 
 ### 주요 기능
-1. **SVG 아이콘**: 커스텀 SVG Path로 다양한 마커 모양 표현
-2. **텍스트 라벨**: 마커 아래 또는 옆에 라벨 표시
+1. **SVG 아이콘**: 미리 정의된 아이콘(pin, circle) 또는 커스텀 SVG Path로 다양한 마커 모양 표현
+2. **텍스트 라벨**: 마커 아래에 라벨 표시
 3. **자동 Billboard**: 항상 카메라를 향하도록 회전
-4. **Occlusion**: 지구 반대편에서 자동으로 가려짐
+4. **Occlusion**: 지구 반대편에서 자동으로 가려짐 (내적 기반 가시성 계산)
 
 ## Props 설계
 
+### SvgStyle 인터페이스
+
+마커의 스타일을 정의하는 인터페이스입니다.
+
+```typescript
+export interface SvgStyle {
+  /** 선 색상 */
+  stroke?: string;
+
+  /** 선 두께 */
+  strokeWidth?: number;
+
+  /** 채우기 색상 */
+  fill?: string;
+
+  /** 필터 */
+  filter?: string;
+
+  /** SVG 크기 비율 */
+  scale?: number;
+}
+```
+
+### MarkerData 인터페이스
+
 ```typescript
 export interface MarkerData {
-  /** 마커 위치 (경도, 위도) */
-  position: LonLat;
+  /** 마커 위치 [경도, 위도] */
+  coordinate: Coordinate;
   
-  /** SVG path 문자열 (선택사항) */
-  icon?: string;
+  /**
+   * 마커 아이콘 타입
+   * - 'pin': 핀 모양 마커 (기본값)
+   * - 'circle': 원형 마커
+   * - 'custom': iconPath로 사용자 정의 SVG path 사용
+   * @default 'pin'
+   */
+  icon?: 'pin' | 'circle' | 'custom';
+  
+  /** 사용자 정의 아이콘. icon이 'custom'인 경우에 적용됩니다. */
+  iconPath?: string;
   
   /** 마커 라벨 텍스트 */
   label?: string;
   
-  /** 마커 색상 */
-  color?: string;
+  /** 마커 스타일 (fill, stroke 등) */
+  style?: SvgStyle;
   
   /** 마커 크기 배율 */
   scale?: number;
@@ -43,14 +77,14 @@ export interface MarkerData {
   /** 사용자 정의 데이터 */
   data?: any;
 }
+```
 
-export interface MarkerFeatureProps {
-  /** 표시할 마커 배열 */
-  markers: MarkerData[];
-  
-  /** 기본 마커 색상 */
-  defaultColor?: string;
-  
+### MarkerFeatureProps 인터페이스
+
+`MarkerFeatureProps`는 `MarkerData`를 확장하여 단일 마커를 표시합니다.
+
+```typescript
+export interface MarkerFeatureProps extends MarkerData {
   /** 기본 마커 크기 */
   defaultScale?: number;
   
@@ -73,22 +107,20 @@ export interface MarkerFeatureProps {
 import { HyperGlobe, MarkerFeature } from 'hyperglobe';
 
 function App() {
-  const markers = [
-    {
-      position: [37.5665, 126.9780], // 서울
-      label: '서울',
-      color: '#ff0000',
-    },
-    {
-      position: [35.6762, 139.6503], // 도쿄
-      label: '도쿄',
-      color: '#0000ff',
-    },
-  ];
-
   return (
     <HyperGlobe>
-      <MarkerFeature markers={markers} />
+      <MarkerFeature
+        coordinate={[126.978, 37.5665]} // 서울 [경도, 위도]
+        label="서울"
+        icon="pin"
+        style={{ fill: '#ff0000', stroke: 'black' }}
+      />
+      <MarkerFeature
+        coordinate={[139.6503, 35.6762]} // 도쿄
+        label="도쿄"
+        icon="circle"
+        style={{ fill: '#0000ff' }}
+      />
     </HyperGlobe>
   );
 }
@@ -97,16 +129,15 @@ function App() {
 ### 커스텀 SVG 아이콘
 
 ```tsx
-const markers = [
-  {
-    position: [37.5665, 126.9780],
-    label: '서울',
-    // Material Icons의 location_on 아이콘
-    icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-    color: '#ff5722',
-    scale: 1.5,
-  },
-];
+<MarkerFeature
+  coordinate={[126.978, 37.5665]}
+  label="서울"
+  icon="custom"
+  // Material Icons의 location_on 아이콘
+  iconPath="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+  style={{ fill: '#ff5722', stroke: 'black' }}
+  scale={1.5}
+/>
 ```
 
 ### 이벤트 처리
@@ -117,18 +148,12 @@ function App() {
     console.log('Clicked:', marker.label);
   };
 
-  const handleMarkerHover = (marker: MarkerData | null) => {
-    if (marker) {
-      console.log('Hovering:', marker.label);
-    }
-  };
-
   return (
     <HyperGlobe>
       <MarkerFeature
-        markers={markers}
+        coordinate={[126.978, 37.5665]}
+        label="서울"
         onMarkerClick={handleMarkerClick}
-        onMarkerHover={handleMarkerHover}
       />
     </HyperGlobe>
   );
@@ -142,9 +167,11 @@ function App() {
 경위도 → 3D 카르테시안 좌표:
 
 ```typescript
-import { lonLatToVector3 } from '@hyperglobe/tools';
+import { OrthographicProj } from '@hyperglobe/tools';
 
-const position3D = lonLatToVector3(marker.position, GLOBE_RADIUS);
+// coordinate: [경도, 위도]
+const coords = OrthographicProj.project(coordinate, 1);
+const position = new THREE.Vector3(coords[0], coords[1], coords[2]);
 ```
 
 ### 2. Html 컴포넌트 사용
@@ -152,36 +179,33 @@ const position3D = lonLatToVector3(marker.position, GLOBE_RADIUS);
 ```tsx
 import { Html } from '@react-three/drei';
 
-function Marker({ marker }: { marker: MarkerData }) {
-  const position = lonLatToVector3(marker.position);
+function MarkerFeature({ coordinate, icon, iconPath, label, style, ... }: MarkerFeatureProps) {
+  const position = useMemo(() => {
+    const coords = OrthographicProj.project(coordinate, 1);
+    return new THREE.Vector3(coords[0], coords[1], coords[2]);
+  }, [coordinate]);
 
   return (
     <group position={position}>
-      <Html
-        center
-        distanceFactor={0.3}
-        occlude  // 지구에 가려지도록
-      >
+      <Html center>
         <div style={{ textAlign: 'center' }}>
           {/* SVG 아이콘 */}
-          {marker.icon && (
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <path d={marker.icon} fill={marker.color} />
-            </svg>
-          )}
+          <svg width={iconSize} height={iconSize} viewBox="0 0 24 24">
+            <path d={iconShape} fill={style?.fill} stroke={style?.stroke} />
+          </svg>
           
           {/* 라벨 */}
-          {marker.label && (
+          {showLabels && label && (
             <div style={{
               fontSize: '12px',
-              marginTop: '4px',
+              fontWeight: 'bold',
               color: 'white',
-              background: 'rgba(0,0,0,0.7)',
-              padding: '2px 6px',
-              borderRadius: '3px',
+              background: 'rgba(0,0,0,0.8)',
+              padding: '4px 8px',
+              borderRadius: '4px',
               whiteSpace: 'nowrap',
             }}>
-              {marker.label}
+              {label}
             </div>
           )}
         </div>
@@ -191,26 +215,54 @@ function Marker({ marker }: { marker: MarkerData }) {
 }
 ```
 
-### 3. Occlusion 처리
+### 3. 아이콘 타입 처리
 
-**기본 방식**: `occlude` prop 사용
+`useMarkerShape` 훅을 사용하여 아이콘 타입에 따른 SVG path를 결정합니다.
 
-```tsx
-<Html occlude>
-  {/* 지구나 다른 3D 객체에 자동으로 가려짐 */}
-</Html>
+```typescript
+// marker-constant.ts
+export const PIN_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z`;
+export const CIRCLE_ICON = `M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16z`;
+
+// use-marker-shape.ts
+function useMarkerShape({ icon, iconPath }) {
+  const iconShape = useMemo(() => {
+    switch (icon) {
+      case 'pin': return PIN_ICON;
+      case 'circle': return CIRCLE_ICON;
+      case 'custom': return iconPath;
+      default: return PIN_ICON;
+    }
+  }, [icon, iconPath]);
+
+  return [iconShape];
+}
 ```
 
-**고급 최적화**: 지구 반대편 마커는 렌더링하지 않음
+### 4. Occlusion 처리 (가시성 계산)
+
+`useFrame`을 사용하여 매 프레임마다 마커의 가시성을 계산합니다.
+지구 반대편에 있는 마커는 렌더링하지 않습니다.
 
 ```tsx
-const isVisible = useMemo(() => {
-  const markerPos = lonLatToVector3(marker.position).normalize();
+useFrame(() => {
+  // 마커 방향 벡터 (원점 → 마커)
+  const markerDir = position.clone().normalize();
+
+  // Globe의 Y축 회전을 마커 벡터에 적용 (월드 좌표계로 변환)
+  const rotationEuler = new THREE.Euler(...UiConstant.globe.rotation);
+  markerDir.applyEuler(rotationEuler);
+
+  // 카메라 방향 벡터
   const cameraDir = camera.position.clone().normalize();
-  
-  // 내적이 0보다 크면 카메라 쪽을 향함
-  return markerPos.dot(cameraDir) > 0;
-}, [marker.position, camera.position]);
+
+  // 내적 계산: 두 벡터가 이루는 각도의 코사인 값
+  const dotProduct = markerDir.dot(cameraDir);
+
+  // 내적 > 0.1: 같은 반구 (보임)
+  // 0.1을 임계값으로 사용하여 경계에서 깜빡임 방지
+  setIsVisible(dotProduct > 0.1);
+});
 
 if (!isVisible) return null;
 ```
@@ -225,30 +277,57 @@ if (!isVisible) return null;
 
 ## 스타일링 가이드
 
-### 마커 스타일 예시
+### SvgStyle을 사용한 스타일링
 
 ```tsx
-const markerStyle = {
-  container: {
-    textAlign: 'center',
-    cursor: 'pointer',
-    userSelect: 'none',
-  },
-  icon: {
-    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-  },
-  label: {
-    fontSize: '12px',
-    fontWeight: 'bold',
-    color: 'white',
-    background: 'rgba(0,0,0,0.8)',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    marginTop: '4px',
-    whiteSpace: 'nowrap',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-  },
-};
+<MarkerFeature
+  coordinate={[126.978, 37.5665]}
+  label="서울"
+  icon="pin"
+  style={{
+    fill: '#ff5722',        // 채우기 색상
+    stroke: 'black',        // 선 색상
+    strokeWidth: 1,         // 선 두께
+    scale: 1.5,             // 크기 비율
+  }}
+/>
+```
+
+### CSS 스타일 (컴포넌트 내부 적용)
+
+마커 컴포넌트 내부에서는 다음과 같은 CSS 스타일이 적용됩니다:
+
+```tsx
+// 아이콘 스타일
+{
+  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+  transform: `translateY(${iconSize / 2}px)`,
+}
+
+// 라벨 스타일
+{
+  fontSize: `${12 * scale}px`,
+  fontWeight: 'bold',
+  color: 'white',
+  background: 'rgba(0,0,0,0.8)',
+  padding: `${4 * scale}px ${8 * scale}px`,
+  borderRadius: `${4 * scale}px`,
+  whiteSpace: 'nowrap',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+}
+```
+
+## 파일 구조
+
+```
+marker-feature/
+├── index.ts                 # export 정의
+├── marker-feature.tsx       # 메인 컴포넌트
+├── marker-interface.ts      # MarkerData 인터페이스 정의
+├── marker-constant.ts       # PIN_ICON, CIRCLE_ICON SVG path 상수
+├── use-marker-shape.ts      # 아이콘 타입에 따른 SVG path 반환 훅
+├── marker-feature.stories.tsx      # Storybook 스토리
+└── marker-feature-story.tsx        # 스토리용 래퍼 컴포넌트
 ```
 
 ## 향후 개선 사항
