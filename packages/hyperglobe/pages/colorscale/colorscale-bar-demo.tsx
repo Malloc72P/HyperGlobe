@@ -111,7 +111,6 @@ export function ColorScaleBarDemo({
         tooltipOptions={{
           distance: 12,
           text: (region: any) => {
-            debugger;
             const value = region.data?.value;
             return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
           },
@@ -122,7 +121,7 @@ export function ColorScaleBarDemo({
             features={hgm.features}
             colorscale={colorscale}
             data={gdpData.reduce((acc, item) => {
-              acc[item.id] = item.value;
+              acc[item.id] = { value: item.value };
               return acc;
             }, {})}
             idField="isoA2"

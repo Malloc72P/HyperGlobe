@@ -29,9 +29,11 @@ export interface UseMergedGeometryOptions {
   /** 컬러스케일 모델 */
   colorscale?: ColorScaleModel;
   /** feature별 데이터 (컬러스케일 적용용) */
-  data?: Record<string, number>;
+  data?: any;
   /** feature의 id로 사용할 속성 이름 */
   idField?: string;
+  /** feature의 값(value)으로 사용할 속성 이름 */
+  valueField: string;
 }
 
 /**
@@ -111,6 +113,7 @@ export function useMergedGeometry({
   colorscale,
   data,
   idField,
+  valueField,
 }: UseMergedGeometryOptions): MergedGeometryResult | null {
   return useMemo(() => {
     if (!features || features.length === 0) return null;
@@ -125,7 +128,7 @@ export function useMergedGeometry({
 
       if (useVertexColors) {
         const key = getFeatureKey(feature, idField);
-        const dataValue = data[key];
+        const dataValue = data[key]?.[valueField];
         const featureStyle = computeFeatureStyle({
           style,
           colorscale,

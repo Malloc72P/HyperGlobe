@@ -55,6 +55,15 @@ export interface RegionFeatureCollectionProps {
   idField?: string;
 
   /**
+   * 피쳐의 값(value)으로 사용할 속성 이름
+   *
+   * - `data` prop과 매핑할 때 사용됩니다.
+   * - 예: 'population'
+   * @default 'value'
+   */
+  valueField?: string;
+
+  /**
    * 컬러스케일.
    *
    * - 컬러스케일이 설정되면, 피쳐는 컬러스케일에 따라 색상이 결정됩니다.
@@ -113,6 +122,7 @@ export function RegionFeatureCollection({
   colorscale,
   data,
   idField,
+  valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
 }: RegionFeatureCollectionProps) {
   // 스타일 병합 (기본값 + 사용자 지정)
@@ -144,6 +154,7 @@ export function RegionFeatureCollection({
     colorscale,
     data,
     idField,
+    valueField,
   });
 
   // R-Tree에 배치 등록 (호버 감지용)
