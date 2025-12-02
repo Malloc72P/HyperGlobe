@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  ColorScaleBar,
-  Graticule,
-  HyperGlobe,
-  RegionFeature,
-  RegionFeatureCollection,
-  useColorScale,
-  useHGM,
-} from '../../src';
+import { Graticule, HyperGlobe, RegionFeatureCollection, useColorScale, useHGM } from '../../src';
 
 interface ColorScaleBarDemoProps {
   /**
@@ -129,17 +121,6 @@ export function ColorScaleBarDemo({
         )}
         <Graticule />
       </HyperGlobe>
-
-      {/* <ColorScaleBar
-        colorScale={colorscale}
-        formatLabel={formatters[formatType]}
-        style={{
-          paddingTop: 10,
-          maxWidth: '70%',
-          margin: '0 auto',
-          fontSize: 12,
-        }}
-      /> */}
     </div>
   );
 }
