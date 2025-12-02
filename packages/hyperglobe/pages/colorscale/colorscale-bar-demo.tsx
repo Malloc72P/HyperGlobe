@@ -111,6 +111,7 @@ export function ColorScaleBarDemo({
         tooltipOptions={{
           distance: 12,
           text: (region: any) => {
+            debugger;
             const value = region.data?.value;
             return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
           },

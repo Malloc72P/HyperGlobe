@@ -147,7 +147,7 @@ export function RegionFeatureCollection({
   });
 
   // R-Tree에 배치 등록 (호버 감지용)
-  useBatchRegionModels({ features });
+  useBatchRegionModels({ features, data, idField });
 
   if (!mergedGeometry) return null;
 

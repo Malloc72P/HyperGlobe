@@ -37,7 +37,7 @@ export interface UseMergedGeometryOptions {
 /**
  * feature에서 데이터 키를 추출하는 헬퍼 함수
  */
-function getFeatureKey(feature: HGMFeature, idField?: string): string {
+export function getFeatureKey(feature: HGMFeature, idField?: string): string {
   if (idField && feature.properties) {
     return String(feature.properties[idField] ?? feature.id);
   }

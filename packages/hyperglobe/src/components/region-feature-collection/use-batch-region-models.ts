@@ -7,10 +7,17 @@ import type {
 import { OrthographicProj, MathConstants } from '@hyperglobe/tools';
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store/main-store';
+import { getFeatureKey } from './use-merged-geometry';
 
 export interface UseBatchRegionModelsOptions {
   /** R-Tree에 등록할 features 배열 */
   features: HGMFeature[];
+
+  /** 리젼에 연결할 추가 데이터 */
+  data?: Record<string, any>;
+
+  /** 피쳐의 id로 사용할 속성 이름 */
+  idField?: string;
 }
 
 /**
@@ -19,7 +26,11 @@ export interface UseBatchRegionModelsOptions {
  * - 기존 useRegionModel은 개별 feature마다 호출되어 비효율적
  * - 이 훅은 모든 feature를 한 번에 등록/제거
  */
-export function useBatchRegionModels({ features }: UseBatchRegionModelsOptions): void {
+export function useBatchRegionModels({
+  features,
+  data,
+  idField,
+}: UseBatchRegionModelsOptions): void {
   const insertRegionModel = useMainStore((s) => s.insertRegionModel);
   const removeRegionModel = useMainStore((s) => s.removeRegionModel);
   const findRegionModelById = useMainStore((s) => s.findRegionModelById);
@@ -40,7 +51,7 @@ export function useBatchRegionModels({ features }: UseBatchRegionModelsOptions):
       }
 
       // RegionModel 생성
-      const model = createRegionModel(feature);
+      const model = createRegionModel({ feature, data, idField });
       insertRegionModel(model);
       newModels.push(model);
     }
@@ -60,7 +71,15 @@ export function useBatchRegionModels({ features }: UseBatchRegionModelsOptions):
 /**
  * HGMFeature를 RegionModel로 변환
  */
-function createRegionModel(feature: HGMFeature): RegionModel {
+function createRegionModel({
+  feature,
+  data,
+  idField,
+}: {
+  feature: HGMFeature;
+  data?: Record<string, any>;
+  idField?: string;
+}): RegionModel {
   const width = Math.abs(feature.bbox.maxX - feature.bbox.minX);
   const height = Math.abs(feature.bbox.maxY - feature.bbox.minY);
 
@@ -77,7 +96,7 @@ function createRegionModel(feature: HGMFeature): RegionModel {
     }, [] as FeaturePolygons)
   );
 
-  return {
+  const regionModel: RegionModel = {
     id: feature.id,
     name: feature.properties.name || '',
     polygons,
@@ -85,4 +104,15 @@ function createRegionModel(feature: HGMFeature): RegionModel {
     properties: feature.properties,
     ...feature.bbox,
   };
+
+  if (data) {
+    const key = getFeatureKey(feature, idField);
+    const foundData = data[key];
+
+    if (foundData) {
+      regionModel.data = foundData;
+    }
+  }
+
+  return regionModel;
 }
