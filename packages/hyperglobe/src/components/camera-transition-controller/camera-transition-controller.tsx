@@ -226,14 +226,19 @@ export function CameraTransitionController({
         const segmentPoints = state.segmentPointsCache.get(i);
         if (!segmentPoints) break;
 
+        // 진행률을 통해 구면선형보간된 좌표배열에서 현재 위치를 구한다.
         const pointIndex = Math.floor(easedProgress * (segmentPoints.length - 1));
-        const localProgress = (easedProgress * (segmentPoints.length - 1)) % 1;
 
+        // 현재 위치와 다음 위치를 구하고, 그 사이를 보간하기 위해 localProgress 계산
         const currentPoint = segmentPoints[pointIndex];
         const nextPoint = segmentPoints[Math.min(pointIndex + 1, segmentPoints.length - 1)];
 
+        // 지역 진행률을 구하기 위해, 위치 진행률의 소수점 부분을 사용. pointIndex는 정수부분만 취했음에 주의.
+        const localProgress = (easedProgress * (segmentPoints.length - 1)) % 1;
+
         // 보간 (카메라 position에 직접 lerp 적용하여 객체 생성 최소화)
         camera.position.lerpVectors(currentPoint, nextPoint, localProgress);
+
         // 카메라가 지구 중심(0,0,0)을 바라보도록 설정
         camera.lookAt(0, 0, 0);
 
