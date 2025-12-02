@@ -360,26 +360,6 @@ function calculateSegments(distance: number): number {
 ```
 
 짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
-- segments 수는 경로 길이에 따라 동적 조정 (짧은 거리는 적은 segments)
-
-### 경로 최적화
-```ts
-const SEGMENTS_PER_UNIT_DISTANCE = 20; // 거리 단위당 세그먼트 수
-
-/**
- * 두 좌표 사이의 대략적인 거리를 계산합니다 (각도 기반)
- */
-function estimateDistance(from: Vector3, to: Vector3): number {
-  return from.angleTo(to);
-}
-
-/**
- * 거리에 따라 적절한 세그먼트 수를 계산합니다
- */
-function calculateSegments(distance: number): number {
-  return Math.min(200, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
-}
-```
 
 ## 향후 확장 가능성
 
