@@ -1,7 +1,7 @@
 import { createGreatCirclePath, OrthographicProj } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useCallback, useEffect, useRef } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { Vector3 } from 'three';
 import { getEasingFunction } from '../../lib/easing';
 import type { CameraTransitionOptions, PathPoint } from '../../types/camera';
@@ -49,12 +49,18 @@ function calculateSegments(distance: number): number {
 export interface CameraTransitionControllerProps {
   /** 카메라가 잠겨있는지 여부 */
   onLockChange: (locked: boolean) => void;
-  /** followPath를 외부에 노출 */
-  onFollowPathReady: (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => void;
-  /** cancelTransition을 외부에 노출 */
-  onCancelTransitionReady: (fn: () => void) => void;
   /** 카메라 위치가 변경될 때 호출되는 콜백 */
   onCameraPositionChange?: (position: Vector3) => void;
+}
+
+/**
+ * CameraTransitionController의 ref 타입
+ */
+export interface CameraTransitionControllerRef {
+  /** 경로를 따라 카메라를 이동시킵니다 */
+  followPath: (path: PathPoint[], options?: CameraTransitionOptions) => void;
+  /** 진행 중인 카메라 트랜지션을 취소합니다 */
+  cancelTransition: () => void;
 }
 
 /**
@@ -63,12 +69,10 @@ export interface CameraTransitionControllerProps {
  * Canvas 외부에서는 이 컴포넌트를 사용할 수 없으므로,
  * HyperGlobe 컴포넌트 내부(Canvas 안)에서 렌더링되어야 합니다.
  */
-export function CameraTransitionController({
-  onLockChange,
-  onFollowPathReady,
-  onCancelTransitionReady,
-  onCameraPositionChange,
-}: CameraTransitionControllerProps) {
+export const CameraTransitionController = forwardRef<
+  CameraTransitionControllerRef,
+  CameraTransitionControllerProps
+>(function CameraTransitionController({ onLockChange, onCameraPositionChange }, ref) {
   const { camera } = useThree();
 
   const stateRef = useRef<TransitionState>({
@@ -182,11 +186,15 @@ export function CameraTransitionController({
     }
   }, [onLockChange]);
 
-  // 함수를 외부에 노출
-  useEffect(() => {
-    onFollowPathReady(followPath);
-    onCancelTransitionReady(cancelTransition);
-  }, [followPath, cancelTransition, onFollowPathReady, onCancelTransitionReady]);
+  // ref로 메서드 노출
+  useImperativeHandle(
+    ref,
+    () => ({
+      followPath,
+      cancelTransition,
+    }),
+    [followPath, cancelTransition]
+  );
 
   /**
    * 매 프레임마다 카메라 위치를 업데이트합니다
@@ -270,4 +278,4 @@ export function CameraTransitionController({
   });
 
   return null;
-}
+});

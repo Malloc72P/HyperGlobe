@@ -14,6 +14,7 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
+import type { CameraTransitionControllerRef } from '../camera-transition-controller';
 import { UiConstant } from 'src/constants';
 import type { OnHoverChangedFn } from 'src/types/events';
 import { NoToneMapping, Vector3, type DirectionalLight } from 'three';
@@ -114,28 +115,12 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function Hy
 ) {
   const rootElementRef = useRef<HTMLDivElement>(null);
   const lightRef = useRef<DirectionalLight>(null);
+  const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);
   const [fps, setFps] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
-  // camera transition 함수들을 저장할 ref
-  const followPathRef = useRef<
-    ((path: PathPoint[], options?: CameraTransitionOptions) => void) | null
-  >(null);
-  const cancelTransitionRef = useRef<(() => void) | null>(null);
-
   const handleLockChange = useCallback((locked: boolean) => {
     setIsLocked(locked);
-  }, []);
-
-  const handleFollowPathReady = useCallback(
-    (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => {
-      followPathRef.current = fn;
-    },
-    []
-  );
-
-  const handleCancelTransitionReady = useCallback((fn: () => void) => {
-    cancelTransitionRef.current = fn;
   }, []);
 
   const handleCameraPositionChange = useCallback((position: Vector3) => {
@@ -151,10 +136,10 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function Hy
     ref,
     () => ({
       followPath: (path: PathPoint[], options?: CameraTransitionOptions) => {
-        followPathRef.current?.(path, options);
+        cameraTransitionRef.current?.followPath(path, options);
       },
       cancelTransition: () => {
-        cancelTransitionRef.current?.();
+        cameraTransitionRef.current?.cancelTransition();
       },
     }),
     []
@@ -283,9 +268,8 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function Hy
 
         {/* 카메라 트랜지션 컨트롤러 */}
         <CameraTransitionController
+          ref={cameraTransitionRef}
           onLockChange={handleLockChange}
-          onFollowPathReady={handleFollowPathReady}
-          onCancelTransitionReady={handleCancelTransitionReady}
           onCameraPositionChange={handleCameraPositionChange}
         />
 
