@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import type { PointerEvent, RefObject } from 'react';
+import { create, createStore, useStore } from 'zustand';
+import { createContext, useContext, type PointerEvent, type RefObject } from 'react';
 import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
+import type { StoreApi } from 'zustand';
 import RBush from 'rbush';
 
 export interface UpdateTooltipPositionFnParam {
@@ -46,41 +47,55 @@ export interface MainStore {
   clean: () => void;
 }
 
-export const useMainStore = create<MainStore>()((set, get) => ({
-  hoveredRegion: null,
-  tooltipRef: null,
-  getTooltipPosition: null,
-  tree: new RBush<RegionModel>(),
-  loading: true,
-  setLoading: (loading: boolean) => set({ loading }),
-  init: () => {
-    const { tree, clearRTree } = get();
+export const createMainStore = (): StoreApi<MainStore> => {
+  return createStore<MainStore>((set, get) => ({
+    hoveredRegion: null,
+    tooltipRef: null,
+    getTooltipPosition: null,
+    tree: new RBush<RegionModel>(),
+    loading: true,
+    setLoading: (loading: boolean) => set({ loading }),
+    init: () => {
+      const { tree, clearRTree } = get();
 
-    if (tree) {
+      if (tree) {
+        clearRTree();
+      }
+    },
+    registerTooltipRef: (ref) => set({ tooltipRef: ref }),
+    setHoveredRegion: (regionModel) => set({ hoveredRegion: regionModel }),
+    findRegionModelById: (id) => {
+      const { tree } = get();
+
+      return tree.all().find((region) => region.id === id) || null;
+    },
+    insertRegionModel: (bbox) => {
+      const tree = get().tree;
+
+      tree.insert(bbox);
+    },
+    removeRegionModel: (bbox: RegionModel) => {
+      get().tree.remove(bbox);
+    },
+    clearRTree: () => {
+      get().tree.clear();
+    },
+    clean: () => {
+      const { clearRTree } = get();
+
       clearRTree();
-    }
-  },
-  registerTooltipRef: (ref) => set({ tooltipRef: ref }),
-  setHoveredRegion: (regionModel) => set({ hoveredRegion: regionModel }),
-  findRegionModelById: (id) => {
-    const { tree } = get();
+    },
+  }));
+};
 
-    return tree.all().find((region) => region.id === id) || null;
-  },
-  insertRegionModel: (bbox) => {
-    const tree = get().tree;
+export const MainStoreContext = createContext<StoreApi<MainStore> | null>(null);
 
-    tree.insert(bbox);
-  },
-  removeRegionModel: (bbox: RegionModel) => {
-    get().tree.remove(bbox);
-  },
-  clearRTree: () => {
-    get().tree.clear();
-  },
-  clean: () => {
-    const { clearRTree } = get();
+export function useMainStore<T>(selector: (state: MainStore) => T): T {
+  const store = useContext(MainStoreContext);
 
-    clearRTree();
-  },
-}));
+  if (!store) {
+    throw new Error('MainStoreProvider 내부에서만 useMainStore를 사용할 수 있습니다.');
+  }
+
+  return useStore(store, selector);
+}

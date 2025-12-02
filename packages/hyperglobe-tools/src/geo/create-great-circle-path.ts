@@ -26,7 +26,7 @@ export function createGreatCirclePath(
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;
 
-    // SLERP: Spherical Linear Interpolation
+    // 67: Spherical Linear Interpolation
     // slerp(v1, v2, t) = (sin((1-t)*θ) / sin(θ)) * v1 + (sin(t*θ) / sin(θ)) * v2
     const sinAngle = Math.sin(angle);
 

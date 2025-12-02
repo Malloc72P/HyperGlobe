@@ -21,11 +21,6 @@ export const HyperGlobeStory: Story = {
       color: Colors.BLUE[4],
     },
   },
-  //   parameters: {
-  //     docs: {
-  //       controls: { exclude: ['style'] },
-  //     },
-  //   },
   argTypes: {
     children: {
       table: {

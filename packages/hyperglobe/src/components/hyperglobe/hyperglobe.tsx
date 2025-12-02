@@ -26,6 +26,7 @@ import { Tooltip, type TooltipOptions } from '../tooltip';
 import type { CameraTransitionOptions, HyperglobeRef, PathPoint } from '../../types/camera';
 import { CameraTransitionController } from '../camera-transition-controller';
 import { Globe, type GlobeStyle } from './globe';
+import { MainStoreProvider } from 'src/store/main-store-provider';
 
 /**
  * HyperGlobe 컴포넌트의 Props
@@ -96,197 +97,210 @@ export interface HyperGlobeProps extends PropsWithChildren {
  * ```
  *
  */
-export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(function HyperGlobe(
-  {
-    id,
-    loading = false,
-    size = '100%',
-    maxSize,
-    wireframe,
-    children,
-    globeStyle,
-    style,
-    tooltipOptions,
-    showFpsCounter = true,
-    onHoverChanged,
-    initialCameraPosition = [0, 0],
-  },
-  ref
-) {
-  const rootElementRef = useRef<HTMLDivElement>(null);
-  const lightRef = useRef<DirectionalLight>(null);
-  const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);
-  const [fps, setFps] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
-
-  const handleLockChange = useCallback((locked: boolean) => {
-    setIsLocked(locked);
-  }, []);
-
-  const handleCameraPositionChange = useCallback((position: Vector3) => {
-    const light = lightRef.current;
-    if (!light) return;
-
-    light.position.set(0, 0, 0);
-    light.position.add(position);
-  }, []);
-
-  // ref 노출
-  useImperativeHandle(
-    ref,
-    () => ({
-      followPath: (path: PathPoint[], options?: CameraTransitionOptions) => {
-        cameraTransitionRef.current?.followPath(path, options);
-      },
-      cancelTransition: () => {
-        cameraTransitionRef.current?.cancelTransition();
-      },
-    }),
-    []
-  );
-
-  // store
-  const tooltipRef = useMainStore((s) => s.tooltipRef);
-  const cleanMainStore = useMainStore((s) => s.clean);
-  const setLoading = useMainStore((s) => s.setLoading);
-
-  const cameraVector = useMemo(() => {
-    const adjustedCoordinate: Coordinate = [
-      initialCameraPosition[0] - 90,
-      initialCameraPosition[1],
-    ];
-
-    return OrthographicProj.project(adjustedCoordinate, 5);
-  }, [initialCameraPosition]);
-
-  const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-    const tooltipOffset = tooltipOptions?.distance || 10;
-    const rootElement = rootElementRef.current;
-
-    if (!rootElement || !tooltipElement) return null;
-
-    const rootRect = rootElement.getBoundingClientRect();
-    const tooltipRect = tooltipElement.getBoundingClientRect();
-    const tooltipWidth = tooltipRect.width;
-    const tooltipHeight = tooltipRect.height;
-
-    const nextPosition = {
-      x: point[0] - rootRect.left,
-      y: point[1] - rootRect.top,
-    };
-
-    // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
-    nextPosition.x = nextPosition.x - tooltipWidth / 2;
-    nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
-
-    return nextPosition;
-  };
-
-  const onPointerMove = useThrottle({
-    fn: (e) => {
-      const tooltipElement = tooltipRef?.current;
-      const { clientX, clientY } = e;
-
-      if (!tooltipElement) return;
-
-      const tooltipPosition = getTooltipPosition({
-        point: [clientX, clientY],
-        tooltipElement,
-      });
-
-      if (tooltipPosition) {
-        const { x, y } = tooltipPosition;
-        tooltipElement.style.transform = `translate(${x}px, ${y}px)`;
-      }
-    },
-    delay: 50,
-  });
-
-  useEffect(() => {
-    return () => {
-      cleanMainStore();
-    };
-  }, []);
-
-  useEffect(() => {
-    setLoading(loading);
-  }, [loading]);
-
+export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>((props, ref) => {
   return (
-    <div
-      ref={rootElementRef}
-      style={{ position: 'relative', overflow: 'hidden' }}
-      onPointerMove={onPointerMove}
-    >
-      <LoadingUI loading={loading} />
-      {/* 툴팁 */}
-      <Tooltip {...tooltipOptions} />
-      {showFpsCounter && <FpsDisplay fps={fps} />}
-      <Canvas
-        id={id}
-        gl={{
-          /**
-           * 색상 값을 그대로 출력하기 위해 톤 매핑 비활성화.
-           * HDR을 모니터가 표현할 수 있는 범위로 압축하는게 톤매핑인데, 지정한 색상이 그대로 나와야 하므로 비활성화함.
-           * 추후에 옵션을 통해 설정할 수 있도록 개선할 수도 있음.
-           */
-          toneMapping: NoToneMapping,
-        }}
-        style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
-        /**
-         * 카메라 위치는 3차원 벡터로 설정, OrbitControls라서 target이 0,0,0, 즉 지구 중심을 바라본다.
-         */
-        camera={{ position: cameraVector, fov: 25 }}
-      >
-        {/* 기본 조명 설정 */}
-        <ambientLight intensity={2} />
-        <directionalLight ref={lightRef} position={cameraVector} intensity={2} />
-        {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
-        <OrbitControls
-          enabled={!isLocked}
-          enableZoom={true}
-          enableRotate={true}
-          enablePan={false}
-          /**
-           * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
-           */
-          minDistance={1.5}
-          /**
-           * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
-           */
-          maxDistance={10}
-          onChange={(e) => {
-            const camera = e?.target.object;
-            const light = lightRef.current;
-
-            if (!light || !camera) return;
-
-            light.position.set(0, 0, 0);
-            light.position.add(camera.position);
-          }}
-        />
-
-        {/* 카메라 트랜지션 컨트롤러 */}
-        <CameraTransitionController
-          ref={cameraTransitionRef}
-          onLockChange={handleLockChange}
-          onCameraPositionChange={handleCameraPositionChange}
-        />
-
-        {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
-        {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
-        <group rotation={UiConstant.globe.rotation}>
-          <Globe wireframe={wireframe} onHoverChanged={onHoverChanged} {...globeStyle} />
-
-          {/* Children */}
-          {children}
-        </group>
-
-        {/* FPS Counter */}
-        {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
-
-        {/* <CoordinateSystem /> */}
-      </Canvas>
-    </div>
+    <MainStoreProvider>
+      <_HyperGlobe {...props} ref={ref} />
+    </MainStoreProvider>
   );
 });
+
+/**
+ * HyperGlobe 컴포넌트의 내부 구현 컴포넌트
+ */
+const _HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
+  (
+    {
+      id,
+      loading = false,
+      size = '100%',
+      maxSize,
+      wireframe,
+      children,
+      globeStyle,
+      style,
+      tooltipOptions,
+      showFpsCounter = true,
+      onHoverChanged,
+      initialCameraPosition = [0, 0],
+    },
+    ref
+  ) => {
+    console.log('render');
+
+    const rootElementRef = useRef<HTMLDivElement>(null);
+    const lightRef = useRef<DirectionalLight>(null);
+    const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);
+    const [fps, setFps] = useState(0);
+    const [isLocked, setIsLocked] = useState(false);
+
+    const handleLockChange = useCallback((locked: boolean) => {
+      setIsLocked(locked);
+    }, []);
+
+    const handleCameraPositionChange = useCallback((position: Vector3) => {
+      const light = lightRef.current;
+      if (!light) return;
+
+      light.position.set(0, 0, 0);
+      light.position.add(position);
+    }, []);
+
+    // ref 노출
+    useImperativeHandle(
+      ref,
+      () => ({
+        followPath: (path: PathPoint[], options?: CameraTransitionOptions) => {
+          cameraTransitionRef.current?.followPath(path, options);
+        },
+        cancelTransition: () => {
+          cameraTransitionRef.current?.cancelTransition();
+        },
+      }),
+      []
+    );
+
+    // store
+    const tooltipRef = useMainStore((s) => s.tooltipRef);
+    const cleanMainStore = useMainStore((s) => s.clean);
+    const setLoading = useMainStore((s) => s.setLoading);
+
+    const cameraVector = useMemo(() => {
+      const adjustedCoordinate: Coordinate = [
+        initialCameraPosition[0] - 90,
+        initialCameraPosition[1],
+      ];
+
+      return OrthographicProj.project(adjustedCoordinate, 5);
+    }, [initialCameraPosition]);
+
+    const getTooltipPosition = ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
+      const tooltipOffset = tooltipOptions?.distance || 10;
+      const rootElement = rootElementRef.current;
+
+      if (!rootElement || !tooltipElement) return null;
+
+      const rootRect = rootElement.getBoundingClientRect();
+      const tooltipRect = tooltipElement.getBoundingClientRect();
+      const tooltipWidth = tooltipRect.width;
+      const tooltipHeight = tooltipRect.height;
+
+      const nextPosition = {
+        x: point[0] - rootRect.left,
+        y: point[1] - rootRect.top,
+      };
+
+      // 툴팁을 마우스 커서 위에 약간 띄워서 표시, 중간 정렬
+      nextPosition.x = nextPosition.x - tooltipWidth / 2;
+      nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
+
+      return nextPosition;
+    };
+
+    const onPointerMove = useThrottle({
+      fn: (e) => {
+        const tooltipElement = tooltipRef?.current;
+        const { clientX, clientY } = e;
+
+        if (!tooltipElement) return;
+
+        const tooltipPosition = getTooltipPosition({
+          point: [clientX, clientY],
+          tooltipElement,
+        });
+
+        if (tooltipPosition) {
+          const { x, y } = tooltipPosition;
+          tooltipElement.style.transform = `translate(${x}px, ${y}px)`;
+        }
+      },
+      delay: 50,
+    });
+
+    useEffect(() => {
+      return () => {
+        cleanMainStore();
+      };
+    }, []);
+
+    useEffect(() => {
+      setLoading(loading);
+    }, [loading]);
+
+    return (
+      <div
+        ref={rootElementRef}
+        style={{ position: 'relative', overflow: 'hidden' }}
+        onPointerMove={onPointerMove}
+      >
+        <LoadingUI loading={loading} />
+        {/* 툴팁 */}
+        <Tooltip {...tooltipOptions} />
+        {showFpsCounter && <FpsDisplay fps={fps} />}
+        <Canvas
+          id={id}
+          gl={{
+            /**
+             * 색상 값을 그대로 출력하기 위해 톤 매핑 비활성화.
+             * HDR을 모니터가 표현할 수 있는 범위로 압축하는게 톤매핑인데, 지정한 색상이 그대로 나와야 하므로 비활성화함.
+             * 추후에 옵션을 통해 설정할 수 있도록 개선할 수도 있음.
+             */
+            toneMapping: NoToneMapping,
+          }}
+          style={{ aspectRatio: '1 / 1', width: size, maxWidth: maxSize, ...style }}
+          /**
+           * 카메라 위치는 3차원 벡터로 설정, OrbitControls라서 target이 0,0,0, 즉 지구 중심을 바라본다.
+           */
+          camera={{ position: cameraVector, fov: 25 }}
+        >
+          {/* 기본 조명 설정 */}
+          <ambientLight intensity={2} />
+          <directionalLight ref={lightRef} position={cameraVector} intensity={2} />
+          {/* 마우스로 카메라 조작 가능하게 하는 컨트롤 */}
+          <OrbitControls
+            enabled={!isLocked}
+            enableZoom={true}
+            enableRotate={true}
+            enablePan={false}
+            /**
+             * 카메라가 타겟에 얼마나 가까이 갈 수 있는지를 제한
+             */
+            minDistance={1.5}
+            /**
+             * 카메라가 타겟에서 얼마나 멀어질 수 있는지를 제한
+             */
+            maxDistance={10}
+            onChange={(e) => {
+              const camera = e?.target.object;
+              const light = lightRef.current;
+
+              if (!light || !camera) return;
+
+              light.position.set(0, 0, 0);
+              light.position.add(camera.position);
+            }}
+          />
+
+          {/* 카메라 트랜지션 컨트롤러 */}
+          <CameraTransitionController
+            ref={cameraTransitionRef}
+            onLockChange={handleLockChange}
+            onCameraPositionChange={handleCameraPositionChange}
+          />
+
+          {/* 지구본과 피쳐를 그룹으로 묶어 함께 회전 */}
+          {/* 0,0,0을 하면 [1, 0, 0]이 경위도 0,0이 된다. y축으로 90도 회전시키면, [0, 0, 1]이 경위도 0,0이 된다. */}
+          <group rotation={UiConstant.globe.rotation}>
+            <Globe wireframe={wireframe} onHoverChanged={onHoverChanged} {...globeStyle} />
+
+            {/* Children */}
+            {children}
+          </group>
+
+          {/* FPS Counter */}
+          {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
+        </Canvas>
+      </div>
+    );
+  }
+);
