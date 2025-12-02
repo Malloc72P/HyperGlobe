@@ -14,8 +14,6 @@ interface TransitionState {
   isActive: boolean;
   /** 전체 경로 */
   path: PathPoint[];
-  /** 현재 진행 중인 구간 인덱스 */
-  currentSegmentIndex: number;
   /** 각 구간별 보간된 포인트들 */
   segmentPointsCache: Map<number, Vector3[]>;
   /** 트랜지션 시작 시간 */
@@ -83,7 +81,6 @@ export function CameraTransitionController({
   const stateRef = useRef<TransitionState>({
     isActive: false,
     path: [],
-    currentSegmentIndex: 0,
     segmentPointsCache: new Map(),
     startTime: 0,
     options: DEFAULT_OPTIONS,
@@ -167,7 +164,6 @@ export function CameraTransitionController({
       stateRef.current = {
         isActive: true,
         path,
-        currentSegmentIndex: 0,
         segmentPointsCache,
         startTime: Date.now(),
         options: mergedOptions,
@@ -206,16 +202,21 @@ export function CameraTransitionController({
     if (!state.isActive) return;
 
     const elapsed = Date.now() - state.startTime;
-    const totalDuration = state.totalDuration; // 캐시된 값 사용
+    // 전체 지속 시간
+    const totalDuration = state.totalDuration;
+    // 현재 구간 이전까지의 모든 duration의 합
     let accumulatedTime = 0;
 
-    // 현재 구간 찾기
+    // 현재 구간 찾기.
     for (let i = 0; i < state.path.length; i++) {
+      // 각 구간의 지속 시간.
       const segmentDuration = state.path[i].duration ?? DEFAULT_DURATION;
 
+      // 현재 경과시간 elapsed가 구간이 끝나는 시점(accumulatedTime + segmentDuration)보다 작으면, 그 구간에 있는 것
       if (elapsed < accumulatedTime + segmentDuration) {
-        // 현재 이 구간에 있음
+        // 현재 경과시간에서 이전 구간들 시간을 빼서 현재 구간에서의 경과시간 계산
         const segmentElapsed = elapsed - accumulatedTime;
+        // 이 구간에서의 진행률 (0~1)
         const rawProgress = segmentElapsed / segmentDuration;
 
         // 이징 적용 (캐시된 함수 사용)
@@ -238,9 +239,6 @@ export function CameraTransitionController({
 
         // 카메라 위치 변경 콜백 호출
         onCameraPositionChange?.(camera.position);
-
-        // 현재 구간 업데이트
-        state.currentSegmentIndex = i;
 
         // 지점 도착 콜백 (한 번만 호출)
         if (rawProgress >= 0.95 && state.lastReachedIndex !== i) {
