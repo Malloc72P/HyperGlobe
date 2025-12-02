@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Graticule, HyperGlobe, RegionFeature, useHGM } from '../../src';
+import { Graticule, HyperGlobe, RegionFeature, RegionFeatureCollection, useHGM } from '../../src';
 
 const pink = [
   '#fff1f3',
@@ -48,7 +48,7 @@ const colorThemes = {
   gray,
 };
 
-export interface NationsDemoProps {
+export interface NationsDemo2Props {
   /**
    * 데모에 적용할 색상을 지정합니다.
    *
@@ -80,7 +80,7 @@ export interface NationsDemoProps {
  * - [RegionFeature](/docs/components-regionfeature--docs)
  * - [Graticule](/docs/components-graticule--docs)
  */
-export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDemoProps) {
+export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDemo2Props) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
@@ -128,48 +128,24 @@ export function NationsDemo({ theme = 'blue', map = 'nations-high' }: NationsDem
         }}
       >
         <Graticule />
-        {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              style={{
-                lineWidth: styles.regionStrokeWidth,
-                color: styles.regionColor,
-                fillColor: styles.regionFill,
-              }}
-              hoverStyle={{
-                lineWidth: styles.hoverRegionStrokeWidth,
-                fillColor: styles.hoverRegionFill,
-              }}
-              extrusion={{
-                color: styles.regionExtrusionColor,
-              }}
-            />
-          ))}
+        {hgm && (
+          <RegionFeatureCollection
+            features={hgm.features}
+            style={{
+              lineWidth: styles.regionStrokeWidth,
+              color: styles.regionColor,
+              fillColor: styles.regionFill,
+            }}
+            hoverStyle={{
+              lineWidth: styles.hoverRegionStrokeWidth,
+              fillColor: styles.hoverRegionFill,
+            }}
+            extrusion={{
+              color: styles.regionExtrusionColor,
+            }}
+          />
+        )}
       </HyperGlobe>
-
-      {/* <HyperGlobe>
-        {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              style={{
-                lineWidth: styles.regionStrokeWidth,
-                color: styles.regionColor,
-                fillColor: styles.regionFill,
-              }}
-              hoverStyle={{
-                lineWidth: styles.hoverRegionStrokeWidth,
-                fillColor: styles.hoverRegionFill,
-              }}
-              extrusion={{
-                color: styles.regionExtrusionColor,
-              }}
-            />
-          ))}
-      </HyperGlobe> */}
     </div>
   );
 }

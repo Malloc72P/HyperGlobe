@@ -126,8 +126,6 @@ const _HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
     },
     ref
   ) => {
-    console.log('render');
-
     const rootElementRef = useRef<HTMLDivElement>(null);
     const lightRef = useRef<DirectionalLight>(null);
     const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);

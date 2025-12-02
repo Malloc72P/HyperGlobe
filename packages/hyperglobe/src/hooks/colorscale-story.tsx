@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ColorScaleBar, Graticule, HyperGlobe, RegionFeature } from 'src/components';
+import {
+  ColorScaleBar,
+  Graticule,
+  HyperGlobe,
+  RegionFeature,
+  RegionFeatureCollection,
+} from 'src/components';
 import { StorybookConstant } from 'src/constants';
 import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
@@ -68,15 +74,13 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           },
         }}
       >
-        {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              colorscale={colorscale}
-              data={resolveFeatureData(feature)}
-            />
-          ))}
+        {hgm && (
+          <RegionFeatureCollection
+            features={hgm.features}
+            colorscale={colorscale}
+            dataResolver={resolveFeatureData}
+          />
+        )}
         <Graticule />
       </HyperGlobe>
 

@@ -1,5 +1,6 @@
 export * from './hyperglobe';
 export * from './region-feature';
+export * from './region-feature-collection';
 export * from './route-feature';
 export * from './marker-feature';
 export * from './graticule';
