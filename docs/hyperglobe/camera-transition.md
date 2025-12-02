@@ -149,6 +149,20 @@ Canvas 내부에서 카메라 트랜지션을 제어하는 컴포넌트입니다
   - 애니메이션 상태 초기화
   - OrbitControls 복원
 
+#### Props:
+```ts
+export interface CameraTransitionControllerProps {
+  /** 카메라가 잠겨있는지 여부 */
+  onLockChange: (locked: boolean) => void;
+  /** followPath를 외부에 노출 */
+  onFollowPathReady: (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => void;
+  /** cancelTransition을 외부에 노출 */
+  onCancelTransitionReady: (fn: () => void) => void;
+  /** 카메라 위치가 변경될 때 호출되는 콜백 (조명 동기화 등에 활용) */
+  onCameraPositionChange?: (position: Vector3) => void;
+}
+```
+
 #### 의존성:
 - `@hyperglobe/tools`의 `OrthographicProj`
 - `@react-three/fiber`의 `useFrame`, `useThree`
@@ -198,6 +212,10 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
           onLockChange={setIsLocked}
           onFollowPathReady={(fn) => { followPathRef.current = fn; }}
           onCancelTransitionReady={(fn) => { cancelTransitionRef.current = fn; }}
+          onCameraPositionChange={(position) => {
+            // 카메라 위치에 맞춰 조명 위치 동기화
+            lightRef.current?.position.copy(position);
+          }}
         />
         <OrbitControls
           enabled={!isLocked}
@@ -223,6 +241,15 @@ export const easingFunctions: Record<string, EasingFunction> = {
   'ease-out': (t) => t * (2 - t),
   'ease-in-out': (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
 };
+
+/**
+ * 이징 함수를 가져옵니다.
+ */
+export function getEasingFunction(
+  type: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' = 'linear'
+): EasingFunction {
+  return easingFunctions[type] || easingFunctions['linear'];
+}
 ```
 
 ### 5. 경로 보간 로직
@@ -319,10 +346,17 @@ const updateCamera = (deltaTime: number) => {
 
 #### segments 수 동적 조정
 ```ts
+const SEGMENTS_PER_UNIT_DISTANCE = 20; // 거리 단위당 세그먼트 수
+
+// 두 좌표 사이의 대략적인 거리를 계산 (Vector3.angleTo 사용)
+function estimateDistance(from: Vector3, to: Vector3): number {
+  return from.angleTo(to);
+}
+
 // 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
-const calculateSegments = (distance: number): number => {
-  return Math.min(200, Math.max(10, Math.floor(distance * 20)));
-};
+function calculateSegments(distance: number): number {
+  return Math.min(200, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
+}
 ```
 
 짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
@@ -330,12 +364,21 @@ const calculateSegments = (distance: number): number => {
 
 ### 경로 최적화
 ```ts
-// 세그먼트 수 계산 예시
-const calculateSegments = (from: Coordinate, to: Coordinate): number => {
-  const distance = getGreatCircleDistance(from, to);
-  // 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
-  return Math.min(200, Math.max(10, Math.floor(distance / 10)));
-};
+const SEGMENTS_PER_UNIT_DISTANCE = 20; // 거리 단위당 세그먼트 수
+
+/**
+ * 두 좌표 사이의 대략적인 거리를 계산합니다 (각도 기반)
+ */
+function estimateDistance(from: Vector3, to: Vector3): number {
+  return from.angleTo(to);
+}
+
+/**
+ * 거리에 따라 적절한 세그먼트 수를 계산합니다
+ */
+function calculateSegments(distance: number): number {
+  return Math.min(200, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
+}
 ```
 
 ## 향후 확장 가능성
