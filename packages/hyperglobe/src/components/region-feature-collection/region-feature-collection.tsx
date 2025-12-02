@@ -29,12 +29,22 @@ export interface RegionFeatureCollectionProps {
   /**
    * 피쳐 컬렉션에 연결할 추가 데이터
    *
-   * - 컬러스케일이나 툴팁 등, 기타 시각화 기능에서 사용할 수 있습니다.
+   * - 컬러스케일 적용에 사용됩니다.
    * - 기본적으로 피쳐의 id와 매핑됩니다.
    * - 국가별 세계지도의 경우, 기본적으로 iso-a3 코드가 id로 사용됩니다.
    * - 만약 피쳐의 특정 속성(properties)의 값을 키로 사용하고 싶다면, `idField` prop을 사용하세요.
+   *
+   * @example
+   * ```tsx
+   * // ISO-A3 키 사용 (기본)
+   * data={{ KOR: 51780000, JPN: 125800000 }}
+   *
+   * // ISO-A2 키 사용 (idField와 함께)
+   * data={{ KR: 51780000, JP: 125800000 }}
+   * idField="ISO_A2"
+   * ```
    */
-  data?: any[];
+  data?: Record<string, number>;
 
   /**
    * 피쳐의 id로 사용할 속성 이름
@@ -84,11 +94,25 @@ export interface RegionFeatureCollectionProps {
  *   extrusion={{ color: 'navy' }}
  * />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // ColorScale 사용 예시
+ * <RegionFeatureCollection
+ *   features={hgm.features}
+ *   colorscale={colorscale}
+ *   data={{ KOR: 51780000, JPN: 125800000, CHN: 1412000000 }}
+ *   idField="ISO_A3"
+ * />
+ * ```
  */
 export function RegionFeatureCollection({
   features,
   style,
   hoverStyle,
+  colorscale,
+  data,
+  idField,
   extrusion = { color: Colors.GRAY[8] },
 }: RegionFeatureCollectionProps) {
   // 스타일 병합 (기본값 + 사용자 지정)
@@ -112,10 +136,14 @@ export function RegionFeatureCollection({
     [mergedStyle, hoverStyle]
   );
 
-  // 지오메트리 병합
+  // 지오메트리 병합 (colorscale + data 전달)
   const mergedGeometry = useMergedGeometry({
     features,
     enableExtrusion: !!extrusion,
+    style: mergedStyle,
+    colorscale,
+    data,
+    idField,
   });
 
   // R-Tree에 배치 등록 (호버 감지용)
@@ -130,8 +158,9 @@ export function RegionFeatureCollection({
         <meshBasicMaterial
           transparent
           side={THREE.DoubleSide}
-          color={mergedStyle.fillColor}
+          color={mergedGeometry.useVertexColors ? 'white' : mergedStyle.fillColor}
           opacity={mergedStyle.fillOpacity}
+          vertexColors={mergedGeometry.useVertexColors}
         />
       </mesh>
 
@@ -158,7 +187,11 @@ export function RegionFeatureCollection({
       {/* 호버 오버레이 */}
       <HoveredRegionOverlay
         features={features}
+        style={mergedStyle}
         hoverStyle={mergedHoverStyle}
+        colorscale={colorscale}
+        data={data}
+        idField={idField}
         extrusionColor={extrusion?.color}
       />
     </group>

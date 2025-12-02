@@ -116,16 +116,17 @@ export function ColorScaleBarDemo({
           },
         }}
       >
-        {/* {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              colorscale={colorscale}
-              data={resolveFeatureData(feature)}
-            />
-          ))} */}
-        {hgm && <RegionFeatureCollection features={hgm.features} colorscale={colorscale} />}
+        {hgm && (
+          <RegionFeatureCollection
+            features={hgm.features}
+            colorscale={colorscale}
+            data={gdpData.reduce((acc, item) => {
+              acc[item.id] = item.value;
+              return acc;
+            }, {})}
+            idField="isoA2"
+          />
+        )}
         <Graticule />
       </HyperGlobe>
 

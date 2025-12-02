@@ -5,13 +5,23 @@ import { Line } from '@react-three/drei';
 import { useMainStore } from '../../store/main-store';
 import { createFeatureGeometry } from './use-merged-geometry';
 import type { FeatureStyle } from '../../types/feature';
+import type { ColorScaleModel } from '../../types/colorscale';
 import { Colors } from '../../lib';
+import { computeFeatureStyle } from '../../hooks/use-feature-style';
 
 export interface HoveredRegionOverlayProps {
   /** 모든 features (호버된 feature를 찾기 위해 필요) */
   features: HGMFeature[];
+  /** 기본 스타일 */
+  style: Required<FeatureStyle>;
   /** 호버 시 적용될 스타일 */
   hoverStyle: Required<FeatureStyle>;
+  /** 컬러스케일 모델 */
+  colorscale?: ColorScaleModel;
+  /** feature별 데이터 */
+  data?: Record<string, number>;
+  /** feature의 id로 사용할 속성 이름 */
+  idField?: string;
   /** extrusion 색상 */
   extrusionColor?: string;
 }
@@ -23,6 +33,16 @@ interface HoveredGeometry {
 }
 
 /**
+ * feature에서 데이터 키를 추출하는 헬퍼 함수
+ */
+function getFeatureKey(feature: HGMFeature, idField?: string): string {
+  if (idField && feature.properties) {
+    return String(feature.properties[idField] ?? feature.id);
+  }
+  return feature.id;
+}
+
+/**
  * 호버된 region만 별도로 렌더링하는 오버레이 컴포넌트
  *
  * - 호버된 region이 있을 때만 렌더링
@@ -30,7 +50,11 @@ interface HoveredGeometry {
  */
 export function HoveredRegionOverlay({
   features,
+  style,
   hoverStyle,
+  colorscale,
+  data,
+  idField,
   extrusionColor = Colors.GRAY[8],
 }: HoveredRegionOverlayProps) {
   // 호버된 region ID 구독
@@ -50,6 +74,22 @@ export function HoveredRegionOverlay({
     if (!hoveredFeature) return null;
     return createFeatureGeometry(hoveredFeature);
   }, [hoveredFeature]);
+
+  // 호버 스타일 계산 (colorscale 적용)
+  const computedHoverStyle = useMemo(() => {
+    if (!hoveredFeature) return hoverStyle;
+
+    const key = getFeatureKey(hoveredFeature, idField);
+    const dataValue = data?.[key];
+
+    return computeFeatureStyle({
+      style,
+      hoverStyle,
+      colorscale,
+      dataValue,
+      isHovered: true,
+    }) as Required<FeatureStyle>;
+  }, [hoveredFeature, style, hoverStyle, colorscale, data, idField]);
 
   // 이전 지오메트리 정리 (메모리 누수 방지)
   useEffect(() => {
@@ -81,8 +121,8 @@ export function HoveredRegionOverlay({
         <meshBasicMaterial
           transparent
           side={THREE.DoubleSide}
-          color={hoverStyle.fillColor}
-          opacity={hoverStyle.fillOpacity}
+          color={computedHoverStyle.fillColor}
+          opacity={computedHoverStyle.fillOpacity}
           polygonOffset
           polygonOffsetFactor={-1}
           polygonOffsetUnits={-1}
@@ -106,8 +146,8 @@ export function HoveredRegionOverlay({
       <Line
         points={hoveredGeometry.borderPoints}
         segments
-        color={hoverStyle.color}
-        lineWidth={hoverStyle.lineWidth}
+        color={computedHoverStyle.color}
+        lineWidth={computedHoverStyle.lineWidth}
       />
     </group>
   );

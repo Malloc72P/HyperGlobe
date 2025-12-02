@@ -4,6 +4,9 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { UiConstant } from '../../constants';
 import { createSideGeometry } from '../../lib/geometry';
+import type { ColorScaleModel } from '../../types/colorscale';
+import type { FeatureStyle } from '../../types/feature';
+import { computeFeatureStyle } from '../../hooks/use-feature-style';
 
 export interface MergedGeometryResult {
   /** 병합된 상단 면 지오메트리 */
@@ -12,6 +15,8 @@ export interface MergedGeometryResult {
   sideGeometry: THREE.BufferGeometry | null;
   /** 병합된 외곽선 좌표 배열 */
   borderPoints: number[];
+  /** vertex color 사용 여부 */
+  useVertexColors: boolean;
 }
 
 export interface UseMergedGeometryOptions {
@@ -19,13 +24,42 @@ export interface UseMergedGeometryOptions {
   features: HGMFeature[];
   /** extrusion 활성화 여부 */
   enableExtrusion?: boolean;
+  /** 기본 스타일 */
+  style?: FeatureStyle;
+  /** 컬러스케일 모델 */
+  colorscale?: ColorScaleModel;
+  /** feature별 데이터 (컬러스케일 적용용) */
+  data?: Record<string, number>;
+  /** feature의 id로 사용할 속성 이름 */
+  idField?: string;
+}
+
+/**
+ * feature에서 데이터 키를 추출하는 헬퍼 함수
+ */
+function getFeatureKey(feature: HGMFeature, idField?: string): string {
+  if (idField && feature.properties) {
+    return String(feature.properties[idField] ?? feature.id);
+  }
+  return feature.id;
+}
+
+/**
+ * hex 색상 문자열을 RGB 배열로 변환
+ */
+function hexToRgb(hex: string): [number, number, number] {
+  const color = new THREE.Color(hex);
+  return [color.r, color.g, color.b];
 }
 
 /**
  * HGMFeature의 geometries를 BufferGeometry 배열로 변환
  * (중복 제거를 위한 헬퍼 함수)
  */
-function createFaceGeometriesFromFeature(feature: HGMFeature): THREE.BufferGeometry[] {
+function createFaceGeometriesFromFeature(
+  feature: HGMFeature,
+  color?: [number, number, number]
+): THREE.BufferGeometry[] {
   return feature.geometries.map((geometrySource) => {
     const { vertices, indices } = geometrySource;
 
@@ -33,6 +67,18 @@ function createFaceGeometriesFromFeature(feature: HGMFeature): THREE.BufferGeome
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(Array.from(indices));
     geometry.computeVertexNormals();
+
+    // vertex color 적용
+    if (color) {
+      const vertexCount = vertices.length / 3;
+      const colors = new Float32Array(vertexCount * 3);
+      for (let i = 0; i < vertexCount; i++) {
+        colors[i * 3] = color[0];
+        colors[i * 3 + 1] = color[1];
+        colors[i * 3 + 2] = color[2];
+      }
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
 
     return geometry;
   });
@@ -56,18 +102,41 @@ function createBorderPointsFromFeature(feature: HGMFeature): number[] {
  * - 상단 면: 모든 feature의 폴리곤을 하나의 BufferGeometry로 병합
  * - 측면: 모든 feature의 측면을 하나의 BufferGeometry로 병합
  * - 외곽선: 모든 feature의 외곽선 좌표를 하나의 배열로 병합
+ * - colorscale + data가 있으면 vertex color 적용
  */
 export function useMergedGeometry({
   features,
   enableExtrusion = true,
+  style,
+  colorscale,
+  data,
+  idField,
 }: UseMergedGeometryOptions): MergedGeometryResult | null {
   return useMemo(() => {
     if (!features || features.length === 0) return null;
 
+    // colorscale + data가 있으면 vertex color 사용
+    const useVertexColors = !!(colorscale && data);
+
     // 1. 상단 면 지오메트리 병합
     const faceGeometries: THREE.BufferGeometry[] = [];
     for (const feature of features) {
-      faceGeometries.push(...createFaceGeometriesFromFeature(feature));
+      let color: [number, number, number] | undefined;
+
+      if (useVertexColors) {
+        const key = getFeatureKey(feature, idField);
+        const dataValue = data[key];
+        const featureStyle = computeFeatureStyle({
+          style,
+          colorscale,
+          dataValue,
+        });
+        if (featureStyle.fillColor) {
+          color = hexToRgb(featureStyle.fillColor);
+        }
+      }
+
+      faceGeometries.push(...createFaceGeometriesFromFeature(feature, color));
     }
     const faceGeometry = mergeGeometries(faceGeometries);
 
@@ -96,8 +165,9 @@ export function useMergedGeometry({
       faceGeometry,
       sideGeometry,
       borderPoints,
+      useVertexColors,
     };
-  }, [features, enableExtrusion]);
+  }, [features, enableExtrusion, style, colorscale, data, idField]);
 }
 
 /**

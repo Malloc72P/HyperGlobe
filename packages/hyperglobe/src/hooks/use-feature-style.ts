@@ -6,6 +6,54 @@ import type { ColorScaleModel } from 'src/types/colorscale';
 import type { FeatureStyle } from '../types/feature';
 import { getColorScaleStyle } from './use-colorscale';
 
+export interface ComputeFeatureStyleParams {
+  /** 기본 스타일 */
+  style?: FeatureStyle;
+  /** 호버 스타일 */
+  hoverStyle?: FeatureStyle;
+  /** 컬러스케일 모델 */
+  colorscale?: ColorScaleModel;
+  /** 컬러스케일 적용에 사용할 데이터 값 */
+  dataValue?: number;
+  /** 호버 상태 여부 */
+  isHovered?: boolean;
+}
+
+/**
+ * 단일 feature의 스타일을 계산하는 순수 함수
+ *
+ * - 우선순위: 기본 스타일 < colorscale 스타일 < 호버 스타일
+ * - 훅이 아니므로 어디서든 호출 가능 (반복문 내부 등)
+ */
+export function computeFeatureStyle({
+  style,
+  hoverStyle,
+  colorscale,
+  dataValue,
+  isHovered,
+}: ComputeFeatureStyleParams): FeatureStyle {
+  // 기본 스타일 및 style 병합
+  let _style: FeatureStyle = {
+    ...UiConstant.polygonFeature.default.style,
+    ...style,
+  };
+
+  // 컬러스케일 스타일 추가 적용
+  if (colorscale && dataValue !== undefined) {
+    const colorscaleStyle = getColorScaleStyle(colorscale, dataValue);
+    if (colorscaleStyle) {
+      _style = { ..._style, ...colorscaleStyle };
+    }
+  }
+
+  // 호버 스타일 추가 적용
+  if (isHovered) {
+    _style = { ..._style, ...UiConstant.polygonFeature.default.hoverStyle, ...hoverStyle };
+  }
+
+  return _style;
+}
+
 export interface UseFeatureStyleProps {
   regionModel?: RegionModel | null;
   style?: FeatureStyle;
@@ -32,25 +80,13 @@ export function useFeatureStyle({
   );
 
   const appliedStyle = useMemo<FeatureStyle>(() => {
-    // 기본 스타일 및 style 병합
-    let _style: FeatureStyle = {
-      ...UiConstant.polygonFeature.default.style,
-      ...style,
-    };
-
-    // 컬러스케일 스타일 추가 적용
-    if (colorscale && regionModel && regionModel.data) {
-      const colorscaleStyle = getColorScaleStyle(colorscale, regionModel.data.value) || {};
-
-      _style = { ..._style, ...colorscaleStyle };
-    }
-
-    // 호버 스타일 추가 적용
-    if (isHoveredRegion) {
-      _style = { ..._style, ...UiConstant.polygonFeature.default.hoverStyle, ...hoverStyle };
-    }
-
-    return _style;
+    return computeFeatureStyle({
+      style,
+      hoverStyle,
+      colorscale,
+      dataValue: regionModel?.data?.value,
+      isHovered: !!isHoveredRegion,
+    });
   }, [style, hoverStyle, isHoveredRegion, colorscale, regionModel]);
 
   return [appliedStyle];
