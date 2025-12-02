@@ -8,6 +8,7 @@ import type { FeatureStyle } from '../../types/feature';
 import { useMergedGeometry } from './use-merged-geometry';
 import { useBatchRegionModels } from './use-batch-region-models';
 import { HoveredRegionOverlay } from './hovered-region-overlay';
+import { ColorScaleModel } from '../../types';
 
 export interface RegionFeatureCollectionProps {
   /**
@@ -24,6 +25,33 @@ export interface RegionFeatureCollectionProps {
    * 호버 시 적용될 스타일
    */
   hoverStyle?: FeatureStyle;
+
+  /**
+   * 피쳐 컬렉션에 연결할 추가 데이터
+   *
+   * - 컬러스케일이나 툴팁 등, 기타 시각화 기능에서 사용할 수 있습니다.
+   * - 기본적으로 피쳐의 id와 매핑됩니다.
+   * - 국가별 세계지도의 경우, 기본적으로 iso-a3 코드가 id로 사용됩니다.
+   * - 만약 피쳐의 특정 속성(properties)의 값을 키로 사용하고 싶다면, `idField` prop을 사용하세요.
+   */
+  data?: any[];
+
+  /**
+   * 피쳐의 id로 사용할 속성 이름
+   *
+   * - `data` prop과 매핑할 때 사용됩니다.
+   * - 예: 'iso-a2'
+   */
+  idField?: string;
+
+  /**
+   * 컬러스케일.
+   *
+   * - 컬러스케일이 설정되면, 피쳐는 컬러스케일에 따라 색상이 결정됩니다.
+   * - style보다 우선 적용됩니다.
+   * - 주로 데이터 시각화에 사용됩니다.
+   */
+  colorscale?: ColorScaleModel;
 
   /**
    * 측면(extrusion) 옵션

@@ -4,6 +4,7 @@ import {
   Graticule,
   HyperGlobe,
   RegionFeature,
+  RegionFeatureCollection,
   useColorScale,
   useHGM,
 } from '../../src';
@@ -25,7 +26,10 @@ interface ColorScaleBarDemoProps {
  * ColorScaleBar 컴포넌트를 실제 지도와 함께 사용하는 데모입니다.
  * 지역을 호버하면 해당 값의 위치에 마커가 표시됩니다.
  */
-export function ColorScaleBarDemo({ formatType = 'fixed', theme = 'blue' }: ColorScaleBarDemoProps) {
+export function ColorScaleBarDemo({
+  formatType = 'fixed',
+  theme = 'blue',
+}: ColorScaleBarDemoProps) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
@@ -112,7 +116,7 @@ export function ColorScaleBarDemo({ formatType = 'fixed', theme = 'blue' }: Colo
           },
         }}
       >
-        {hgm &&
+        {/* {hgm &&
           hgm.features.map((feature) => (
             <RegionFeature
               key={feature.id}
@@ -120,11 +124,12 @@ export function ColorScaleBarDemo({ formatType = 'fixed', theme = 'blue' }: Colo
               colorscale={colorscale}
               data={resolveFeatureData(feature)}
             />
-          ))}
+          ))} */}
+        {hgm && <RegionFeatureCollection features={hgm.features} colorscale={colorscale} />}
         <Graticule />
       </HyperGlobe>
 
-      <ColorScaleBar
+      {/* <ColorScaleBar
         colorScale={colorscale}
         formatLabel={formatters[formatType]}
         style={{
@@ -133,7 +138,7 @@ export function ColorScaleBarDemo({ formatType = 'fixed', theme = 'blue' }: Colo
           margin: '0 auto',
           fontSize: 12,
         }}
-      />
+      /> */}
     </div>
   );
 }
