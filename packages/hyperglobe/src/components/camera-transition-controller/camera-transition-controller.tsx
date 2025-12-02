@@ -1,4 +1,4 @@
-import { OrthographicProj } from '@hyperglobe/tools';
+import { createGreatCirclePath, OrthographicProj } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useEffect, useRef } from 'react';
@@ -38,13 +38,6 @@ const DEFAULT_OPTIONS: Required<CameraTransitionOptions> = {
 const DEFAULT_DURATION = 1000;
 const DEFAULT_DISTANCE = 5;
 const SEGMENTS_PER_UNIT_DISTANCE = 20; // 거리 단위당 세그먼트 수
-
-/**
- * 두 좌표 사이의 대략적인 거리를 계산합니다 (각도 기반)
- */
-function estimateDistance(from: Vector3, to: Vector3): number {
-  return from.angleTo(to);
-}
 
 /**
  * 거리에 따라 적절한 세그먼트 수를 계산합니다
@@ -119,35 +112,37 @@ export function CameraTransitionController({
         // Globe가 Y축으로 -90도 회전되어 있으므로, 카메라 좌표도 조정
         const adjustedCoordinate: Coordinate = [point.coordinate[0] - 90, point.coordinate[1]];
 
-        // 목표 지점의 방향 벡터 (OrthographicProj를 사용하여 정확하게 변환)
-        const projectedVector = OrthographicProj.project(adjustedCoordinate, 1);
-        const targetDirection = new Vector3(...projectedVector).normalize();
+        // 현재 카메라 방향을 경위도 좌표로 변환 (역투영)
+        // previousPoint는 이미 정규화된 방향 벡터
+        const fromCoordinate = OrthographicProj.unproject([
+          previousPoint.x,
+          previousPoint.y,
+          previousPoint.z,
+        ]);
 
-        // 세그먼트 수 계산
-        const distance = estimateDistance(previousPoint, targetDirection);
-        const segments = calculateSegments(distance);
+        // 목표 지점의 방향 벡터 (세그먼트 수 계산을 위해)
+        const targetDirection = new Vector3(
+          ...OrthographicProj.project(adjustedCoordinate, 1)
+        ).normalize();
 
-        // 대권항로 생성 (선형 보간으로 포인트 생성, 이징은 나중에 적용)
-        const pathPoints: Vector3[] = [];
+        // 이전 지점과 목표 지점 사이의 각도 계산, 이 각도로 세그먼트 수 결정
+        const angularDistance = previousPoint.angleTo(targetDirection);
+        const segments = calculateSegments(angularDistance);
 
-        for (let j = 0; j <= segments; j++) {
+        // SLERP를 사용한 대권항로 방향 벡터 생성
+        const directions = createGreatCirclePath(fromCoordinate, adjustedCoordinate, segments);
+
+        // 각 방향 벡터에 보간된 거리를 곱하여 최종 위치 계산
+        const pathPoints: Vector3[] = directions.map((direction, j) => {
           const t = j / segments;
-
-          // SLERP로 방향 보간 (선형)
-          const direction = new Vector3().lerpVectors(previousPoint, targetDirection, t);
-          direction.normalize();
-
-          // 거리 보간 (선형)
           const interpolatedDistance = previousDistance + (targetDistance - previousDistance) * t;
-
-          // 최종 위치
-          const position = direction.multiplyScalar(interpolatedDistance);
-          pathPoints.push(position);
-        }
+          return direction.clone().multiplyScalar(interpolatedDistance);
+        });
 
         segmentPointsCache.set(i, pathPoints);
 
-        previousPoint = targetDirection;
+        // 다음 구간을 위해 현재 끝점을 저장
+        previousPoint = directions[directions.length - 1].clone();
         previousDistance = targetDistance;
       }
 
