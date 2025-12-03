@@ -30,36 +30,34 @@ export function ColorScaleBarDemo({
   // 테마별 색상 설정 (더 옅은 톤)
   const colorSteps = {
     blue: [
-      { to: -10, style: { fillColor: '#f0f9ff' } },
-      { from: -10, to: 0, style: { fillColor: '#dbeafe' } },
-      { from: 0, to: 2, style: { fillColor: '#bfdbfe' } },
-      { from: 2, to: 4, style: { fillColor: '#93c5fd' } },
-      { from: 4, to: 6, style: { fillColor: '#60a5fa' } },
-      { from: 6, style: { fillColor: '#3b82f6' } },
+      { to: -10, color: '#f0f9ff' },
+      { from: -10, to: 0, color: '#dbeafe' },
+      { from: 0, to: 2, color: '#bfdbfe' },
+      { from: 2, to: 4, color: '#93c5fd' },
+      { from: 4, to: 6, color: '#60a5fa' },
+      { from: 6, color: '#3b82f6' },
     ],
     red: [
-      { to: -10, style: { fillColor: '#fef2f2' } },
-      { from: -10, to: 0, style: { fillColor: '#fee2e2' } },
-      { from: 0, to: 2, style: { fillColor: '#fecaca' } },
-      { from: 2, to: 4, style: { fillColor: '#fca5a5' } },
-      { from: 4, to: 6, style: { fillColor: '#f87171' } },
-      { from: 6, style: { fillColor: '#ef4444' } },
+      { to: -10, color: '#fef2f2' },
+      { from: -10, to: 0, color: '#fee2e2' },
+      { from: 0, to: 2, color: '#fecaca' },
+      { from: 2, to: 4, color: '#fca5a5' },
+      { from: 4, to: 6, color: '#f87171' },
+      { from: 6, color: '#ef4444' },
     ],
     green: [
-      { to: -10, style: { fillColor: '#f0fdf4' } },
-      { from: -10, to: 0, style: { fillColor: '#dcfce7' } },
-      { from: 0, to: 2, style: { fillColor: '#bbf7d0' } },
-      { from: 2, to: 4, style: { fillColor: '#86efac' } },
-      { from: 4, to: 6, style: { fillColor: '#4ade80' } },
-      { from: 6, style: { fillColor: '#22c55e' } },
+      { to: -10, color: '#f0fdf4' },
+      { from: -10, to: 0, color: '#dcfce7' },
+      { from: 0, to: 2, color: '#bbf7d0' },
+      { from: 2, to: 4, color: '#86efac' },
+      { from: 4, to: 6, color: '#4ade80' },
+      { from: 6, color: '#22c55e' },
     ],
   };
 
   const { colorscale, resolveFeatureData } = useColorScale({
     steps: colorSteps[theme],
-    nullStyle: {
-      fillColor: '#e5e7eb',
-    },
+    nullColor: '#e5e7eb',
     data: gdpData,
     itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
   });

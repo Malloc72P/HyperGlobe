@@ -4,7 +4,7 @@ import { UiConstant } from 'src/constants';
 import { useMainStore } from 'src/store';
 import type { ColorScaleModel } from 'src/types/colorscale';
 import type { FeatureStyle } from '../types/feature';
-import { getColorScaleStyle } from './use-colorscale';
+import { getColorScaleColor, getColorScaleHoverColor } from './use-colorscale';
 
 export interface ComputeFeatureStyleParams {
   /** 기본 스타일 */
@@ -38,17 +38,25 @@ export function computeFeatureStyle({
     ...style,
   };
 
-  // 컬러스케일 스타일 추가 적용
+  // 컬러스케일 색상 추가 적용
   if (colorscale && dataValue !== undefined) {
-    const colorscaleStyle = getColorScaleStyle(colorscale, dataValue);
-    if (colorscaleStyle) {
-      _style = { ..._style, ...colorscaleStyle };
+    const color = getColorScaleColor(colorscale, dataValue);
+    if (color) {
+      _style = { ..._style, fillColor: color };
     }
   }
 
   // 호버 스타일 추가 적용
   if (isHovered) {
     _style = { ..._style, ...UiConstant.polygonFeature.default.hoverStyle, ...hoverStyle };
+
+    // 컬러스케일 호버 색상이 있으면 적용
+    if (colorscale && dataValue !== undefined) {
+      const hoverColor = getColorScaleHoverColor(colorscale, dataValue);
+      if (hoverColor) {
+        _style = { ..._style, fillColor: hoverColor };
+      }
+    }
   }
 
   return _style;

@@ -70,10 +70,11 @@ function createFaceGeometriesFromFeature(
     geometry.setIndex(Array.from(indices));
     geometry.computeVertexNormals();
 
-    // vertex color 적용
+    // vertex color 적용(color는 RGB 배열)
     if (color) {
+      // x,y,z 각각에 대해 동일한 색상 할당
       const vertexCount = vertices.length / 3;
-      const colors = new Float32Array(vertexCount * 3);
+      const colors = new Float32Array(vertices.length);
       for (let i = 0; i < vertexCount; i++) {
         colors[i * 3] = color[0];
         colors[i * 3 + 1] = color[1];
@@ -129,6 +130,8 @@ export function useMergedGeometry({
       if (useVertexColors) {
         const key = getFeatureKey(feature, idField);
         const dataValue = data[key]?.[valueField];
+
+        // 해당 피쳐의 스타일 계산(컬러스케일 고려)
         const featureStyle = computeFeatureStyle({
           style,
           colorscale,

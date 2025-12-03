@@ -125,7 +125,7 @@ export function RegionFeatureCollection({
   valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
 }: RegionFeatureCollectionProps) {
-  // 스타일 병합 (기본값 + 사용자 지정)
+  /** 스타일 병합 (기본값 + 사용자 지정) */
   const mergedStyle = useMemo(
     () => ({
       color: UiConstant.polygonFeature.default.style.color!,
@@ -137,6 +137,7 @@ export function RegionFeatureCollection({
     [style]
   );
 
+  /** 병합된 지오메트리에 대한 호버 스타일 */
   const mergedHoverStyle = useMemo(
     () => ({
       ...mergedStyle,
@@ -146,7 +147,7 @@ export function RegionFeatureCollection({
     [mergedStyle, hoverStyle]
   );
 
-  // 지오메트리 병합 (colorscale + data 전달)
+  /** 지오메트리 병합 (colorscale + data 전달) */
   const mergedGeometry = useMergedGeometry({
     features,
     enableExtrusion: !!extrusion,
@@ -157,7 +158,7 @@ export function RegionFeatureCollection({
     valueField,
   });
 
-  // R-Tree에 배치 등록 (호버 감지용)
+  /** R-Tree에 배치 등록 (호버 감지용) */
   useBatchRegionModels({ features, data, idField });
 
   if (!mergedGeometry) return null;

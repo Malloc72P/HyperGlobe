@@ -2,7 +2,6 @@ import type { HGMFeature, RegionModel } from '@hyperglobe/interfaces';
 import { isSafeNumber, resolveNumber } from '@hyperglobe/tools';
 import { useCallback, useMemo } from 'react';
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
-import type { FeatureStyle } from 'src/types/feature';
 
 export interface ColorScaleStepOptions {
   /**
@@ -24,23 +23,23 @@ export interface ColorScaleStepOptions {
    */
   to?: number;
   /**
-   * 구간에 적용될 스타일
+   * 구간에 적용될 색상
    */
-  style?: FeatureStyle;
+  color?: string;
   /**
-   * 구간에 적용될 호버 스타일
+   * 구간에 적용될 호버 색상
    */
-  hoverStyle?: FeatureStyle;
+  hoverColor?: string;
 }
 
 /**
- * 컬러스케일 옵션
+ * 컨러스케일 옵션
  */
 export interface ColorScaleOptions {
   /**
-   * 값이 null인 경우 적용될 스타일
+   * 값이 null인 경우 적용될 색상
    */
-  nullStyle?: FeatureStyle;
+  nullColor?: string;
   /**
    * 컬러스케일 구간에 대한 옵션
    */
@@ -71,7 +70,7 @@ export interface ColorScaleOptions {
  * 컬러스케일 모델을 생성합니다.
  */
 export function useColorScale({
-  nullStyle,
+  nullColor,
   steps: stepOptions,
   data,
   itemResolver = (feature, item) => feature.id === item.id,
@@ -88,8 +87,8 @@ export function useColorScale({
       label: stepOption.label || '',
       from: resolveNumber(stepOption.from, -Infinity),
       to: resolveNumber(stepOption.to, Infinity),
-      style: stepOption.style,
-      hoverStyle: stepOption.hoverStyle,
+      color: stepOption.color,
+      hoverColor: stepOption.hoverColor,
     }));
 
     let minValue = Infinity;
@@ -107,14 +106,14 @@ export function useColorScale({
     }
 
     const colorScaleModel = {
-      nullStyle,
+      nullColor,
       steps: stepModels,
       minValue: isSafeNumber(minValue) ? minValue : -Infinity,
       maxValue: isSafeNumber(maxValue) ? maxValue : Infinity,
     };
 
     return colorScaleModel;
-  }, [nullStyle, stepOptions, data]);
+  }, [nullColor, stepOptions, data]);
 
   const resolveFeatureData = useCallback(
     (feature: HGMFeature) => {
@@ -141,7 +140,7 @@ export function useColorScale({
      * 피쳐에 해당하는 데이터를 찾아 반환하는 함수
      *
      * - 반환되는 데이터는 { value: number | null } 형태입니다.
-     * - 값이 null인 피쳐에 대한 스타일을 지정하려면 colorscale.nullStyle를 사용하세요.
+     * - 값이 null인 피쳐에 대한 색상을 지정하려면 colorscale.nullColor를 사용하세요.
      */
     resolveFeatureData,
   };
@@ -163,19 +162,25 @@ export const isCurrentStep = (step: ColorScaleStepModel, value: any) => {
 };
 
 /**
- * 값에 해당하는 구간의 스타일을 반환합니다.
+ * 값에 해당하는 구간의 색상을 반환합니다.
  */
-export const getColorScaleStyle = (colorscale: ColorScaleModel, value: number) => {
+export const getColorScaleColor = (
+  colorscale: ColorScaleModel,
+  value: number
+): string | undefined => {
   const step = findStepByValue(colorscale, value);
 
-  return step ? step.style : colorscale.nullStyle;
+  return step?.color ?? colorscale.nullColor;
 };
 
 /**
- * 값에 해당하는 구간의 호버 스타일을 반환합니다.
+ * 값에 해당하는 구간의 호버 색상을 반환합니다.
  */
-export const getColorScaleHoverStyle = (colorscale: ColorScaleModel, value: number) => {
+export const getColorScaleHoverColor = (
+  colorscale: ColorScaleModel,
+  value: number
+): string | undefined => {
   const step = findStepByValue(colorscale, value);
 
-  return step?.hoverStyle;
+  return step?.hoverColor;
 };

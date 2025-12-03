@@ -24,16 +24,14 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
   const [gdpData, setGdpData] = useState<any[]>([]);
   const { colorscale, resolveFeatureData } = useColorScale({
     steps: [
-      { to: -10, style: { fillColor: '#ff5757' } },
-      { from: -10, to: 0, style: { fillColor: '#ffc0c0' } },
-      { from: 0, to: 1, style: { fillColor: '#f2f6fc' } },
-      { from: 1, to: 3, style: { fillColor: '#c9dcf4' } },
-      { from: 3, to: 5, style: { fillColor: '#a4c6ec' } },
-      { from: 5, style: { fillColor: '#78a9e2' } },
+      { to: -10, color: '#ff5757' },
+      { from: -10, to: 0, color: '#ffc0c0' },
+      { from: 0, to: 1, color: '#f2f6fc' },
+      { from: 1, to: 3, color: '#c9dcf4' },
+      { from: 3, to: 5, color: '#a4c6ec' },
+      { from: 5, color: '#78a9e2' },
     ],
-    nullStyle: {
-      fillColor: Colors.GRAY[3],
-    },
+    nullColor: Colors.GRAY[3],
     data: gdpData,
     itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
   });
