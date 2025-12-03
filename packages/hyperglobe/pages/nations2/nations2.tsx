@@ -114,9 +114,6 @@ export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDe
       <HyperGlobe
         hgm={hgm}
         maxSize={900}
-        tooltip={{
-          show: true,
-        }}
         globe={{
           style: {
             color: styles.globeColor,

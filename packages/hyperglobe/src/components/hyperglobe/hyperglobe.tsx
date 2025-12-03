@@ -169,8 +169,15 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
 
     // === Tooltip 설정 ===
     const tooltipConfig = useMemo<TooltipConfig | null>(() => {
-      if (!tooltip) return null;
-      if (tooltip === true) return {};
+      const defaultTooltipConfig = { show: true };
+
+      // 설정 아예 안하면 툴팁 표시하는걸로 간주
+      if (tooltip === null || tooltip === undefined) return defaultTooltipConfig;
+
+      if (!tooltip) return { show: false };
+
+      if (tooltip === true) return defaultTooltipConfig;
+
       return tooltip;
     }, [tooltip]);
 
@@ -371,7 +378,11 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
           {/* 지구본 그룹 */}
           <group rotation={UiConstant.globe.rotation}>
             {/* Globe */}
-            <Globe wireframe={wireframe} onHoverChanged={onHoverChanged} {...globeStyle} />
+            <Globe
+              wireframe={wireframe}
+              //onHoverChanged={onHoverChanged}
+              {...globeStyle}
+            />
 
             {/* Region Features */}
             {hgm && region && (
