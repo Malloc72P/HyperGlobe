@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ColorScaleBar, Graticule, HyperGlobe, RegionFeature } from 'src/components';
+import { ColorScaleBar, Graticule, HyperGlobe, RegionFeatureCollection } from 'src/components';
 import { StorybookConstant } from 'src/constants';
 import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
@@ -21,19 +21,17 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
-  const [gdpData, setGdpData] = useState<GdpGrowth[]>([]);
+  const [gdpData, setGdpData] = useState<any[]>([]);
   const { colorscale, resolveFeatureData } = useColorScale({
     steps: [
-      { to: -10, style: { fillColor: '#ff5757' } },
-      { from: -10, to: 0, style: { fillColor: '#ffc0c0' } },
-      { from: 0, to: 1, style: { fillColor: '#f2f6fc' } },
-      { from: 1, to: 3, style: { fillColor: '#c9dcf4' } },
-      { from: 3, to: 5, style: { fillColor: '#a4c6ec' } },
-      { from: 5, style: { fillColor: '#78a9e2' } },
+      { to: -10, color: '#ff5757' },
+      { from: -10, to: 0, color: '#ffc0c0' },
+      { from: 0, to: 1, color: '#f2f6fc' },
+      { from: 1, to: 3, color: '#c9dcf4' },
+      { from: 3, to: 5, color: '#a4c6ec' },
+      { from: 5, color: '#78a9e2' },
     ],
-    nullStyle: {
-      fillColor: Colors.GRAY[3],
-    },
+    nullColor: Colors.GRAY[3],
     data: gdpData,
     itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
   });
@@ -68,19 +66,22 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           },
         }}
       >
-        {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              colorscale={colorscale}
-              data={resolveFeatureData(feature)}
-            />
-          ))}
+        {hgm && (
+          <RegionFeatureCollection
+            features={hgm.features}
+            colorscale={colorscale}
+            data={gdpData.reduce((acc, item) => {
+              acc[item.id] = { value: item.value };
+              return acc;
+            }, {})}
+            idField="isoA2"
+            valueField="value"
+          />
+        )}
         <Graticule />
       </HyperGlobe>
 
-      <ColorScaleBar
+      {/* <ColorScaleBar
         colorScale={colorscale}
         style={{
           paddingTop: 10,
@@ -88,7 +89,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           margin: '0 auto',
           fontSize: 12,
         }}
-      />
+      /> */}
     </div>
   );
 }

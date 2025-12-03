@@ -15,7 +15,7 @@ export function ColorScaleStep({ colorscale, step, formatLabel }: ColorScaleStep
       {/* 컬러스케일 막대 한칸 */}
       <div
         style={{
-          background: step.style?.fillColor,
+          background: step.color,
         }}
         className={classes.stepBar}
       />

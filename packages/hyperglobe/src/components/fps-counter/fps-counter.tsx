@@ -25,11 +25,11 @@ export function FpsCounter({ onFpsUpdate }: { onFpsUpdate: (fps: number) => void
       lastTimeRef.current = currentTime;
 
       const info = gl.info.render;
-      //   console.log({
-      //     드로우콜: info.calls,
-      //     삼각형: info.triangles.toLocaleString(),
-      //     지오메트리: gl.info.memory.geometries,
-      //   });
+      console.log({
+        드로우콜: info.calls,
+        삼각형: info.triangles.toLocaleString(),
+        지오메트리: gl.info.memory.geometries,
+      });
     }
   });
 

@@ -1,10 +1,10 @@
-import { StorybookConstant } from 'src/constants';
-import { HyperGlobe } from '../hyperglobe';
-import { RegionFeature } from '../region-feature';
 import { useEffect, useState } from 'react';
-import { useHGM } from '../../hooks/use-hgm';
+import { StorybookConstant } from 'src/constants';
 import { Colors } from 'src/lib';
+import { useHGM } from '../../hooks/use-hgm';
 import { Graticule } from '../graticule';
+import { HyperGlobe } from '../hyperglobe';
+import { RegionFeatureCollection } from '../region-feature-collection';
 import { RouteFeature, RouteFeatureProps } from './route-feature';
 
 /**
@@ -37,21 +37,19 @@ export function RouteStoryComponent(routeProps: RouteFeatureProps) {
       loading={loading}
     >
       <Graticule />
-      {hgm &&
-        hgm.features.map((feature) => (
-          <RegionFeature
-            key={feature.id}
-            feature={feature}
-            style={{
-              color: Colors.GRAY[7],
-              fillColor: Colors.GRAY[3],
-            }}
-            hoverStyle={{
-              color: Colors.GRAY[8],
-              fillColor: Colors.GRAY[3],
-            }}
-          />
-        ))}
+      {hgm && (
+        <RegionFeatureCollection
+          features={hgm.features}
+          style={{
+            color: Colors.GRAY[7],
+            fillColor: Colors.GRAY[3],
+          }}
+          hoverStyle={{
+            color: Colors.GRAY[8],
+            fillColor: Colors.GRAY[3],
+          }}
+        />
+      )}
 
       <RouteFeature {...routeProps} />
     </HyperGlobe>

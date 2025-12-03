@@ -1,10 +1,8 @@
-import type { FeatureStyle } from './feature';
-
 export interface ColorScaleModel {
   /**
-   * 값이 null인 경우 적용될 스타일
+   * 값이 null인 경우 적용될 색상
    */
-  nullStyle?: FeatureStyle;
+  nullColor?: string;
   /**
    * 컬러스케일 구간 목록
    */
@@ -51,11 +49,11 @@ export interface ColorScaleStepModel {
    */
   to: number;
   /**
-   * 구간에 적용될 스타일
+   * 구간에 적용될 색상
    */
-  style?: FeatureStyle;
+  color?: string;
   /**
-   * 구간에 적용될 호버 스타일
+   * 구간에 적용될 호버 색상
    */
-  hoverStyle?: FeatureStyle;
+  hoverColor?: string;
 }

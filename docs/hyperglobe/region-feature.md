@@ -1,3 +1,51 @@
+# RegionFeature 컴포넌트 (삭제됨)
+
+> ⚠️ **이 컴포넌트는 삭제되었습니다.**
+
+## 삭제 사유
+
+`RegionFeature`는 개별 국가마다 별도의 메시와 드로우콜을 발생시켜 심각한 성능 문제가 있었습니다.
+
+### 성능 문제
+
+| 항목 | 수치 |
+|------|------|
+| 200개 국가 렌더링 시 드로우콜 | 약 600회 |
+| 2개 HyperGlobe 인스턴스 사용 시 FPS | 75 → 40 저하 |
+
+### 원인
+
+- 각 국가마다 상단면, 측면, 외곽선 3개의 드로우콜 발생
+- N개 국가 × 3 = 3N 드로우콜
+- GPU 병목 현상으로 프레임 드랍
+
+## 대체 컴포넌트
+
+**[RegionFeatureCollection](./region-feature-collection.md)** 을 사용하세요.
+
+### 개선 사항
+
+| 항목 | RegionFeature | RegionFeatureCollection |
+|------|---------------|------------------------|
+| 드로우콜 (200개 국가) | ~600 | ~6 |
+| 국가별 색상 | ✅ 개별 메시 | ✅ Vertex Color |
+| ColorScale 지원 | ✅ | ✅ |
+| 호버 지원 | ✅ | ✅ (오버레이 방식) |
+
+```tsx
+// ❌ 삭제된 방식
+{features.map(feature => (
+  <RegionFeature key={feature.id} feature={feature} />
+))}
+
+// ✅ 새로운 방식
+<RegionFeatureCollection features={features} />
+```
+
+### 아래는 레거시 문서입니다.
+
+---
+
 # RegionFeature 컴포넌트
 
 ## 개요
