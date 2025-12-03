@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Graticule, HyperGlobe, RegionFeature, RegionFeatureCollection, useHGM } from '../../src';
+import { HyperGlobe, useHGM } from '../../src';
 
 const pink = [
   '#fff1f3',
@@ -68,23 +68,18 @@ export interface NationsDemo2Props {
  * **국가별 세계지도 데모**
  *
  * ### 소개
- * - HyperGlobe 컴포넌트와 Graticule, RegionFeature 컴포넌트를 사용하여 국가별 세계지도를 렌더링합니다.
- * - HyperGlobe의 textureEnabled 속성을 false로 설정하여 지구본의 텍스처를 비활성화합니다.
- * - 대신 globeStyle속성을 사용하여 지구본의 색상과 재질 속성을 지정합니다.
- * - Graticule 컴포넌트로 지구본의 격자선을 추가합니다.
- * - RegionFeature 컴포넌트를 사용하여 GeoJSON 데이터의 각 국가를 렌더링합니다.
+ * - 새로운 Props 기반 API를 사용하여 국가별 세계지도를 렌더링합니다.
+ * - hgm이 null이면 자동으로 로딩 UI가 표시됩니다.
+ * - region, graticule, globe 등을 props로 설정합니다.
  *
  * ### 관련 문서
  *
  * - [HyperGlobe](/docs/components-hyperglobe--docs)
- * - [RegionFeature](/docs/components-regionfeature--docs)
- * - [Graticule](/docs/components-graticule--docs)
  */
 export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDemo2Props) {
-  const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
-  const [hgm2] = useHGM({ rawHgmBlob });
+
   const color = useMemo(() => {
     return colorThemes[theme];
   }, [theme]);
@@ -101,51 +96,53 @@ export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDe
       metalness: 0,
       roughness: 0,
     }),
-    [theme]
+    [color]
   );
 
   useEffect(() => {
     const mapName = map.split('(')[0];
-    setLoading(true);
 
     fetch(`/maps/${mapName}.hgm`)
       .then((res) => res.blob())
       .then((blob) => {
         setRawHgmBlob(blob);
-        setTimeout(() => setLoading(false), 300);
       });
   }, [map]);
 
   return (
     <div>
       <HyperGlobe
+        hgm={hgm}
         maxSize={900}
-        loading={loading}
-        globeStyle={{
-          color: styles.globeColor,
-          metalness: styles.metalness,
-          roughness: styles.roughness,
+        tooltip={{
+          show: true,
         }}
-      >
-        <Graticule />
-        {hgm && (
-          <RegionFeatureCollection
-            features={hgm.features}
-            style={{
-              lineWidth: styles.regionStrokeWidth,
-              color: styles.regionColor,
-              fillColor: styles.regionFill,
-            }}
-            hoverStyle={{
-              lineWidth: styles.hoverRegionStrokeWidth,
-              fillColor: styles.hoverRegionFill,
-            }}
-            extrusion={{
-              color: styles.regionExtrusionColor,
-            }}
-          />
-        )}
-      </HyperGlobe>
+        globe={{
+          style: {
+            color: styles.globeColor,
+            metalness: styles.metalness,
+            roughness: styles.roughness,
+          },
+        }}
+        graticule
+        region={{
+          style: {
+            lineWidth: styles.regionStrokeWidth,
+            color: styles.regionColor,
+            fillColor: styles.regionFill,
+          },
+          hoverStyle: {
+            lineWidth: styles.hoverRegionStrokeWidth,
+            fillColor: styles.hoverRegionFill,
+          },
+          extrusion: {
+            color: styles.regionExtrusionColor,
+          },
+        }}
+        onReady={() => {
+          console.log('HyperGlobe 렌더링 완료');
+        }}
+      />
     </div>
   );
 }
