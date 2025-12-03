@@ -1,14 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useHGM,
-  HyperGlobe,
-  Colors,
-  RouteFeature,
-  RouteFeatureProps,
-  RoutePoint,
-  SvgStyle,
-  HyperglobeRef,
-} from '../../src';
+import { useHGM, HyperGlobe, Colors, SvgStyle, HyperglobeRef } from '../../src';
+import type { RouteConfig, RoutePointConfig } from '../../src/types/hyperglobe-props';
 
 export interface RoundTheWorld {}
 
@@ -18,49 +10,49 @@ const markerStyle: SvgStyle = {
 };
 
 // 서울 인천국제공항
-const seoul: RoutePoint = {
+const seoul: RoutePointConfig = {
   coordinate: [126.4506, 37.4639],
   label: '서울(인천국제공항)',
   style: markerStyle,
 };
 
 // 인도 뭄바이 차트라파티 시바지 마하라지 국제공항
-const mumbai: RoutePoint = {
+const mumbai: RoutePointConfig = {
   coordinate: [72.8777, 19.0896],
   label: '뭄바이(차트라파티 시바지공항)',
   style: markerStyle,
 };
 
 // 남아프리카공화국 요하네스버그 O.R. 탐보 국제공항
-const johannesburg: RoutePoint = {
+const johannesburg: RoutePointConfig = {
   coordinate: [28.2461, -26.1367],
   label: '요하네스버그(O.R.탐보공항)',
   style: markerStyle,
 };
 
 // 영국 런던 히드로 공항
-const london: RoutePoint = {
+const london: RoutePointConfig = {
   coordinate: [-0.4543, 51.47],
   label: '런던(히드로공항)',
   style: markerStyle,
 };
 
 // 캐나다 토론토 피어슨 국제공항
-const toronto: RoutePoint = {
+const toronto: RoutePointConfig = {
   coordinate: [-79.6248, 43.6777],
   label: '토론토(피어슨국제공항)',
   style: markerStyle,
 };
 
 // 미국 샌프란시스코 국제공항
-const sanFrancisco: RoutePoint = {
+const sanFrancisco: RoutePointConfig = {
   coordinate: [-122.3789, 37.6213],
   label: '샌프란시스코(국제공항)',
   style: markerStyle,
 };
 
 // 남미 브라질 상파울루 구아룰류스 국제공항
-const saoPaulo: RoutePoint = {
+const saoPaulo: RoutePointConfig = {
   coordinate: [-46.4731, -23.4356],
   label: '상파울루(구아룰류스공항)',
   style: markerStyle,
@@ -84,9 +76,9 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
       });
   }, []);
 
-  const routes = useMemo<Pick<RouteFeatureProps, 'from' | 'to'>[]>(() => {
+  const routes = useMemo<RouteConfig[]>(() => {
     // 순회 경로: 서울 → 샌프란시스코 → 토론토 → 런던 → 상파울루 → 요하네스버그 → 뭄바이 → 서울
-    return [
+    const routePairs: { from: RoutePointConfig; to: RoutePointConfig }[] = [
       { from: seoul, to: sanFrancisco },
       { from: sanFrancisco, to: toronto },
       { from: toronto, to: london },
@@ -95,6 +87,16 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
       { from: johannesburg, to: mumbai },
       { from: mumbai, to: seoul },
     ];
+
+    return routePairs.map(({ from, to }, index) => ({
+      id: `${from.label}-${to.label}`,
+      from,
+      to,
+      maxHeight: 0.1,
+      lineWidth: 5,
+      animationDuration: 1000,
+      animationDelay: (index + 1) * 1000 + 200,
+    }));
   }, []);
 
   return (
@@ -126,6 +128,7 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
           fillColor: Colors.GRAY[3],
         },
       }}
+      routes={routes}
       onReady={() => {
         const hyperglobe = hyperglobeRef.current;
 
@@ -142,19 +145,6 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
           { coordinate: seoul.coordinate, duration: 1000 },
         ]);
       }}
-    >
-      {/* RouteFeature는 아직 내부화되지 않아 children으로 전달 */}
-      {/* {routes.map(({ from, to }, index) => (
-        <RouteFeature
-          key={`${from.label}-${to.label}`}
-          from={from}
-          to={to}
-          maxHeight={0.1}
-          lineWidth={5}
-          animationDuration={1000}
-          animationDelay={(index + 1) * 1000 + 200}
-        />
-      ))} */}
-    </HyperGlobe>
+    />
   );
 }

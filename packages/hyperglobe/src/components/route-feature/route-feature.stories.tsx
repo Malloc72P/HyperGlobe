@@ -27,28 +27,32 @@ type Story = StoryObj<typeof meta>;
  */
 export const SeoulToLondon: Story = {
   args: {
-    from: {
-      coordinate: [127, 37],
-      label: '서울',
-      style: {
-        fill: Colors.BLUE[5],
+    routeConfig: [
+      {
+        from: {
+          coordinate: [127, 37],
+          label: '서울',
+          style: {
+            fill: Colors.BLUE[5],
+          },
+        },
+        to: {
+          coordinate: [-122, 37.7749],
+          label: '샌프란시스코',
+          style: {
+            fill: Colors.PINK[5],
+          },
+        },
+        maxHeight: 0.1,
+        lineWidth: 5,
+        segments: 300,
+        animated: true,
+        animationDuration: 1,
+        animationDelay: 0.5,
+        style: {
+          fill: Colors.BLUE[5],
+        },
       },
-    },
-    to: {
-      coordinate: [-122, 37.7749],
-      label: '샌프란시스코',
-      style: {
-        fill: Colors.PINK[5],
-      },
-    },
-    maxHeight: 0.1,
-    lineWidth: 5,
-    segments: 300,
-    animated: true,
-    animationDuration: 1,
-    animationDelay: 0.5,
-    style: {
-      fill: Colors.BLUE[5],
-    },
+    ],
   },
 };

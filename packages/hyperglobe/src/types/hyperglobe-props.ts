@@ -2,6 +2,7 @@ import type { Coordinate, HGM, RegionModel } from '@hyperglobe/interfaces';
 import type { CSSProperties, ReactNode } from 'react';
 import type { ColorScaleModel } from './colorscale';
 import type { FeatureStyle } from './feature';
+import type { SvgStyle } from './svg';
 
 // ============================================================================
 // 캔버스/컨테이너 설정
@@ -220,6 +221,178 @@ export interface GraticuleConfig {
 }
 
 // ============================================================================
+// Route 설정
+// ============================================================================
+
+/**
+ * 라우트의 시작/끝 지점 정보
+ */
+export interface RoutePointConfig {
+  /**
+   * 좌표 (경도, 위도)
+   */
+  coordinate: Coordinate;
+
+  /**
+   * 라벨 텍스트 (설정하면 마커가 표시됨)
+   */
+  label?: string;
+
+  /**
+   * 마커 스타일
+   */
+  style?: SvgStyle;
+}
+
+/**
+ * 개별 라우트 설정
+ */
+export interface RouteConfig {
+  /**
+   * 라우트 식별자 (React key로 사용)
+   */
+  id: string;
+
+  /**
+   * 시작점 정보
+   */
+  from: RoutePointConfig;
+
+  /**
+   * 끝점 정보
+   */
+  to: RoutePointConfig;
+
+  /**
+   * 최대 높이 (중간점의 지구 표면으로부터의 높이)
+   */
+  maxHeight: number;
+
+  /**
+   * 선 너비
+   */
+  lineWidth: number;
+
+  /**
+   * 경로 보간 개수
+   * @default 500
+   */
+  segments?: number;
+
+  /**
+   * 스타일
+   */
+  style?: FeatureStyle;
+
+  /**
+   * 애니메이션 활성화 여부
+   * @default true
+   */
+  animated?: boolean;
+
+  /**
+   * 애니메이션 지속 시간 (밀리초)
+   * @default 1000
+   */
+  animationDuration?: number;
+
+  /**
+   * 애니메이션 시작 딜레이 (밀리초)
+   * @default 0
+   */
+  animationDelay?: number;
+
+  /**
+   * 도형 크기 스케일
+   * @default 1
+   */
+  objectScale?: number;
+}
+
+// ============================================================================
+// Marker 설정
+// ============================================================================
+
+/**
+ * 개별 마커 설정
+ */
+export interface MarkerConfig {
+  /**
+   * 마커 식별자 (React key로 사용)
+   */
+  id: string;
+
+  /**
+   * 마커 위치 (경도, 위도)
+   */
+  coordinate: Coordinate;
+
+  /**
+   * 아이콘 타입
+   * @default 'pin'
+   */
+  icon?: 'pin' | 'circle' | 'custom';
+
+  /**
+   * 사용자 정의 아이콘 SVG path (icon이 'custom'인 경우)
+   */
+  iconPath?: string;
+
+  /**
+   * 마커 라벨 텍스트
+   */
+  label?: string;
+
+  /**
+   * 마커 스타일
+   */
+  style?: SvgStyle;
+
+  /**
+   * 마커 크기 배율
+   * @default 1
+   */
+  scale?: number;
+
+  /**
+   * 사용자 정의 데이터
+   */
+  data?: unknown;
+}
+
+/**
+ * 마커 전체 설정
+ */
+export interface MarkersConfig {
+  /**
+   * 마커 목록
+   */
+  items: MarkerConfig[];
+
+  /**
+   * 기본 스케일
+   * @default 1
+   */
+  defaultScale?: number;
+
+  /**
+   * 라벨 표시 여부
+   * @default true
+   */
+  showLabels?: boolean;
+
+  /**
+   * 마커 클릭 핸들러
+   */
+  onMarkerClick?: (marker: MarkerConfig) => void;
+
+  /**
+   * 마커 호버 핸들러
+   */
+  onMarkerHover?: (marker: MarkerConfig | null) => void;
+}
+
+// ============================================================================
 // Colorscale 설정
 // ============================================================================
 
@@ -408,6 +581,20 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    * - true를 전달하면 기본값으로 표시합니다.
    */
   graticule?: GraticuleConfig | boolean;
+
+  /**
+   * 라우트(비행경로) 설정
+   *
+   * - 두 지점 사이의 대권항로를 곡선으로 표시합니다.
+   */
+  routes?: RouteConfig[];
+
+  /**
+   * 마커 설정
+   *
+   * - 지구본 위에 마커를 표시합니다.
+   */
+  markers?: MarkersConfig;
 
   // === UI ===
 

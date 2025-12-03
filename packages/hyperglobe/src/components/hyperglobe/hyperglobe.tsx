@@ -34,6 +34,8 @@ import { MainStoreProvider } from 'src/store/main-store-provider';
 import { RegionFeatureCollection } from '../region-feature-collection';
 import { Graticule } from '../graticule';
 import { ColorScaleBar } from '../colorscale-bar';
+import { RouteFeature } from '../route-feature';
+import { MarkerFeature } from '../marker-feature';
 
 // Re-export for backward compatibility during migration
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
@@ -102,15 +104,17 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       // 컨트롤
       controls,
 
-      // 피처
+      // 피쳐
       region,
       graticule,
+      routes,
+      markers,
 
       // UI
       colorscale,
       colorscaleBar,
       tooltip,
-      showFpsCounter = false,
+      showFpsCounter = true,
       showLoadingUI = true,
 
       // 이벤트
@@ -367,7 +371,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
               //onHoverChanged={onHoverChanged}
               {...globeStyle}
             />
-
             {/* Region Features */}
             {hgm && region && (
               <RegionFeatureCollection
@@ -380,7 +383,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 extrusion={region.extrusion}
               />
             )}
-
             {/* Graticule */}
             {graticuleConfig && (
               <Graticule
@@ -390,6 +392,39 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 lineWidth={graticuleConfig.lineWidth}
               />
             )}
+            {/* Routes */}
+            {routes?.map((route) => (
+              <RouteFeature
+                key={route.id}
+                from={route.from}
+                to={route.to}
+                maxHeight={route.maxHeight}
+                lineWidth={route.lineWidth}
+                segments={route.segments}
+                style={route.style}
+                animated={route.animated}
+                animationDuration={route.animationDuration}
+                animationDelay={route.animationDelay}
+                objectScale={route.objectScale}
+              />
+            ))}
+            {/* Markers */}
+            {markers?.items.map((marker) => (
+              <MarkerFeature
+                key={marker.id}
+                coordinate={marker.coordinate}
+                icon={marker.icon}
+                iconPath={marker.iconPath}
+                label={marker.label}
+                style={marker.style}
+                scale={marker.scale}
+                defaultScale={markers.defaultScale}
+                showLabels={markers.showLabels}
+                onMarkerClick={
+                  markers.onMarkerClick ? () => markers.onMarkerClick?.(marker) : undefined
+                }
+              />
+            ))}{' '}
           </group>
 
           {/* FPS Counter */}
