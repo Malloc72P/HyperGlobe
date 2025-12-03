@@ -1,7 +1,7 @@
 import { createGreatCirclePath, OrthographicProj } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { useFrame, useThree } from '@react-three/fiber';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { Vector3 } from 'three';
 import { getEasingFunction } from '../../lib/easing';
 import type { CameraTransitionOptions, PathPoint } from '../../types/camera';
@@ -51,6 +51,8 @@ export interface CameraTransitionControllerProps {
   onLockChange: (locked: boolean) => void;
   /** 카메라 위치가 변경될 때 호출되는 콜백 */
   onCameraPositionChange?: (position: Vector3) => void;
+  /** 컴포넌트가 마운트되어 ref가 준비되었을 때 호출되는 콜백 */
+  onMount?: () => void;
 }
 
 /**
@@ -72,8 +74,9 @@ export interface CameraTransitionControllerRef {
 export const CameraTransitionController = forwardRef<
   CameraTransitionControllerRef,
   CameraTransitionControllerProps
->(function CameraTransitionController({ onLockChange, onCameraPositionChange }, ref) {
+>(function CameraTransitionController({ onLockChange, onCameraPositionChange, onMount }, ref) {
   const { camera } = useThree();
+  const isMountedRef = useRef(false);
 
   const stateRef = useRef<TransitionState>({
     isActive: false,
@@ -195,6 +198,14 @@ export const CameraTransitionController = forwardRef<
     }),
     [followPath, cancelTransition]
   );
+
+  // 마운트 완료 알림
+  useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      onMount?.();
+    }
+  }, [onMount]);
 
   /**
    * 매 프레임마다 카메라 위치를 업데이트합니다

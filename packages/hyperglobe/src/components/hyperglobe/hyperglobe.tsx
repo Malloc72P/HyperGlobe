@@ -128,6 +128,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     // === State ===
     const [fps, setFps] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
+    const [cameraControllerReady, setCameraControllerReady] = useState(false);
 
     // === Store ===
     const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -291,16 +292,18 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       setLoading(isLoading);
     }, [isLoading, setLoading]);
 
-    // onReady 호출 (최초 1회)
+    // onReady 호출 (hgm 로드 완료 + 카메라 컨트롤러 준비 완료 후)
     useEffect(() => {
-      if (!isLoading && !onReadyCalledRef.current && onReady) {
-        // 다음 프레임에 호출하여 렌더링 완료 보장
-        requestAnimationFrame(() => {
-          onReady();
-          onReadyCalledRef.current = true;
-        });
+      if (!isLoading && cameraControllerReady && !onReadyCalledRef.current && onReady) {
+        onReady();
+        onReadyCalledRef.current = true;
       }
-    }, [isLoading, onReady]);
+    }, [isLoading, cameraControllerReady, onReady]);
+
+    // 카메라 컨트롤러 마운트 핸들러
+    const handleCameraControllerMount = useCallback(() => {
+      setCameraControllerReady(true);
+    }, []);
 
     // === Render ===
     return (
@@ -353,6 +356,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
             ref={cameraTransitionRef}
             onLockChange={handleLockChange}
             onCameraPositionChange={handleCameraPositionChange}
+            onMount={handleCameraControllerMount}
           />
 
           {/* 지구본 그룹 */}
