@@ -324,26 +324,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         {/* FPS 표시 */}
         {showFpsCounter && <FpsDisplay fps={fps} />}
 
-        {/* ColorscaleBar (Canvas 외부, HTML) */}
-        {colorscaleBarConfig && colorscale?.model && (
-          <ColorScaleBar
-            colorScale={colorscale.model}
-            style={{
-              position: 'absolute',
-              ...(colorscaleBarConfig.position === 'top-left' && { top: 16, left: 16 }),
-              ...(colorscaleBarConfig.position === 'top-right' && { top: 16, right: 16 }),
-              ...(colorscaleBarConfig.position === 'bottom-left' && { bottom: 16, left: 16 }),
-              ...((colorscaleBarConfig.position === 'bottom-right' ||
-                !colorscaleBarConfig.position) && {
-                bottom: 16,
-                right: 16,
-              }),
-              ...colorscaleBarConfig.style,
-            }}
-            formatLabel={colorscaleBarConfig.formatLabel}
-          />
-        )}
-
         {/* Canvas */}
         <Canvas
           id={id}
@@ -411,6 +391,17 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
           {/* FPS Counter */}
           {showFpsCounter && <FpsCounter onFpsUpdate={setFps} />}
         </Canvas>
+
+        {/* ColorscaleBar (Canvas 외부, HTML) */}
+        {colorscaleBarConfig && colorscale?.model && (
+          <ColorScaleBar
+            colorScale={colorscale.model}
+            style={{
+              ...colorscaleBarConfig.style,
+            }}
+            formatLabel={colorscaleBarConfig.formatLabel}
+          />
+        )}
       </div>
     );
   }

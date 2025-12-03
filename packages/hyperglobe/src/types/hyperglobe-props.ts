@@ -369,7 +369,7 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    * }}
    * ```
    */
-  dataMap?: Record<string, Record<string, number>>;
+  dataMap?: Record<string, any>;
 
   // === 지구본 ===
 

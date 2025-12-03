@@ -137,6 +137,7 @@ export function useMergedGeometry({
           colorscale,
           dataValue,
         });
+
         if (featureStyle.fillColor) {
           color = hexToRgb(featureStyle.fillColor);
         }
