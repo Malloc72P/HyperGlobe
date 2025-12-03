@@ -1,12 +1,10 @@
 # RouteFeature 컴포넌트
 
-> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `routes` prop을 통해 사용하는 것을 권장합니다.
-
 ## 개요
 
 RouteFeature는 3D 지구본 위에 시작점부터 끝점까지 대권항로(Great Circle Route)를 따라 경로를 그리는 컴포넌트입니다. `@react-three/drei`의 `Line` 컴포넌트를 사용하여 간단하고 효율적으로 경로를 렌더링하며, 포물선 형태의 높이 프로필을 적용합니다.
 
-## 권장 사용법 (새 API)
+## 사용법
 
 `HyperGlobe` 컴포넌트의 `routes` prop을 사용합니다:
 
@@ -122,67 +120,6 @@ const height = minHeight + (maxHeight - minHeight) * heightFactor;
 
 `from` 또는 `to`에 `label`이 설정된 경우, 해당 지점에 `MarkerFeature`가 자동으로 렌더링됩니다.
 
-## 레거시 사용 예시
-
-> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
-
-### 기본 사용
-
-```tsx
-import { HyperGlobe, RouteFeature } from 'hyperglobe';
-
-const seoul = {
-  coordinate: [126.978, 37.5665],
-  label: '서울',
-  style: { fill: '#3B82F6', scale: 1.5 },
-};
-
-const london = {
-  coordinate: [-0.1278, 51.5074],
-  label: '런던',
-  style: { fill: '#3B82F6', scale: 1.5 },
-};
-
-function App() {
-  return (
-    <HyperGlobe>
-      <RouteFeature
-        from={seoul}
-        to={london}
-        maxHeight={0.3}
-        lineWidth={3}
-      />
-    </HyperGlobe>
-  );
-}
-```
-
-### 애니메이션 비활성화
-
-```tsx
-<RouteFeature
-  from={seoul}
-  to={newYork}
-  maxHeight={0.5}
-  lineWidth={5}
-  animated={false}
-/>
-```
-
-### 애니메이션 타이밍 커스터마이징
-
-```tsx
-<RouteFeature
-  from={seoul}
-  to={sanFrancisco}
-  maxHeight={0.4}
-  lineWidth={4}
-  animationDuration={2000}   // 2초 동안 그리기
-  animationDelay={500}       // 0.5초 후 시작
-  objectScale={1.2}          // 헤드 도형 1.2배 크기
-/>
-```
-
 ## 파라미터 가이드
 
 ### segments (세그먼트 개수)
@@ -225,10 +162,10 @@ function App() {
 
 #### animationDelay (밀리초)
 
-애니메이션 시작 전 대기 시간. 여러 RouteFeature를 순차적으로 그릴 때 유용:
+애니메이션 시작 전 대기 시간. 여러 경로를 순차적으로 그릴 때 유용:
 
 ```tsx
-// HyperGlobe routes prop에서 순차적 경로 그리기
+// 순차적 경로 그리기
 routes={routes.map((route, index) => ({
   ...route,
   animationDuration: 1000,

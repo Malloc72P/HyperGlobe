@@ -1,7 +1,5 @@
 # Graticule 컴포넌트
 
-> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `graticule` prop을 통해 사용하는 것을 권장합니다.
-
 ## 개요
 
 `Graticule`은 지구본에 경선(Longitude)과 위선(Latitude)으로 이루어진 격자무늬를 추가하는 컴포넌트입니다. 지리적 참조점을 시각적으로 제공합니다.
@@ -17,7 +15,7 @@
 - 선 색상 설정
 - 선 두께 조절
 
-## 권장 사용법 (새 API)
+## 사용법
 
 `HyperGlobe` 컴포넌트의 `graticule` prop을 사용합니다:
 
@@ -57,42 +55,6 @@ function Map() {
 | `latitudeStep` | `number` | `10` | 위선 간격 (단위: 도) |
 | `lineColor` | `string` | `'#808080'` | 격자선 색상 |
 | `lineWidth` | `number` | `1.2` | 격자선 두께 |
-
-## 레거시 사용 예시
-
-> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
-
-### 기본 사용
-```tsx
-import { HyperGlobe, Graticule } from 'hyperglobe';
-
-function Map() {
-  return (
-    <HyperGlobe>
-      <Graticule />
-    </HyperGlobe>
-  );
-}
-```
-
-### 간격 조절
-```tsx
-// 30도 간격의 격자선
-<Graticule 
-  longitudeStep={30}
-  latitudeStep={30}
-/>
-```
-
-### 스타일 커스터마이징
-```tsx
-<Graticule
-  longitudeStep={15}
-  latitudeStep={15}
-  lineColor="#4a5568"
-  lineWidth={2}
-/>
-```
 
 ## 기술 세부사항
 

@@ -15,7 +15,7 @@ HyperGlobe에 컬러스케일 모델을 전달합니다.
 ### colorscaleBar prop
 컬러스케일을 시각적으로 표시하는 범례 UI를 표시합니다.
 
-## 권장 사용법 (새 API)
+## 사용법
 
 ```tsx
 import { HyperGlobe, useColorScale } from 'hyperglobe';
@@ -114,13 +114,6 @@ valueResolver?: (dataItem: any) => number | null | undefined;
 #### colorscale
 컬러스케일 모델 (`ColorScaleModel`)
 - HyperGlobe의 `colorscale.model`에 전달합니다.
-
-#### resolveFeatureData
-피쳐에 해당하는 데이터를 찾아 반환하는 함수 (레거시 API용)
-
-```typescript
-(feature: HGMFeature) => { value: number | null }
-```
 
 ## 사용 예시
 
@@ -304,42 +297,6 @@ getColorScaleHoverColor(colorscale: ColorScaleModel, value: number): string | un
 ### 성능
 - `useColorScale`은 내부적으로 메모이제이션됨
 - `steps` 배열이 변경되지 않으면 colorscale도 변경되지 않음
-
-## 레거시 사용법
-
-> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
-
-```tsx
-import { HyperGlobe, RegionFeatureCollection, useColorScale, ColorScaleBar } from 'hyperglobe';
-
-function LegacyDataVisualization() {
-  const hgm = useHGM('/maps/world.hgm');
-  
-  const { colorscale, resolveFeatureData } = useColorScale({
-    steps: [...],
-    data: gdpData,
-  });
-
-  if (!hgm) return null;
-
-  return (
-    <div>
-      <HyperGlobe>
-        {hgm.features.map(feature => (
-          <RegionFeature
-            key={feature.id}
-            feature={feature}
-            colorscale={colorscale}
-            data={resolveFeatureData(feature)}
-          />
-        ))}
-      </HyperGlobe>
-      
-      <ColorScaleBar colorScale={colorscale} />
-    </div>
-  );
-}
-```
 
 ## 관련 문서
 

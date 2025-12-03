@@ -1,7 +1,5 @@
 # MarkerFeature 컴포넌트
 
-> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `markers` prop을 통해 사용하는 것을 권장합니다.
-
 ## 개요
 
 MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨**로 표시하는 컴포넌트입니다.
@@ -10,7 +8,7 @@ MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨*
 - **적합한 개수**: 50개 이하
 - **특징**: SVG 아이콘, 텍스트 라벨, CSS 스타일링 지원
 
-## 권장 사용법 (새 API)
+## 사용법
 
 `HyperGlobe` 컴포넌트의 `markers` prop을 사용합니다:
 
@@ -71,7 +69,7 @@ function CityMarkers() {
 3. **자동 Billboard**: 항상 카메라를 향하도록 회전
 4. **Occlusion**: 지구 반대편에서 자동으로 가려짐 (내적 기반 가시성 계산)
 
-## Props 설계
+## Props
 
 ### SvgStyle 인터페이스
 
@@ -96,7 +94,7 @@ export interface SvgStyle {
 }
 ```
 
-### MarkerConfig 인터페이스 (새 API)
+### MarkerConfig 인터페이스
 
 ```typescript
 export interface MarkerConfig {
@@ -132,7 +130,7 @@ export interface MarkerConfig {
 }
 ```
 
-### MarkersConfig 인터페이스 (새 API)
+### MarkersConfig 인터페이스
 
 ```typescript
 export interface MarkersConfig {
@@ -150,68 +148,6 @@ export interface MarkersConfig {
   
   /** 마커 호버 이벤트 핸들러 */
   onMarkerHover?: (marker: MarkerConfig | null) => void;
-}
-```
-
-## 레거시 사용 예시
-
-> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
-
-### 기본 사용
-
-```tsx
-import { HyperGlobe, MarkerFeature } from 'hyperglobe';
-
-function App() {
-  return (
-    <HyperGlobe>
-      <MarkerFeature
-        coordinate={[126.978, 37.5665]}
-        label="서울"
-        icon="pin"
-        style={{ fill: '#ff0000', stroke: 'black' }}
-      />
-      <MarkerFeature
-        coordinate={[139.6503, 35.6762]}
-        label="도쿄"
-        icon="circle"
-        style={{ fill: '#0000ff' }}
-      />
-    </HyperGlobe>
-  );
-}
-```
-
-### 커스텀 SVG 아이콘
-
-```tsx
-<MarkerFeature
-  coordinate={[126.978, 37.5665]}
-  label="서울"
-  icon="custom"
-  iconPath="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-  style={{ fill: '#ff5722', stroke: 'black' }}
-  scale={1.5}
-/>
-```
-
-### 이벤트 처리
-
-```tsx
-function App() {
-  const handleMarkerClick = (marker) => {
-    console.log('Clicked:', marker.label);
-  };
-
-  return (
-    <HyperGlobe>
-      <MarkerFeature
-        coordinate={[126.978, 37.5665]}
-        label="서울"
-        onMarkerClick={handleMarkerClick}
-      />
-    </HyperGlobe>
-  );
 }
 ```
 
@@ -284,21 +220,22 @@ if (!isVisible) return null;
 ### SvgStyle을 사용한 스타일링
 
 ```tsx
-// HyperGlobe markers prop에서
-markers={{
-  items: [{
-    id: 'seoul',
-    coordinate: [126.978, 37.5665],
-    label: '서울',
-    icon: 'pin',
-    style: {
-      fill: '#ff5722',
-      stroke: 'black',
-      strokeWidth: 1,
-      scale: 1.5,
-    },
-  }],
-}}
+<HyperGlobe
+  markers={{
+    items: [{
+      id: 'seoul',
+      coordinate: [126.978, 37.5665],
+      label: '서울',
+      icon: 'pin',
+      style: {
+        fill: '#ff5722',
+        stroke: 'black',
+        strokeWidth: 1,
+        scale: 1.5,
+      },
+    }],
+  }}
+/>
 ```
 
 ### 내부 CSS 스타일

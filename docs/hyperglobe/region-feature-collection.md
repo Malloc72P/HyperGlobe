@@ -1,7 +1,5 @@
 # RegionFeatureCollection 컴포넌트
 
-> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `region` prop을 통해 사용하는 것을 권장합니다.
-
 ## 개요
 
 `RegionFeatureCollection`은 여러 지역(국가, 행정구역 등)을 **하나의 병합된 지오메트리**로 렌더링하는 최적화된 컴포넌트입니다.
@@ -17,7 +15,7 @@
 | ColorScale 지원 | ✅ | ✅ |
 | 호버 지원 | ✅ | ✅ (오버레이 방식) |
 
-## 권장 사용법 (새 API)
+## 사용법
 
 `HyperGlobe` 컴포넌트의 `region` prop을 사용합니다:
 
@@ -27,9 +25,9 @@ import { HyperGlobe, useColorScale } from 'hyperglobe';
 function DataVisualization() {
   const { colorscale } = useColorScale({
     steps: [
-      { to: 1000000, style: { fillColor: '#eff6ff' } },
-      { from: 1000000, to: 10000000, style: { fillColor: '#3b82f6' } },
-      { from: 10000000, style: { fillColor: '#1e40af' } },
+      { to: 1000000, color: '#eff6ff' },
+      { from: 1000000, to: 10000000, color: '#3b82f6' },
+      { from: 10000000, color: '#1e40af' },
     ],
   });
 
@@ -75,101 +73,15 @@ function DataVisualization() {
 
 ## Props
 
-### 필수
-| Prop | 타입 | 설명 |
-|------|------|------|
-| `features` | `HGMFeature[]` | 렌더링할 features 배열 |
+### RegionConfig
 
-### 선택
 | Prop | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
+| `dataKey` | `string` | - | dataMap에서 사용할 데이터 키 |
+| `idField` | `string` | `'ISO_A3'` | 피쳐의 id로 사용할 속성 이름 |
 | `style` | `FeatureStyle` | - | 기본 스타일 |
 | `hoverStyle` | `FeatureStyle` | - | 호버 시 적용될 스타일 |
-| `colorscale` | `ColorScaleModel` | - | 데이터 시각화를 위한 컬러스케일 |
-| `data` | `Record<string, number>` | - | 피쳐별 데이터 (컬러스케일 적용용) |
-| `idField` | `string` | - | 피쳐의 id로 사용할 속성 이름 |
-| `valueField` | `string` | `'value'` | 피쳐의 값으로 사용할 속성 이름 |
 | `extrusion` | `{ color?: string }` | `{ color: Colors.GRAY[8] }` | 측면 옵션 |
-
-## 레거시 사용 예시
-
-> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
-
-### 기본 사용
-
-```tsx
-import { HyperGlobe, RegionFeatureCollection, useHGM } from 'hyperglobe';
-
-function Map() {
-  const hgm = useHGM('/maps/world.hgm');
-
-  if (!hgm) return null;
-
-  return (
-    <HyperGlobe>
-      <RegionFeatureCollection
-        features={hgm.features}
-        style={{ fillColor: '#3b82f6', color: '#1e3a8a' }}
-      />
-    </HyperGlobe>
-  );
-}
-```
-
-### ColorScale과 함께 사용
-
-```tsx
-import { HyperGlobe, RegionFeatureCollection, useHGM, useColorScale } from 'hyperglobe';
-
-function DataVisualization() {
-  const hgm = useHGM('/maps/world.hgm');
-  
-  const { colorscale } = useColorScale({
-    steps: [
-      { from: 0, to: 1000000, style: { fillColor: '#eff6ff' } },
-      { from: 1000000, to: 10000000, style: { fillColor: '#3b82f6' } },
-      { from: 10000000, style: { fillColor: '#1e40af' } },
-    ],
-  });
-
-  const populationData = {
-    KOR: 51780000,
-    JPN: 125800000,
-    CHN: 1412000000,
-  };
-
-  if (!hgm) return null;
-
-  return (
-    <HyperGlobe>
-      <RegionFeatureCollection
-        features={hgm.features}
-        colorscale={colorscale}
-        data={populationData}
-      />
-    </HyperGlobe>
-  );
-}
-```
-
-### idField 활용 (ISO-A2 매핑)
-
-HGM 파일의 기본 id는 ISO-A3 코드이지만, 데이터가 ISO-A2 기준인 경우:
-
-```tsx
-const populationData = {
-  KR: 51780000,  // ISO-A2
-  JP: 125800000,
-  CN: 1412000000,
-};
-
-<RegionFeatureCollection
-  features={hgm.features}
-  colorscale={colorscale}
-  data={populationData}
-  idField="ISO_A2"  // properties.ISO_A2를 키로 사용
-/>
-```
 
 ## 기술 세부사항
 
