@@ -1,11 +1,11 @@
 import { StorybookConstant } from 'src/constants';
 import { HyperGlobe } from '../hyperglobe';
-import { RegionFeature } from '../region-feature';
 import { useEffect, useState } from 'react';
 import { useHGM } from '../../hooks/use-hgm';
 import type { TooltipOptions } from './tooltip';
 import { Colors } from 'src/lib';
 import { Graticule } from '../graticule';
+import { RegionFeatureCollection } from '../region-feature-collection';
 
 /**
  * 툴팁 컴포넌트
@@ -40,20 +40,18 @@ export function TooltipStoryComponent(tooltipProps: TooltipOptions) {
       }}
     >
       <Graticule />
-      {hgm &&
-        hgm.features.map((feature) => (
-          <RegionFeature
-            key={feature.id}
-            feature={feature}
-            style={{
-              color: Colors.GRAY[2],
-              fillColor: Colors.GRAY[7],
-            }}
-            hoverStyle={{
-              fillColor: Colors.GRAY[6],
-            }}
-          />
-        ))}
+      {hgm && (
+        <RegionFeatureCollection
+          features={hgm.features}
+          style={{
+            color: Colors.GRAY[2],
+            fillColor: Colors.GRAY[7],
+          }}
+          hoverStyle={{
+            fillColor: Colors.GRAY[6],
+          }}
+        />
+      )}
     </HyperGlobe>
   );
 }

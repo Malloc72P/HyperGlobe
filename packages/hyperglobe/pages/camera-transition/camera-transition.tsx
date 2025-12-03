@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { HyperGlobe, Colors, Graticule, HyperglobeRef, useHGM, RegionFeature } from '../../src';
+import {
+  HyperGlobe,
+  Colors,
+  Graticule,
+  HyperglobeRef,
+  useHGM,
+  RegionFeature,
+  RegionFeatureCollection,
+} from '../../src';
 import { StorybookConstant } from '../../src/constants';
 
 export interface CameraTransitionDemoProps {}
@@ -96,21 +104,19 @@ export function CameraTransitionDemo() {
       >
         <Graticule />
 
-        {hgm &&
-          hgm.features.map((feature) => (
-            <RegionFeature
-              key={feature.id}
-              feature={feature}
-              style={{
-                color: Colors.GRAY[7],
-                fillColor: Colors.GRAY[3],
-              }}
-              hoverStyle={{
-                color: Colors.GRAY[8],
-                fillColor: Colors.GRAY[3],
-              }}
-            />
-          ))}
+        {hgm && (
+          <RegionFeatureCollection
+            features={hgm.features}
+            style={{
+              color: Colors.GRAY[7],
+              fillColor: Colors.GRAY[3],
+            }}
+            hoverStyle={{
+              color: Colors.GRAY[8],
+              fillColor: Colors.GRAY[3],
+            }}
+          />
+        )}
       </HyperGlobe>
     </div>
   );

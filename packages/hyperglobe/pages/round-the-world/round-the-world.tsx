@@ -10,6 +10,7 @@ import {
   RoutePoint,
   SvgStyle,
   HyperglobeRef,
+  RegionFeatureCollection,
 } from '../../src';
 import { StorybookConstant } from '../../src/constants';
 
@@ -133,21 +134,19 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
       }}
     >
       <Graticule />
-      {hgm &&
-        hgm.features.map((feature) => (
-          <RegionFeature
-            key={feature.id}
-            feature={feature}
-            style={{
-              color: Colors.GRAY[7],
-              fillColor: Colors.GRAY[2],
-            }}
-            hoverStyle={{
-              color: Colors.GRAY[8],
-              fillColor: Colors.GRAY[3],
-            }}
-          />
-        ))}
+      {hgm && (
+        <RegionFeatureCollection
+          features={hgm.features}
+          style={{
+            color: Colors.GRAY[7],
+            fillColor: Colors.GRAY[2],
+          }}
+          hoverStyle={{
+            color: Colors.GRAY[8],
+            fillColor: Colors.GRAY[3],
+          }}
+        />
+      )}
       {routes.map(({ from, to }, index) => (
         <RouteFeature
           key={`${from.label}-${to.label}`}

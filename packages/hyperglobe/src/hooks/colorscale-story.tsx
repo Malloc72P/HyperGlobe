@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  ColorScaleBar,
-  Graticule,
-  HyperGlobe,
-  RegionFeature,
-  RegionFeatureCollection,
-} from 'src/components';
+import { ColorScaleBar, Graticule, HyperGlobe, RegionFeatureCollection } from 'src/components';
 import { StorybookConstant } from 'src/constants';
 import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
@@ -27,7 +21,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
   const [loading, setLoading] = useState(false);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
-  const [gdpData, setGdpData] = useState<GdpGrowth[]>([]);
+  const [gdpData, setGdpData] = useState<any[]>([]);
   const { colorscale, resolveFeatureData } = useColorScale({
     steps: [
       { to: -10, style: { fillColor: '#ff5757' } },
@@ -78,13 +72,18 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           <RegionFeatureCollection
             features={hgm.features}
             colorscale={colorscale}
-            dataResolver={resolveFeatureData}
+            data={gdpData.reduce((acc, item) => {
+              acc[item.id] = { value: item.value };
+              return acc;
+            }, {})}
+            idField="isoA2"
+            valueField="value"
           />
         )}
         <Graticule />
       </HyperGlobe>
 
-      <ColorScaleBar
+      {/* <ColorScaleBar
         colorScale={colorscale}
         style={{
           paddingTop: 10,
@@ -92,7 +91,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
           margin: '0 auto',
           fontSize: 12,
         }}
-      />
+      /> */}
     </div>
   );
 }
