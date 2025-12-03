@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { HyperGlobe, Colors, HyperglobeRef, useHGM } from '../../src';
+import { useRef, useState } from 'react';
+import { HyperGlobe, Colors, HyperglobeRef } from '../../src';
 
 export interface CameraTransitionDemoProps {}
 
@@ -14,16 +14,6 @@ export function CameraTransitionDemo() {
   const [progress, setProgress] = useState(0);
   const [currentPoint, setCurrentPoint] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
-
-  useEffect(() => {
-    fetch(`/maps/nations-mid.hgm`)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setRawHgmBlob(blob);
-      });
-  }, []);
 
   const startBasicTransition = () => {
     setIsAnimating(true);
@@ -83,7 +73,7 @@ export function CameraTransitionDemo() {
 
       <HyperGlobe
         ref={hyperglobeRef}
-        hgm={hgm}
+        hgmUrl="/maps/nations-mid.hgm"
         id="hyperglobe-canvas"
         size="100%"
         maxSize={900}

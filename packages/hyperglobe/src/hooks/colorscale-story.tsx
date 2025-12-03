@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { ColorScaleBar, Graticule, HyperGlobe, RegionFeatureCollection } from 'src/components';
+import { useState, useEffect, useMemo } from 'react';
+import { HyperGlobe } from 'src/components';
 import { StorybookConstant } from 'src/constants';
-import { useHGM } from './use-hgm';
 import { useColorScale, type ColorScaleOptions } from './use-colorscale';
 import type { RegionModel } from '@hyperglobe/interfaces';
 import { Colors } from 'src/lib/colors';
@@ -18,11 +17,8 @@ interface GdpGrowth {
  * - 이 예제에서는 useColorScale 훅을 사용하여 컬러스케일을 적용하는 방법을 보여줍니다.
  */
 export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
-  const [loading, setLoading] = useState(false);
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
   const [gdpData, setGdpData] = useState<any[]>([]);
-  const { colorscale, resolveFeatureData } = useColorScale({
+  const { colorscale } = useColorScale({
     steps: [
       { to: -10, color: '#ff5757' },
       { from: -10, to: 0, color: '#ffc0c0' },
@@ -36,60 +32,46 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
     itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
   });
 
+  // dataMap 형식으로 변환
+  const dataMap = useMemo(() => {
+    if (!gdpData.length) return undefined;
+
+    const gdpGrowth: Record<string, { value: number }> = {};
+    for (const item of gdpData) {
+      gdpGrowth[item.id] = { value: item.value };
+    }
+
+    return { gdpGrowth };
+  }, [gdpData]);
+
   useEffect(() => {
-    setLoading(true);
-
-    (async function () {
-      const [hgmBlob, gdpGrowth] = await Promise.all([
-        await fetch('/maps/nations-mid.hgm').then((res) => res.blob()),
-        await fetch('/data/gdp-growth.json').then((res) => res.json() as Promise<GdpGrowth[]>),
-      ]);
-
-      setRawHgmBlob(hgmBlob);
-      setGdpData(gdpGrowth);
-
-      setTimeout(() => setLoading(false), 300);
-    })();
+    fetch('/data/gdp-growth.json')
+      .then((res) => res.json() as Promise<GdpGrowth[]>)
+      .then(setGdpData);
   }, []);
 
   return (
     <div>
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        loading={loading}
-        tooltipOptions={{
+        dataMap={dataMap}
+        region={{
+          dataKey: 'gdpGrowth',
+          idField: 'isoA2',
+        }}
+        colorscale={{
+          model: colorscale,
+          dataKey: 'gdpGrowth',
+        }}
+        tooltip={{
           distance: 12,
           text: (region: RegionModel<{ value: number }>) => {
             const value = region.data?.value;
-
             return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
           },
         }}
-      >
-        {hgm && (
-          <RegionFeatureCollection
-            features={hgm.features}
-            colorscale={colorscale}
-            data={gdpData.reduce((acc, item) => {
-              acc[item.id] = { value: item.value };
-              return acc;
-            }, {})}
-            idField="isoA2"
-            valueField="value"
-          />
-        )}
-        <Graticule />
-      </HyperGlobe>
-
-      {/* <ColorScaleBar
-        colorScale={colorscale}
-        style={{
-          paddingTop: 10,
-          maxWidth: '70%',
-          margin: '0 auto',
-          fontSize: 12,
-        }}
-      /> */}
+        graticule
+      />
     </div>
   );
 }

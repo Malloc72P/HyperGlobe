@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useHGM, HyperGlobe, Colors, SvgStyle, HyperglobeRef } from '../../src';
+import { useMemo, useRef } from 'react';
+import { HyperGlobe, Colors, SvgStyle, HyperglobeRef } from '../../src';
 import type { RouteConfig, RoutePointConfig } from '../../src/types/hyperglobe-props';
 
 export interface RoundTheWorld {}
@@ -65,16 +65,6 @@ const saoPaulo: RoutePointConfig = {
  */
 export function RoundTheWorld(routeProps: RoundTheWorld) {
   const hyperglobeRef = useRef<HyperglobeRef>(null);
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
-
-  useEffect(() => {
-    fetch(`/maps/nations-mid.hgm`)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setRawHgmBlob(blob);
-      });
-  }, []);
 
   const routes = useMemo<RouteConfig[]>(() => {
     // 순회 경로: 서울 → 샌프란시스코 → 토론토 → 런던 → 상파울루 → 요하네스버그 → 뭄바이 → 서울
@@ -102,7 +92,7 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
   return (
     <HyperGlobe
       ref={hyperglobeRef}
-      hgm={hgm}
+      hgmUrl="/maps/nations-mid.hgm"
       id="hyperglobe-canvas"
       size="100%"
       maxSize={900}

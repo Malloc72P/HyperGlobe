@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { HyperGlobe, useColorScale, useHGM } from '../../src';
+import { HyperGlobe, useColorScale } from '../../src';
 
 interface ColorScaleBarDemoProps {
   /**
@@ -22,8 +22,6 @@ export function ColorScaleBarDemo({
   formatType = 'fixed',
   theme = 'blue',
 }: ColorScaleBarDemoProps) {
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
   const [gdpData, setGdpData] = useState<any[]>([]);
 
   // 테마별 색상 설정 (더 옅은 톤)
@@ -81,21 +79,15 @@ export function ColorScaleBarDemo({
   }, [gdpData]);
 
   useEffect(() => {
-    (async function () {
-      const [hgmBlob, gdpGrowth] = await Promise.all([
-        fetch('/maps/nations-mid.hgm').then((res) => res.blob()),
-        fetch('/data/gdp-growth.json').then((res) => res.json()),
-      ]);
-
-      setRawHgmBlob(hgmBlob);
-      setGdpData(gdpGrowth);
-    })();
+    fetch('/data/gdp-growth.json')
+      .then((res) => res.json())
+      .then(setGdpData);
   }, []);
 
   return (
     <div>
       <HyperGlobe
-        hgm={hgm}
+        hgmUrl="/maps/nations-mid.hgm"
         id="colorscale-demo-globe"
         size="100%"
         maxSize={900}

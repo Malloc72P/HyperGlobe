@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
 import { StorybookConstant } from 'src/constants';
 import { Colors } from 'src/lib';
 import { MarkersConfig } from 'src/types';
-import { useHGM } from '../../hooks/use-hgm';
 import { HyperGlobe } from '../hyperglobe';
 
 /**
@@ -12,25 +10,9 @@ import { HyperGlobe } from '../hyperglobe';
  * - 지정된 마커들을 지구본에 렌더링합니다.
  */
 export function MarkerStoryComponent(markerConfig: MarkersConfig) {
-  const [loading, setLoading] = useState(true);
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
-
-  useEffect(() => {
-    setLoading(true);
-
-    fetch(`/maps/nations-mid.hgm`)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setRawHgmBlob(blob);
-        setTimeout(() => setLoading(false), 300);
-      });
-  }, []);
-
   return (
     <HyperGlobe
       {...StorybookConstant.props.HyperGlobe}
-      hgm={hgm}
       globe={{
         style: {
           color: Colors.GRAY[1],
@@ -51,6 +33,6 @@ export function MarkerStoryComponent(markerConfig: MarkersConfig) {
           fillColor: Colors.GRAY[3],
         },
       }}
-    ></HyperGlobe>
+    />
   );
 }

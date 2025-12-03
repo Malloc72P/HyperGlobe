@@ -4,6 +4,7 @@ export const StorybookConstant = {
   props: {
     HyperGlobe: {
       id: 'hyperglobe-canvas',
+      hgmUrl: '/maps/nations-mid.hgm',
       size: '100%',
       maxSize: 900,
       style: { margin: '0 auto' },

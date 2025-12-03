@@ -17,15 +17,6 @@ export const HyperGlobeStory: Story = {
   tags: ['autodocs'],
   args: {
     ...StorybookConstant.props.HyperGlobe,
-    globeStyle: {
-      color: Colors.BLUE[4],
-    },
-  },
-  argTypes: {
-    children: {
-      table: {
-        disable: true,
-      },
-    },
+    hgmUrl: '/maps/nations-mid.hgm',
   },
 };

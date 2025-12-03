@@ -1,4 +1,4 @@
-import type { Coordinate, HGM, RegionModel } from '@hyperglobe/interfaces';
+import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
 import type { CSSProperties, ReactNode } from 'react';
 import type { ColorScaleModel } from './colorscale';
 import type { FeatureStyle } from './feature';
@@ -519,12 +519,17 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
   // === 필수 ===
 
   /**
-   * HGM 데이터
+   * HGM 파일 URL
    *
-   * - null이면 로딩 상태로 간주됩니다.
-   * - useHGM 훅으로 Blob 데이터를 HGM 객체로 변환할 수 있습니다.
+   * - HyperGlobe 내부에서 자동으로 fetch하여 로드합니다.
+   * - 로딩 중에는 내장 로딩 UI가 표시됩니다.
+   *
+   * @example
+   * ```tsx
+   * <HyperGlobe hgmUrl="/maps/world.hgm" ... />
+   * ```
    */
-  hgm: HGM | null;
+  hgmUrl: string;
 
   // === 데이터 ===
 

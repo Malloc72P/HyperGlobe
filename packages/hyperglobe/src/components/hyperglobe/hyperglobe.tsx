@@ -36,6 +36,7 @@ import { Graticule } from '../graticule';
 import { ColorScaleBar } from '../colorscale-bar';
 import { RouteFeature } from '../route-feature';
 import { MarkerFeature } from '../marker-feature';
+import { useHGM } from '../../hooks/use-hgm';
 
 // Re-export for backward compatibility during migration
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
@@ -84,7 +85,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
   (
     {
       // 필수
-      hgm,
+      hgmUrl,
 
       // 데이터
       dataMap,
@@ -133,6 +134,27 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     const [fps, setFps] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
     const [cameraControllerReady, setCameraControllerReady] = useState(false);
+    const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
+
+    // === HGM 로딩 ===
+    const [hgm] = useHGM({ rawHgmBlob });
+
+    // hgmUrl이 변경되면 HGM 파일을 다시 로드
+    useEffect(() => {
+      if (!hgmUrl) return;
+
+      // 이전 데이터 초기화
+      setRawHgmBlob(null);
+      onReadyCalledRef.current = false;
+      setCameraControllerReady(false);
+
+      fetch(hgmUrl)
+        .then((res) => res.blob())
+        .then(setRawHgmBlob)
+        .catch((err) => {
+          console.error(`Failed to load HGM file: ${hgmUrl}`, err);
+        });
+    }, [hgmUrl]);
 
     // === Store ===
     const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -372,15 +394,15 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
               {...globeStyle}
             />
             {/* Region Features */}
-            {hgm && region && (
+            {hgm && (
               <RegionFeatureCollection
                 features={hgm.features}
-                style={region.style}
-                hoverStyle={region.hoverStyle}
                 data={regionData}
-                idField={region.idField}
+                style={region?.style}
+                hoverStyle={region?.hoverStyle}
+                idField={region?.idField}
                 colorscale={colorscale?.model}
-                extrusion={region.extrusion}
+                extrusion={region?.extrusion}
               />
             )}
             {/* Graticule */}

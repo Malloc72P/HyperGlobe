@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { HyperGlobe, useHGM } from '../../src';
+import { useMemo } from 'react';
+import { HyperGlobe } from '../../src';
 
 const pink = [
   '#fff1f3',
@@ -77,9 +77,6 @@ export interface NationsDemo2Props {
  * - [HyperGlobe](/docs/components-hyperglobe--docs)
  */
 export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDemo2Props) {
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
-
   const color = useMemo(() => {
     return colorThemes[theme];
   }, [theme]);
@@ -99,20 +96,15 @@ export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDe
     [color]
   );
 
-  useEffect(() => {
+  const hgmUrl = useMemo(() => {
     const mapName = map.split('(')[0];
-
-    fetch(`/maps/${mapName}.hgm`)
-      .then((res) => res.blob())
-      .then((blob) => {
-        setRawHgmBlob(blob);
-      });
+    return `/maps/${mapName}.hgm`;
   }, [map]);
 
   return (
     <div>
       <HyperGlobe
-        hgm={hgm}
+        hgmUrl={hgmUrl}
         maxSize={900}
         globe={{
           style: {

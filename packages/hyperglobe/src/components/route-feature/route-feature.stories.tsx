@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { RouteStoryComponent } from './route-feature-story';
 import { Colors } from '../../lib';
+import { HyperGlobe } from '../hyperglobe';
+import { StorybookConstant } from '../../constants';
 
 /**
  * RouteFeature는 drei의 Line을 사용한 단순한 경로 렌더링 컴포넌트입니다.
@@ -11,12 +13,12 @@ import { Colors } from '../../lib';
  */
 const meta = {
   title: 'Components/RouteFeature',
-  component: RouteStoryComponent,
+  component: HyperGlobe,
   parameters: {
     layout: 'fullscreen',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof RouteStoryComponent>;
+} satisfies Meta<typeof HyperGlobe>;
 
 export default meta;
 1;
@@ -27,8 +29,13 @@ type Story = StoryObj<typeof meta>;
  */
 export const SeoulToLondon: Story = {
   args: {
-    routeConfig: [
+    ...StorybookConstant.props.HyperGlobe,
+    camera: {
+      initialPosition: [183, 37],
+    },
+    routes: [
       {
+        id: 'seoul-to-sanfrancisco',
         from: {
           coordinate: [127, 37],
           label: '서울',
@@ -49,10 +56,8 @@ export const SeoulToLondon: Story = {
         animated: true,
         animationDuration: 1,
         animationDelay: 0.5,
-        style: {
-          fill: Colors.BLUE[5],
-        },
       },
     ],
+    graticule: true,
   },
 };
