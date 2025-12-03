@@ -98,19 +98,19 @@ export interface CameraConfig {
   initialPosition?: Coordinate;
 
   /**
-   * 카메라 시야각 (Field of View)
-   * @default 25
-   */
-  fov?: number;
-
-  /**
    * 카메라 최소 거리
+   *
+   * - 1.5보다 작게 설정할 수 없습니다.
+   *
    * @default 1.5
    */
   minDistance?: number;
 
   /**
    * 카메라 최대 거리
+   *
+   * - 10보다 크게 설정할 수 없습니다.
+   *
    * @default 10
    */
   maxDistance?: number;

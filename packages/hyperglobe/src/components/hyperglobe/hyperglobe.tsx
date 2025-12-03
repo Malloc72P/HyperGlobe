@@ -37,8 +37,6 @@ import { ColorScaleBar } from '../colorscale-bar';
 import { RouteFeature } from '../route-feature';
 import { MarkerFeature } from '../marker-feature';
 import { useHGM } from '../../hooks/use-hgm';
-
-// Re-export for backward compatibility during migration
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
 
 /**
@@ -50,25 +48,10 @@ export type { HyperGlobeProps } from '../../types/hyperglobe-props';
  *
  * ### import
  *
- * ```
+ * ```tsx
  * import { HyperGlobe } from 'hyperglobe';
  * ```
  *
- * ### 사용 예시
- *
- * ```tsx
- * const [hgm] = useHGM({ rawHgmBlob });
- *
- * <HyperGlobe
- *   hgm={hgm}
- *   dataMap={{ gdp: gdpData }}
- *   region={{ dataKey: 'gdp', style: { fillColor: 'blue' } }}
- *   colorscale={{ model: colorscaleModel, dataKey: 'gdp' }}
- *   colorscaleBar={{ position: 'bottom-right' }}
- *   tooltip
- *   onReady={() => console.log('렌더링 완료')}
- * />
- * ```
  */
 export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>((props, ref) => {
   return (
@@ -166,9 +149,9 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
 
     // === 카메라 설정 ===
     const initialCameraPosition = camera?.initialPosition ?? [0, 0];
-    const cameraFov = camera?.fov ?? 25;
-    const minDistance = camera?.minDistance ?? 1.5;
-    const maxDistance = camera?.maxDistance ?? 10;
+    const cameraFov = 25;
+    const minDistance = Math.max(camera?.minDistance ?? 1.5, 1.5);
+    const maxDistance = Math.min(camera?.maxDistance ?? 10, 10);
 
     const cameraVector = useMemo(() => {
       const adjustedCoordinate: Coordinate = [
