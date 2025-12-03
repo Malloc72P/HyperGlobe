@@ -1,5 +1,5 @@
 import type { Coordinate, HGM, RegionModel } from '@hyperglobe/interfaces';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { ColorScaleModel } from './colorscale';
 import type { FeatureStyle } from './feature';
 

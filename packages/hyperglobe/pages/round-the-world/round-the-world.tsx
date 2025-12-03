@@ -1,18 +1,14 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   useHGM,
   HyperGlobe,
   Colors,
-  Graticule,
-  RegionFeature,
   RouteFeature,
   RouteFeatureProps,
   RoutePoint,
   SvgStyle,
   HyperglobeRef,
-  RegionFeatureCollection,
 } from '../../src';
-import { StorybookConstant } from '../../src/constants';
 
 export interface RoundTheWorld {}
 
@@ -77,36 +73,14 @@ const saoPaulo: RoutePoint = {
  */
 export function RoundTheWorld(routeProps: RoundTheWorld) {
   const hyperglobeRef = useRef<HyperglobeRef>(null);
-  const [loading, setLoading] = useState(true);
   const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
   const [hgm] = useHGM({ rawHgmBlob });
 
   useEffect(() => {
-    setLoading(true);
-
     fetch(`/maps/nations-mid.hgm`)
       .then((res) => res.blob())
       .then((blob) => {
         setRawHgmBlob(blob);
-        setTimeout(() => {
-          setLoading(false);
-          const hyperglobe = hyperglobeRef.current;
-
-          if (!hyperglobe) {
-            return;
-          }
-
-          hyperglobe.followPath([
-            { coordinate: seoul.coordinate, duration: 1000 },
-            { coordinate: sanFrancisco.coordinate, duration: 1000 },
-            { coordinate: toronto.coordinate, duration: 1000 },
-            { coordinate: london.coordinate, duration: 1000 },
-            { coordinate: saoPaulo.coordinate, duration: 1000 },
-            { coordinate: johannesburg.coordinate, duration: 1000 },
-            { coordinate: mumbai.coordinate, duration: 1000 },
-            { coordinate: seoul.coordinate, duration: 1000 },
-          ]);
-        }, 300);
       });
   }, []);
 
@@ -125,29 +99,52 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
 
   return (
     <HyperGlobe
-      {...StorybookConstant.props.HyperGlobe}
-      loading={loading}
-      initialCameraPosition={seoul.coordinate}
       ref={hyperglobeRef}
-      globeStyle={{
-        color: Colors.GRAY[1],
+      hgm={hgm}
+      id="hyperglobe-canvas"
+      size="100%"
+      maxSize={900}
+      style={{ margin: '0 auto' }}
+      camera={{
+        initialPosition: seoul.coordinate,
+      }}
+      globe={{
+        style: {
+          color: Colors.GRAY[1],
+          metalness: 0,
+          roughness: 0,
+        },
+      }}
+      graticule
+      region={{
+        style: {
+          color: Colors.GRAY[7],
+          fillColor: Colors.GRAY[2],
+        },
+        hoverStyle: {
+          color: Colors.GRAY[8],
+          fillColor: Colors.GRAY[3],
+        },
+      }}
+      onReady={() => {
+        const hyperglobe = hyperglobeRef.current;
+
+        if (!hyperglobe) return;
+
+        hyperglobe.followPath([
+          { coordinate: seoul.coordinate, duration: 1000 },
+          { coordinate: sanFrancisco.coordinate, duration: 1000 },
+          { coordinate: toronto.coordinate, duration: 1000 },
+          { coordinate: london.coordinate, duration: 1000 },
+          { coordinate: saoPaulo.coordinate, duration: 1000 },
+          { coordinate: johannesburg.coordinate, duration: 1000 },
+          { coordinate: mumbai.coordinate, duration: 1000 },
+          { coordinate: seoul.coordinate, duration: 1000 },
+        ]);
       }}
     >
-      <Graticule />
-      {hgm && (
-        <RegionFeatureCollection
-          features={hgm.features}
-          style={{
-            color: Colors.GRAY[7],
-            fillColor: Colors.GRAY[2],
-          }}
-          hoverStyle={{
-            color: Colors.GRAY[8],
-            fillColor: Colors.GRAY[3],
-          }}
-        />
-      )}
-      {routes.map(({ from, to }, index) => (
+      {/* RouteFeature는 아직 내부화되지 않아 children으로 전달 */}
+      {/* {routes.map(({ from, to }, index) => (
         <RouteFeature
           key={`${from.label}-${to.label}`}
           from={from}
@@ -157,7 +154,7 @@ export function RoundTheWorld(routeProps: RoundTheWorld) {
           animationDuration={1000}
           animationDelay={(index + 1) * 1000 + 200}
         />
-      ))}
+      ))} */}
     </HyperGlobe>
   );
 }

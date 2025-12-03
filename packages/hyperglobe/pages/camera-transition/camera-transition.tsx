@@ -1,14 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  HyperGlobe,
-  Colors,
-  Graticule,
-  HyperglobeRef,
-  useHGM,
-  RegionFeature,
-  RegionFeatureCollection,
-} from '../../src';
-import { StorybookConstant } from '../../src/constants';
+import { HyperGlobe, Colors, HyperglobeRef, useHGM } from '../../src';
 
 export interface CameraTransitionDemoProps {}
 
@@ -19,7 +10,6 @@ export interface CameraTransitionDemoProps {}
  * - 대권항로(Great Circle)를 따라 부드럽게 이동합니다.
  */
 export function CameraTransitionDemo() {
-  const [loading, setLoading] = useState(true);
   const hyperglobeRef = useRef<HyperglobeRef>(null);
   const [progress, setProgress] = useState(0);
   const [currentPoint, setCurrentPoint] = useState(-1);
@@ -28,13 +18,10 @@ export function CameraTransitionDemo() {
   const [hgm] = useHGM({ rawHgmBlob });
 
   useEffect(() => {
-    setLoading(true);
-
     fetch(`/maps/nations-mid.hgm`)
       .then((res) => res.blob())
       .then((blob) => {
         setRawHgmBlob(blob);
-        setTimeout(() => setLoading(false), 300);
       });
   }, []);
 
@@ -96,28 +83,33 @@ export function CameraTransitionDemo() {
 
       <HyperGlobe
         ref={hyperglobeRef}
-        {...StorybookConstant.props.HyperGlobe}
-        loading={loading}
-        globeStyle={{
-          color: Colors.GRAY[1],
+        hgm={hgm}
+        id="hyperglobe-canvas"
+        size="100%"
+        maxSize={900}
+        style={{ margin: '0 auto' }}
+        globe={{
+          style: {
+            color: Colors.GRAY[1],
+            metalness: 0,
+            roughness: 0,
+          },
         }}
-      >
-        <Graticule />
-
-        {hgm && (
-          <RegionFeatureCollection
-            features={hgm.features}
-            style={{
-              color: Colors.GRAY[7],
-              fillColor: Colors.GRAY[3],
-            }}
-            hoverStyle={{
-              color: Colors.GRAY[8],
-              fillColor: Colors.GRAY[3],
-            }}
-          />
-        )}
-      </HyperGlobe>
+        graticule
+        region={{
+          style: {
+            color: Colors.GRAY[7],
+            fillColor: Colors.GRAY[3],
+          },
+          hoverStyle: {
+            color: Colors.GRAY[8],
+            fillColor: Colors.GRAY[3],
+          },
+        }}
+        onReady={() => {
+          console.log('카메라 트랜지션 데모 렌더링 완료');
+        }}
+      />
     </div>
   );
 }
