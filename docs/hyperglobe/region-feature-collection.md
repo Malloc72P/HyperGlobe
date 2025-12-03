@@ -1,5 +1,7 @@
 # RegionFeatureCollection 컴포넌트
 
+> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `region` prop을 통해 사용하는 것을 권장합니다.
+
 ## 개요
 
 `RegionFeatureCollection`은 여러 지역(국가, 행정구역 등)을 **하나의 병합된 지오메트리**로 렌더링하는 최적화된 컴포넌트입니다.
@@ -14,6 +16,45 @@
 | 국가별 색상 | ✅ 개별 메시 | ✅ Vertex Color |
 | ColorScale 지원 | ✅ | ✅ |
 | 호버 지원 | ✅ | ✅ (오버레이 방식) |
+
+## 권장 사용법 (새 API)
+
+`HyperGlobe` 컴포넌트의 `region` prop을 사용합니다:
+
+```tsx
+import { HyperGlobe, useColorScale } from 'hyperglobe';
+
+function DataVisualization() {
+  const { colorscale } = useColorScale({
+    steps: [
+      { to: 1000000, style: { fillColor: '#eff6ff' } },
+      { from: 1000000, to: 10000000, style: { fillColor: '#3b82f6' } },
+      { from: 10000000, style: { fillColor: '#1e40af' } },
+    ],
+  });
+
+  const gdpData = {
+    KOR: 1800000,
+    JPN: 4900000,
+    USA: 25000000,
+  };
+
+  return (
+    <HyperGlobe
+      hgmUrl="/maps/nations-mid.hgm"
+      dataMap={{ gdp: gdpData }}
+      region={{
+        dataKey: 'gdp',
+        idField: 'ISO_A3',
+        style: { fillColor: '#3b82f6' },
+        hoverStyle: { fillColor: '#60a5fa' },
+      }}
+      colorscale={{ model: colorscale }}
+      colorscaleBar={{ position: 'bottom-right' }}
+    />
+  );
+}
+```
 
 ## 주요 기능
 
@@ -50,7 +91,9 @@
 | `valueField` | `string` | `'value'` | 피쳐의 값으로 사용할 속성 이름 |
 | `extrusion` | `{ color?: string }` | `{ color: Colors.GRAY[8] }` | 측면 옵션 |
 
-## 사용 예시
+## 레거시 사용 예시
+
+> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
 
 ### 기본 사용
 
@@ -83,18 +126,16 @@ function DataVisualization() {
   
   const { colorscale } = useColorScale({
     steps: [
-      { from: 0, to: 1000000, color: '#eff6ff' },
-      { from: 1000000, to: 10000000, color: '#3b82f6' },
-      { from: 10000000, color: '#1e40af' },
+      { from: 0, to: 1000000, style: { fillColor: '#eff6ff' } },
+      { from: 1000000, to: 10000000, style: { fillColor: '#3b82f6' } },
+      { from: 10000000, style: { fillColor: '#1e40af' } },
     ],
   });
 
-  // 국가별 인구 데이터
   const populationData = {
     KOR: 51780000,
     JPN: 125800000,
     CHN: 1412000000,
-    // ...
   };
 
   if (!hgm) return null;

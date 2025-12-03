@@ -1,5 +1,7 @@
 # MarkerFeature 컴포넌트
 
+> ⚠️ **레거시 컴포넌트**: 이 컴포넌트는 직접 사용하지 않고, `HyperGlobe`의 `markers` prop을 통해 사용하는 것을 권장합니다.
+
 ## 개요
 
 MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨**로 표시하는 컴포넌트입니다.
@@ -7,6 +9,54 @@ MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨*
 - **용도**: 주요 도시, 랜드마크, 이벤트 위치 등 강조할 지점 표시
 - **적합한 개수**: 50개 이하
 - **특징**: SVG 아이콘, 텍스트 라벨, CSS 스타일링 지원
+
+## 권장 사용법 (새 API)
+
+`HyperGlobe` 컴포넌트의 `markers` prop을 사용합니다:
+
+```tsx
+import { HyperGlobe } from 'hyperglobe';
+
+function CityMarkers() {
+  const markers = {
+    items: [
+      {
+        id: 'seoul',
+        coordinate: [126.978, 37.5665],
+        label: '서울',
+        icon: 'pin',
+        style: { fill: '#ff0000', stroke: 'black' },
+      },
+      {
+        id: 'tokyo',
+        coordinate: [139.6503, 35.6762],
+        label: '도쿄',
+        icon: 'circle',
+        style: { fill: '#0000ff' },
+      },
+      {
+        id: 'custom',
+        coordinate: [-122.4194, 37.7749],
+        label: '샌프란시스코',
+        icon: 'custom',
+        iconPath: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
+        style: { fill: '#ff5722' },
+        scale: 1.5,
+      },
+    ],
+    showLabels: true,
+    defaultScale: 1,
+    onMarkerClick: (marker) => console.log('Clicked:', marker.label),
+  };
+
+  return (
+    <HyperGlobe
+      hgmUrl="/maps/nations-mid.hgm"
+      markers={markers}
+    />
+  );
+}
+```
 
 ## 구현 방식
 
@@ -46,12 +96,15 @@ export interface SvgStyle {
 }
 ```
 
-### MarkerData 인터페이스
+### MarkerConfig 인터페이스 (새 API)
 
 ```typescript
-export interface MarkerData {
+export interface MarkerConfig {
+  /** 마커 식별자 (React key로 사용) */
+  id: string;
+
   /** 마커 위치 [경도, 위도] */
-  coordinate: Coordinate;
+  coordinate: [number, number];
   
   /**
    * 마커 아이콘 타입
@@ -75,16 +128,17 @@ export interface MarkerData {
   scale?: number;
   
   /** 사용자 정의 데이터 */
-  data?: any;
+  data?: unknown;
 }
 ```
 
-### MarkerFeatureProps 인터페이스
-
-`MarkerFeatureProps`는 `MarkerData`를 확장하여 단일 마커를 표시합니다.
+### MarkersConfig 인터페이스 (새 API)
 
 ```typescript
-export interface MarkerFeatureProps extends MarkerData {
+export interface MarkersConfig {
+  /** 마커 목록 */
+  items: MarkerConfig[];
+  
   /** 기본 마커 크기 */
   defaultScale?: number;
   
@@ -92,14 +146,16 @@ export interface MarkerFeatureProps extends MarkerData {
   showLabels?: boolean;
   
   /** 마커 클릭 이벤트 핸들러 */
-  onMarkerClick?: (marker: MarkerData) => void;
+  onMarkerClick?: (marker: MarkerConfig) => void;
   
   /** 마커 호버 이벤트 핸들러 */
-  onMarkerHover?: (marker: MarkerData | null) => void;
+  onMarkerHover?: (marker: MarkerConfig | null) => void;
 }
 ```
 
-## 사용 예시
+## 레거시 사용 예시
+
+> ⚠️ 아래 방식은 레거시입니다. 새 프로젝트에서는 위의 권장 사용법을 사용하세요.
 
 ### 기본 사용
 
@@ -110,13 +166,13 @@ function App() {
   return (
     <HyperGlobe>
       <MarkerFeature
-        coordinate={[126.978, 37.5665]} // 서울 [경도, 위도]
+        coordinate={[126.978, 37.5665]}
         label="서울"
         icon="pin"
         style={{ fill: '#ff0000', stroke: 'black' }}
       />
       <MarkerFeature
-        coordinate={[139.6503, 35.6762]} // 도쿄
+        coordinate={[139.6503, 35.6762]}
         label="도쿄"
         icon="circle"
         style={{ fill: '#0000ff' }}
@@ -133,7 +189,6 @@ function App() {
   coordinate={[126.978, 37.5665]}
   label="서울"
   icon="custom"
-  // Material Icons의 location_on 아이콘
   iconPath="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
   style={{ fill: '#ff5722', stroke: 'black' }}
   scale={1.5}
@@ -144,7 +199,7 @@ function App() {
 
 ```tsx
 function App() {
-  const handleMarkerClick = (marker: MarkerData) => {
+  const handleMarkerClick = (marker) => {
     console.log('Clicked:', marker.label);
   };
 
@@ -169,64 +224,21 @@ function App() {
 ```typescript
 import { OrthographicProj } from '@hyperglobe/tools';
 
-// coordinate: [경도, 위도]
 const coords = OrthographicProj.project(coordinate, 1);
 const position = new THREE.Vector3(coords[0], coords[1], coords[2]);
 ```
 
-### 2. Html 컴포넌트 사용
-
-```tsx
-import { Html } from '@react-three/drei';
-
-function MarkerFeature({ coordinate, icon, iconPath, label, style, ... }: MarkerFeatureProps) {
-  const position = useMemo(() => {
-    const coords = OrthographicProj.project(coordinate, 1);
-    return new THREE.Vector3(coords[0], coords[1], coords[2]);
-  }, [coordinate]);
-
-  return (
-    <group position={position}>
-      <Html center>
-        <div style={{ textAlign: 'center' }}>
-          {/* SVG 아이콘 */}
-          <svg width={iconSize} height={iconSize} viewBox="0 0 24 24">
-            <path d={iconShape} fill={style?.fill} stroke={style?.stroke} />
-          </svg>
-          
-          {/* 라벨 */}
-          {showLabels && label && (
-            <div style={{
-              fontSize: '12px',
-              fontWeight: 'bold',
-              color: 'white',
-              background: 'rgba(0,0,0,0.8)',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              whiteSpace: 'nowrap',
-            }}>
-              {label}
-            </div>
-          )}
-        </div>
-      </Html>
-    </group>
-  );
-}
-```
-
-### 3. 아이콘 타입 처리
+### 2. 아이콘 타입 처리
 
 `useMarkerShape` 훅을 사용하여 아이콘 타입에 따른 SVG path를 결정합니다.
 
 ```typescript
-// marker-constant.ts
-export const PIN_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z`;
-export const CIRCLE_ICON = `M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16z`;
+// 내장 아이콘
+const PIN_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7...`;
+const CIRCLE_ICON = `M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16z`;
 
-// use-marker-shape.ts
 function useMarkerShape({ icon, iconPath }) {
-  const iconShape = useMemo(() => {
+  return useMemo(() => {
     switch (icon) {
       case 'pin': return PIN_ICON;
       case 'circle': return CIRCLE_ICON;
@@ -234,33 +246,27 @@ function useMarkerShape({ icon, iconPath }) {
       default: return PIN_ICON;
     }
   }, [icon, iconPath]);
-
-  return [iconShape];
 }
 ```
 
-### 4. Occlusion 처리 (가시성 계산)
+### 3. Occlusion 처리 (가시성 계산)
 
 `useFrame`을 사용하여 매 프레임마다 마커의 가시성을 계산합니다.
-지구 반대편에 있는 마커는 렌더링하지 않습니다.
 
 ```tsx
 useFrame(() => {
-  // 마커 방향 벡터 (원점 → 마커)
+  // 마커 방향 벡터
   const markerDir = position.clone().normalize();
-
-  // Globe의 Y축 회전을 마커 벡터에 적용 (월드 좌표계로 변환)
+  
+  // Globe의 Y축 회전을 마커 벡터에 적용
   const rotationEuler = new THREE.Euler(...UiConstant.globe.rotation);
   markerDir.applyEuler(rotationEuler);
 
   // 카메라 방향 벡터
   const cameraDir = camera.position.clone().normalize();
 
-  // 내적 계산: 두 벡터가 이루는 각도의 코사인 값
-  const dotProduct = markerDir.dot(cameraDir);
-
   // 내적 > 0.1: 같은 반구 (보임)
-  // 0.1을 임계값으로 사용하여 경계에서 깜빡임 방지
+  const dotProduct = markerDir.dot(cameraDir);
   setIsVisible(dotProduct > 0.1);
 });
 
@@ -271,29 +277,31 @@ if (!isVisible) return null;
 
 - **마커 개수**: 50개 이하 권장
 - **많은 마커**: 50개 이상이면 PointsFeature 사용 고려
-- **최적화**: 
-  - 카메라 시점 밖의 마커는 렌더링하지 않음
-  - SVG를 Canvas 텍스처로 캐싱 고려 (100개 이상일 때)
+- **최적화**: 카메라 시점 밖의 마커는 렌더링하지 않음
 
 ## 스타일링 가이드
 
 ### SvgStyle을 사용한 스타일링
 
 ```tsx
-<MarkerFeature
-  coordinate={[126.978, 37.5665]}
-  label="서울"
-  icon="pin"
-  style={{
-    fill: '#ff5722',        // 채우기 색상
-    stroke: 'black',        // 선 색상
-    strokeWidth: 1,         // 선 두께
-    scale: 1.5,             // 크기 비율
-  }}
-/>
+// HyperGlobe markers prop에서
+markers={{
+  items: [{
+    id: 'seoul',
+    coordinate: [126.978, 37.5665],
+    label: '서울',
+    icon: 'pin',
+    style: {
+      fill: '#ff5722',
+      stroke: 'black',
+      strokeWidth: 1,
+      scale: 1.5,
+    },
+  }],
+}}
 ```
 
-### CSS 스타일 (컴포넌트 내부 적용)
+### 내부 CSS 스타일
 
 마커 컴포넌트 내부에서는 다음과 같은 CSS 스타일이 적용됩니다:
 
@@ -326,8 +334,7 @@ marker-feature/
 ├── marker-interface.ts      # MarkerData 인터페이스 정의
 ├── marker-constant.ts       # PIN_ICON, CIRCLE_ICON SVG path 상수
 ├── use-marker-shape.ts      # 아이콘 타입에 따른 SVG path 반환 훅
-├── marker-feature.stories.tsx      # Storybook 스토리
-└── marker-feature-story.tsx        # 스토리용 래퍼 컴포넌트
+└── marker-feature.stories.tsx  # Storybook 스토리
 ```
 
 ## 향후 개선 사항
@@ -336,6 +343,12 @@ marker-feature/
 2. **애니메이션**: 마커 등장/사라짐 효과
 3. **커스텀 컴포넌트**: icon 대신 React 컴포넌트 전달
 4. **줌 레벨 제어**: 줌 레벨에 따라 마커 표시/숨김
+
+## 관련 문서
+
+- [HyperGlobe 컴포넌트](./hyperglobe-component.md)
+- [RouteFeature 컴포넌트](./route-feature.md)
+- [수학 라이브러리](./math-libraries.md)
 
 ## 참고
 
