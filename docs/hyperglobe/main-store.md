@@ -4,11 +4,61 @@
 
 메인 스토어는 HyperGlobe의 전역 상태를 관리하는 Zustand 기반 스토어입니다. 호버 상태, 툴팁, 공간 인덱싱(R-Tree) 등을 중앙에서 관리합니다.
 
-## 위치
+## 파일 구조
 
-`packages/hyperglobe/src/store/main-store.ts`
+```
+packages/hyperglobe/src/store/
+├── index.ts                  # export 정의
+├── main-store.ts             # 스토어 정의 및 useMainStore 훅
+└── main-store-provider.tsx   # MainStoreProvider 컴포넌트
+```
 
 ## 주요 상태
+
+### 스토어 아키텍처
+
+HyperGlobe의 MainStore는 **Context Provider 패턴**을 사용합니다:
+
+```typescript
+// main-store.ts
+export const createMainStore = (): StoreApi<MainStore> => {
+  return createStore<MainStore>((set, get) => ({
+    // ... 상태 및 액션
+  }));
+};
+
+export const MainStoreContext = createContext<StoreApi<MainStore> | null>(null);
+
+export function useMainStore<T>(selector: (state: MainStore) => T): T {
+  const store = useContext(MainStoreContext);
+  if (!store) {
+    throw new Error('MainStoreProvider 내부에서만 useMainStore를 사용할 수 있습니다.');
+  }
+  return useStore(store, selector);
+}
+```
+
+```tsx
+// main-store-provider.tsx
+export function MainStoreProvider({ children }: PropsWithChildren) {
+  const storeRef = useRef<StoreApi<MainStore> | null>(null);
+
+  if (!storeRef.current) {
+    storeRef.current = createMainStore();
+  }
+
+  return (
+    <MainStoreContext.Provider value={storeRef.current}>
+      {children}
+    </MainStoreContext.Provider>
+  );
+}
+```
+
+**이 패턴의 장점:**
+- 각 HyperGlobe 인스턴스마다 독립적인 스토어 생성
+- 여러 HyperGlobe를 동시에 사용해도 상태 충돌 없음
+- Provider 내부에서만 스토어 접근 가능 (오용 방지)
 
 ### hoveredRegion
 ```typescript
@@ -374,21 +424,23 @@ const tooltipRef = useMainStore((s) => s.tooltipRef);
 
 ## 디버깅
 
-### Zustand DevTools
+### Zustand DevTools (선택적)
 
-Zustand DevTools를 사용하여 상태 변경을 추적할 수 있습니다.
+현재 코드에서는 DevTools 미들웨어를 사용하지 않지만, 디버깅이 필요한 경우 추가할 수 있습니다:
 
 ```typescript
 import { devtools } from 'zustand/middleware';
 
-export const useMainStore = create<MainStore>()(
-  devtools(
-    (set, get) => ({
-      // ... 스토어 구현
-    }),
-    { name: 'MainStore' }
-  )
-);
+export const createMainStore = (): StoreApi<MainStore> => {
+  return createStore<MainStore>()(
+    devtools(
+      (set, get) => ({
+        // ... 스토어 구현
+      }),
+      { name: 'MainStore' }
+    )
+  );
+};
 ```
 
 ### 콘솔에서 스토어 접근

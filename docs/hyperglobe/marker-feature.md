@@ -146,7 +146,7 @@ export interface MarkersConfig {
   /** 마커 클릭 이벤트 핸들러 */
   onMarkerClick?: (marker: MarkerConfig) => void;
   
-  /** 마커 호버 이벤트 핸들러 */
+  /** 마커 호버 이벤트 핸들러 (미구현) */
   onMarkerHover?: (marker: MarkerConfig | null) => void;
 }
 ```
@@ -169,16 +169,17 @@ const position = new THREE.Vector3(coords[0], coords[1], coords[2]);
 `useMarkerShape` 훅을 사용하여 아이콘 타입에 따른 SVG path를 결정합니다.
 
 ```typescript
-// 내장 아이콘
-const PIN_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7...`;
-const CIRCLE_ICON = `M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16z`;
+// 내장 아이콘 (marker-constant.ts)
+export const PIN_ICON = `M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z`;
+export const CIRCLE_ICON = `M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16z`;
 
+// use-marker-shape.ts
 function useMarkerShape({ icon, iconPath }) {
   return useMemo(() => {
     switch (icon) {
       case 'pin': return PIN_ICON;
       case 'circle': return CIRCLE_ICON;
-      case 'custom': return iconPath;
+      case 'custom': return iconPath;  // iconPath가 없으면 콘솔 경고
       default: return PIN_ICON;
     }
   }, [icon, iconPath]);
@@ -271,7 +272,20 @@ marker-feature/
 ├── marker-interface.ts      # MarkerData 인터페이스 정의
 ├── marker-constant.ts       # PIN_ICON, CIRCLE_ICON SVG path 상수
 ├── use-marker-shape.ts      # 아이콘 타입에 따른 SVG path 반환 훅
+├── marker-feature-story.tsx # 스토리용 컴포넌트
 └── marker-feature.stories.tsx  # Storybook 스토리
+```
+
+### 스타일 병합
+
+`useSvgStyle` 훅을 통해 기본 스타일과 사용자 스타일이 병합됩니다:
+
+```typescript
+// src/hooks/use-svg-style.ts
+const appliedStyle = {
+  ...UiConstant.svgFeature.default.style,  // 기본 스타일
+  ...style,  // 사용자 스타일 (우선)
+};
 ```
 
 ## 향후 개선 사항
@@ -280,6 +294,7 @@ marker-feature/
 2. **애니메이션**: 마커 등장/사라짐 효과
 3. **커스텀 컴포넌트**: icon 대신 React 컴포넌트 전달
 4. **줌 레벨 제어**: 줌 레벨에 따라 마커 표시/숨김
+5. **onMarkerHover 구현**: 호버 이벤트 핸들러 실제 동작 구현
 
 ## 관련 문서
 

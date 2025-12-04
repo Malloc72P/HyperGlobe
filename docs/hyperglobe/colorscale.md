@@ -112,8 +112,19 @@ valueResolver?: (dataItem: any) => number | null | undefined;
 ### 반환값
 
 #### colorscale
-컬러스케일 모델 (`ColorScaleModel`)
+커러스케일 모델 (`ColorScaleModel`)
 - HyperGlobe의 `colorscale.model`에 전달합니다.
+
+#### resolveFeatureData
+피쳐에 해당하는 데이터를 찾아 반환하는 함수
+
+```typescript
+resolveFeatureData: (feature: HGMFeature) => { value: number | null }
+```
+
+- `data` 배열에서 `itemResolver`로 매칭되는 항목을 찾습니다.
+- 찾은 항목에서 `valueResolver`로 값을 추출합니다.
+- 항목이 없으면 `{ value: null }`을 반환합니다.
 
 ## 사용 예시
 
@@ -179,6 +190,22 @@ const { colorscale } = useColorScale({
 
 ## ColorscaleBar 설정
 
+### ColorscaleConfig (HyperGlobe prop)
+
+HyperGlobe의 `colorscale` prop에 전달하는 설정:
+
+```typescript
+interface ColorscaleConfig {
+  /** 커러스케일 모델 (useColorScale으로 생성) */
+  model: ColorScaleModel;
+
+  /** dataMap에서 사용할 데이터 키 (region.dataKey와 동일하게 설정) */
+  dataKey?: string;
+}
+```
+
+### ColorscaleBarConfig (HyperGlobe prop)
+
 ### Props
 
 ```typescript
@@ -216,6 +243,29 @@ interface ColorscaleBarConfig {
     formatLabel: (value) => `${(value / 1000000).toFixed(1)}M`,
   }}
 />
+```
+
+## 파일 구조
+
+### useColorScale 훅
+
+```
+src/hooks/
+├── use-colorscale.ts           # 메인 훅 및 헬퍼 함수
+├── use-colorscale.stories.tsx  # Storybook 스토리
+├── use-colorscale-snippets.ts  # 코드 스니펫
+└── colorscale-story.tsx        # 스토리용 컴포넌트
+```
+
+### ColorScaleBar 컴포넌트
+
+```
+src/components/colorscale-bar/
+├── index.ts                    # export 정의
+├── colorscale-bar.tsx          # 메인 컴포넌트
+├── colorscale-bar.module.css   # 스타일
+├── colorscale-step.tsx         # 개별 구간 컴포넌트
+└── use-marker-position.ts      # 마커 위치 계산 훅
 ```
 
 ## 기술 세부사항

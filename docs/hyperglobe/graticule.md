@@ -56,6 +56,16 @@ function Map() {
 | `lineColor` | `string` | `'#808080'` | 격자선 색상 |
 | `lineWidth` | `number` | `1.2` | 격자선 두께 |
 
+## 파일 구조
+
+```
+graticule/
+├── index.ts               # export 정의
+├── graticule.tsx          # 메인 컴포넌트
+├── graticule-line.tsx     # 개별 격자선 컴포넌트
+└── graticule.stories.tsx  # Storybook 스토리
+```
+
 ## 기술 세부사항
 
 ### 렌더링 원리
