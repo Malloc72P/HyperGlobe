@@ -74,14 +74,14 @@ distance2D([0, 0], [3, 4]);  // 5
 - Delaunay 삼각분할
 - 경계 상자 계산
 
-#### roundCoordinate(coord)
-좌표를 반올림하여 부동소수점 오차를 제거합니다.
+#### roundCoordinates(coord, precision)
+좌표값을 반올림하여 부동소수점 오차를 제거합니다.
 
 ```typescript
-import { roundCoordinate } from '@hyperglobe/tools';
+import { roundCoordinates } from '@hyperglobe/tools';
 
-roundCoordinate([127.123456789, 37.987654321]);
-// [127.1235, 37.9877] (소수점 4자리)
+roundCoordinates(127.123456789, 5);
+// 127.12346 (소수점 5자리, 기본값)
 ```
 
 **사용처:**
@@ -198,7 +198,7 @@ OrthographicProj.interpolates(pairs, 10);
 
 ### 폴리곤 처리 (polygon/)
 
-#### delaunayTriangulate(polygon)
+#### delaunayTriangulate(options)
 폴리곤을 Delaunay 삼각분할합니다. 내부적으로 `delaunator` 라이브러리를 사용합니다.
 
 ```typescript
@@ -211,7 +211,10 @@ const polygon = [
   [127.0, 38.5]
 ];
 
-const result = delaunayTriangulate(polygon);
+const result = delaunayTriangulate({
+  outerRing: polygon,
+  holes: [],  // 홀(구멍) 배열 (선택사항)
+});
 // {
 //   vertices: Float32Array,  // 3D 좌표 [x,y,z,x,y,z,...]
 //   indices: Uint32Array     // 삼각형 인덱스
