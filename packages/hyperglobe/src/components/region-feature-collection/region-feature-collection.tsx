@@ -31,17 +31,16 @@ export interface RegionFeatureCollectionProps {
    *
    * - 컬러스케일 적용에 사용됩니다.
    * - 기본적으로 피쳐의 id와 매핑됩니다.
-   * - 국가별 세계지도의 경우, 기본적으로 iso-a3 코드가 id로 사용됩니다.
    * - 만약 피쳐의 특정 속성(properties)의 값을 키로 사용하고 싶다면, `idField` prop을 사용하세요.
    *
    * @example
    * ```tsx
-   * // ISO-A3 키 사용 (기본)
+   * // Feature의 id 속성 사용(기본값)
    * data={{ KOR: 51780000, JPN: 125800000 }}
    *
-   * // ISO-A2 키 사용 (idField와 함께)
+   * // isoA2 속성을 키로 사용하는 경우(idField 지정)
    * data={{ KR: 51780000, JP: 125800000 }}
-   * idField="ISO_A2"
+   * idField="isoA2"
    * ```
    */
   data?: Record<string, number>;

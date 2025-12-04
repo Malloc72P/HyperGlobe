@@ -75,12 +75,29 @@ function DataVisualization() {
 
 ### RegionConfig
 
+`HyperGlobe`의 `region` prop에 전달하는 설정입니다.
+
 | Prop | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
 | `dataKey` | `string` | - | dataMap에서 사용할 데이터 키 |
-| `idField` | `string` | `'ISO_A3'` | 피쳐의 id로 사용할 속성 이름 |
+| `idField` | `string` | - | 피쳐의 id로 사용할 속성 이름. 미설정 시 `feature.id` 사용 |
 | `style` | `FeatureStyle` | - | 기본 스타일 |
 | `hoverStyle` | `FeatureStyle` | - | 호버 시 적용될 스타일 |
+| `extrusion` | `{ color?: string }` | `{ color: Colors.GRAY[8] }` | 측면 옵션 |
+
+### RegionFeatureCollectionProps
+
+내부 컴포넌트가 직접 받는 props입니다.
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `features` | `HGMFeature[]` | (필수) | 렌더링할 피쳐 배열 |
+| `style` | `FeatureStyle` | - | 기본 스타일 |
+| `hoverStyle` | `FeatureStyle` | - | 호버 시 적용될 스타일 |
+| `data` | `Record<string, number>` | - | 피쳐별 데이터 (컬러스케일 적용용) |
+| `idField` | `string` | - | 피쳐의 id로 사용할 속성 이름 |
+| `valueField` | `string` | `'value'` | 데이터에서 값을 추출할 속성 이름 |
+| `colorscale` | `ColorScaleModel` | - | 컬러스케일 모델 |
 | `extrusion` | `{ color?: string }` | `{ color: Colors.GRAY[8] }` | 측면 옵션 |
 
 ## 기술 세부사항
@@ -166,6 +183,19 @@ geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
 - **Three.js**: `BufferGeometry`, `mergeGeometries`, `Float32BufferAttribute`
 - **@react-three/drei**: `Line` 컴포넌트
 - **RBush**: R-Tree 공간 인덱싱 (호버 감지)
+
+### 데이터 매핑 방식
+
+`data` prop과 피쳐를 매핑하는 방식:
+
+```typescript
+// 1. idField가 없으면 feature.id 사용
+data={{ KOR: 51780000 }}  // feature.id가 'KOR'인 경우
+
+// 2. idField가 있으면 해당 properties 값 사용
+data={{ KR: 51780000 }}
+idField="isoA2"  // feature.properties.isoA2가 'KR'인 경우
+```
 
 ## 제약사항
 
