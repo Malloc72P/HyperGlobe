@@ -38,7 +38,7 @@ export interface RouteFeatureProps {
   lineWidth: number;
 
   /**
-   * 경로 보간 개수 (기본값: 50)
+   * 경로 보간 개수 (기본값: 500)
    */
   segments?: number;
 
