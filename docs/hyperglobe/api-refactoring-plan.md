@@ -1,5 +1,9 @@
 # HyperGlobe API 리팩토링 계획
 
+> **✅ 완료됨**: 이 문서에 기술된 리팩토링은 완료되었습니다. 현재 HyperGlobe는 Props 기반 설정 방식을 사용하며, `RegionFeatureCollection`을 통한 지오메트리 병합 최적화가 적용되어 있습니다.
+>
+> 실제 구현은 `hyperglobe-component.md` 문서를 참고하세요.
+
 ## 개요
 
 HyperGlobe의 API를 **컴포넌트 조합 방식**에서 **단일 Props 기반 설정 방식**으로 전환한다.

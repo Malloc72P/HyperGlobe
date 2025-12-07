@@ -359,10 +359,21 @@ const markers = {
 
 ## 관련 문서
 
-- [RegionFeatureCollection](./region-feature-collection.md) - 지역 피처 렌더링
+- [RegionFeatureCollection](./region-feature-collection.md) - 지역 피쳐 렌더링
 - [Graticule](./graticule.md) - 경위선 격자
-- [RouteFeature](./route-feature.md) - 라우트 피처
-- [MarkerFeature](./marker-feature.md) - 마커 피처
+- [RouteFeature](./route-feature.md) - 라우트 피쳐
+- [MarkerFeature](./marker-feature.md) - 마커 피쳐
 - [ColorScale 시스템](./colorscale.md) - 데이터 시각화
 - [카메라 트랜지션](./camera-transition.md) - 명령형 카메라 API
 - [메인 스토어](./main-store.md) - 상태 관리
+
+## 파일 구조
+
+```
+packages/hyperglobe/src/components/hyperglobe/
+├── index.ts                    # export 정의
+├── hyperglobe.tsx              # 메인 컴포넌트
+├── globe.tsx                   # 내부 Globe 메쉬 컴포넌트
+├── hyperglobe.stories.tsx      # Storybook 스토리
+└── hyperglobe.guide.mdx        # MDX 가이드
+```

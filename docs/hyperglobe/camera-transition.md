@@ -137,6 +137,13 @@ interface HyperglobeRef {
 
 Canvas 내부에서 카메라 트랜지션을 제어하는 컴포넌트입니다. Canvas 외부에서는 Three.js 컨텍스트에 접근할 수 없으므로, HyperGlobe 컴포넌트 내부에서 렌더링됩니다.
 
+**파일 구조:**
+```
+packages/hyperglobe/src/components/camera-transition-controller/
+├── index.ts                          # export 정의
+└── camera-transition-controller.tsx  # 메인 컴포넌트
+```
+
 #### 주요 기능:
 - `followPath` 구현
   - 현재 카메라 위치를 시작점으로 사용
@@ -152,14 +159,19 @@ Canvas 내부에서 카메라 트랜지션을 제어하는 컴포넌트입니다
 #### Props:
 ```ts
 export interface CameraTransitionControllerProps {
-  /** 카메라가 잠겨있는지 여부 */
+  /** 카메라가 잠겼을 때 호출되는 콜백 */
   onLockChange: (locked: boolean) => void;
-  /** followPath를 외부에 노출 */
-  onFollowPathReady: (fn: (path: PathPoint[], options?: CameraTransitionOptions) => void) => void;
-  /** cancelTransition을 외부에 노출 */
-  onCancelTransitionReady: (fn: () => void) => void;
   /** 카메라 위치가 변경될 때 호출되는 콜백 (조명 동기화 등에 활용) */
   onCameraPositionChange?: (position: Vector3) => void;
+  /** 컴포넌트가 마운트되어 ref가 준비되었을 때 호출되는 콜백 */
+  onMount?: () => void;
+}
+
+export interface CameraTransitionControllerRef {
+  /** 경로를 따라 카메라를 이동시킵니다 */
+  followPath: (path: PathPoint[], options?: CameraTransitionOptions) => void;
+  /** 진행 중인 카메라 트랜지션을 취소합니다 */
+  cancelTransition: () => void;
 }
 ```
 
@@ -362,6 +374,11 @@ function calculateSegments(distance: number): number {
 짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
 
 ## 향후 확장 가능성
+
+## 관련 문서
+
+- [HyperGlobe 컴포넌트](./hyperglobe-component.md)
+- [수학 라이브러리](./math-libraries.md) - `createGreatCirclePath`, `OrthographicProj`
 
 1. **카메라 회전**: 카메라가 바라보는 방향도 제어
 2. **곡선 경로**: 베지어 곡선 등 다양한 경로 타입 지원
