@@ -68,6 +68,14 @@ export interface RouteFeatureProps {
   objectScale?: number;
 }
 
+/**
+ * 지구본 위에 두 지점을 연결하는 3D 경로를 렌더링하는 컴포넌트입니다.
+ *
+ * - 대권항로(Great Circle) 기반 경로 생성
+ * - 포물선 형태의 높이 적용 가능
+ * - 애니메이션 지원 (경로 그리기)
+ * - 시작점과 끝점에 마커 표시
+ */
 export function RouteFeature({
   from,
   to,

@@ -24,27 +24,27 @@ export const BuildMapMeta: BuildMapMetaType = {
     resolutions: [
       {
         resolution: 'extra-low',
-        simplifyPercent: 1,
+        simplifyPercent: 5,
         precision: 0.0001,
       },
       {
         resolution: 'low',
-        simplifyPercent: 2,
+        simplifyPercent: 15,
         precision: 0.0001,
       },
       {
         resolution: 'mid',
-        simplifyPercent: 3,
+        simplifyPercent: 30,
         precision: 0.0001,
       },
       {
         resolution: 'high',
-        simplifyPercent: 4,
+        simplifyPercent: 60,
         precision: 0.0001,
       },
       {
         resolution: 'extra-high',
-        simplifyPercent: 5,
+        simplifyPercent: 90,
         precision: 0.0001,
       },
     ],

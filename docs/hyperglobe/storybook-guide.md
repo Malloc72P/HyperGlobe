@@ -221,6 +221,24 @@ https://cdn.jsdelivr.net/npm/@hyperglobe/maps@latest/nations-mid.hgm
 <Controls of={Examples.Size} />
 ```
 
+### 4. 관련된 Arg만 노출하기
+
+특정 스토리에서 불필요한 컨트롤을 숨기고, 관련된 Arg만 노출하여 사용자가 집중할 수 있도록 합니다.
+`parameters.controls.include` 배열에 노출할 Arg의 이름을 문자열로 나열합니다.
+
+```tsx
+export const MyStory: Story = {
+  args: {
+    // ...
+  },
+  parameters: {
+    controls: {
+      include: ['relevantArg1', 'relevantArg2'],
+    },
+  },
+};
+```
+
 ## 스토리 작성 팁
 
 ### argTypes로 컨트롤 커스터마이징
@@ -273,6 +291,19 @@ Demo/               ← 복합 예제
   Nations
   Routes
 ```
+
+## 주의사항
+
+### 1. 색상 사용 규칙
+
+- `Colors` 객체에 정의되지 않은 색상은 사용하지 마세요.
+- 프로젝트의 일관된 디자인 시스템을 유지하기 위해 정의된 색상 팔레트만 사용해야 합니다.
+
+### 2. autodocs 태그 사용 금지
+
+- `.stories.tsx` 파일에서 `tags: ['autodocs']`를 사용하지 마세요.
+- 현재 프로젝트는 `.guide.mdx` 파일을 통해 커스텀 문서화 페이지를 생성하고 있습니다.
+- `autodocs` 태그를 추가하면 자동 생성된 문서 페이지와 충돌하거나 에러가 발생할 수 있습니다.
 
 ## 체크리스트
 
