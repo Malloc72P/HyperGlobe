@@ -1,6 +1,6 @@
 import { StorybookConstant } from 'src/constants';
 import { Colors } from 'src/lib';
-import { MarkersConfig } from 'src/types';
+import { MarkerConfig } from 'src/types';
 import { HyperGlobe } from '../hyperglobe';
 
 /**
@@ -9,7 +9,7 @@ import { HyperGlobe } from '../hyperglobe';
  * - Html 컴포넌트를 사용한 마커와 라벨 렌더링
  * - 지정된 마커들을 지구본에 렌더링합니다.
  */
-export function MarkerStoryComponent(markerConfig: MarkersConfig) {
+export function MarkerStoryComponent(markerConfig: MarkerConfig) {
   return (
     <HyperGlobe
       {...StorybookConstant.props.HyperGlobe}
@@ -22,7 +22,7 @@ export function MarkerStoryComponent(markerConfig: MarkersConfig) {
         initialPosition: [127, 36],
       }}
       graticule
-      markers={markerConfig}
+      marker={markerConfig}
       region={{
         style: {
           color: Colors.GRAY[7],

@@ -92,7 +92,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       region,
       graticule,
       routes,
-      markers,
+      marker,
 
       // UI
       colorscale,
@@ -414,7 +414,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
               />
             ))}
             {/* Markers */}
-            {markers?.items.map((marker) => (
+            {marker?.items.map((marker) => (
               <MarkerFeature
                 key={marker.id}
                 coordinate={marker.coordinate}
@@ -423,10 +423,10 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 label={marker.label}
                 style={marker.style}
                 scale={marker.scale}
-                defaultScale={markers.defaultScale}
-                showLabels={markers.showLabels}
+                defaultScale={marker.defaultScale}
+                showLabels={marker.showLabels}
                 onMarkerClick={
-                  markers.onMarkerClick ? () => markers.onMarkerClick?.(marker) : undefined
+                  marker.onMarkerClick ? () => marker.onMarkerClick?.(marker) : undefined
                 }
               />
             ))}{' '}

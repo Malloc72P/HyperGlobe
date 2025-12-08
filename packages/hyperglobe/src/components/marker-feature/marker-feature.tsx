@@ -16,7 +16,14 @@ export interface MarkerFeatureProps extends MarkerData {
 }
 
 /**
- * 마커 컴포넌트
+ * 지구본 위에 특정 지점을 아이콘과 라벨로 표시하는 컴포넌트입니다.
+ *
+ * - HTML 기반 렌더링 (drei/Html 사용)
+ * - SVG 아이콘 지원 (기본 아이콘 및 커스텀 경로)
+ * - 지구 반대편 자동 숨김 처리
+ * - 클릭 및 호버 이벤트 지원
+ *
+ * 주로 `HyperGlobe` 컴포넌트의 `markers` prop을 통해 데이터 객체 형태로 전달하여 사용합니다.
  */
 export function MarkerFeature({
   coordinate,

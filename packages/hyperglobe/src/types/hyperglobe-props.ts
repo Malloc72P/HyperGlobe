@@ -316,7 +316,7 @@ export interface RouteConfig {
 /**
  * 개별 마커 설정
  */
-export interface MarkerConfig {
+export interface MarkerInfo {
   /**
    * 마커 식별자 (React key로 사용)
    */
@@ -363,11 +363,11 @@ export interface MarkerConfig {
 /**
  * 마커 전체 설정
  */
-export interface MarkersConfig {
+export interface MarkerConfig {
   /**
    * 마커 목록
    */
-  items: MarkerConfig[];
+  items: MarkerInfo[];
 
   /**
    * 기본 스케일
@@ -384,12 +384,12 @@ export interface MarkersConfig {
   /**
    * 마커 클릭 핸들러
    */
-  onMarkerClick?: (marker: MarkerConfig) => void;
+  onMarkerClick?: (marker: MarkerInfo) => void;
 
   /**
    * 마커 호버 핸들러
    */
-  onMarkerHover?: (marker: MarkerConfig | null) => void;
+  onMarkerHover?: (marker: MarkerInfo | null) => void;
 }
 
 // ============================================================================
@@ -599,7 +599,7 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    *
    * - 지구본 위에 마커를 표시합니다.
    */
-  markers?: MarkersConfig;
+  marker?: MarkerConfig;
 
   // === UI ===
 
