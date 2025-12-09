@@ -1,0 +1,39 @@
+import { Meta, Title, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as GraticuleExamples from './graticule.stories';
+
+<Meta title="Components/Graticule" of={GraticuleExamples} />
+
+<Title>Graticule</Title>
+
+### 개요
+
+`Graticule`은 지구본 위에 경선(세로선)과 위선(가로선)으로 이루어진 격자무늬를 표시하는 컴포넌트입니다.
+지리적 위치를 파악하기 쉽게 도와주며, 지도의 가독성을 높여줍니다.
+
+주로 `HyperGlobe` 컴포넌트의 `graticule` prop을 통해 설정합니다.
+`true`를 전달하면 기본값으로 표시되고, 객체를 전달하면 상세 설정이 가능합니다.
+
+### 기본 사용법
+
+`graticule: true`를 전달하면 기본 설정(10도 간격)으로 격자가 표시됩니다.
+
+<Canvas of={GraticuleExamples.Basic} />
+
+<Controls of={GraticuleExamples.Basic} />
+
+### 격자 간격 조절
+
+`longitudeStep`과 `latitudeStep` 속성을 사용하여 경선과 위선의 간격을 조절할 수 있습니다.
+아래 예제는 30도 간격으로 설정한 예시입니다.
+
+<Canvas of={GraticuleExamples.CustomStep} />
+
+<Controls of={GraticuleExamples.CustomStep} />
+
+### 스타일 커스터마이징
+
+`lineColor`와 `lineWidth` 속성을 통해 격자선의 색상과 두께를 변경할 수 있습니다.
+
+<Canvas of={GraticuleExamples.StyledGraticule} />
+
+<Controls of={GraticuleExamples.StyledGraticule} />

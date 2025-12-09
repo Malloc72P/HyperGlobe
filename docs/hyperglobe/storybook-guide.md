@@ -210,15 +210,21 @@ https://cdn.jsdelivr.net/npm/@hyperglobe/maps@latest/nations-mid.hgm
 
 ### 3. 인터랙티브 컨트롤 활용
 
-사용자가 직접 값을 조절해볼 수 있는 예제에는 `<Controls>`를 추가합니다.
+각 스토리에 `<Controls>`를 추가하면 사용자가 직접 옵션을 조절하며 테스트할 수 있습니다.
+모든 스토리에 `<Controls>`를 추가하여 인터랙티브한 문서를 제공하세요.
 
 ```mdx
-## 사이즈 조절
+### 기본 사용법
 
-슬라이더를 움직여 크기 변화를 확인해보세요.
+<Canvas of={Examples.Basic} />
 
-<Canvas of={Examples.Size} />
-<Controls of={Examples.Size} />
+<Controls of={Examples.Basic} />
+
+### 스타일 커스터마이징
+
+<Canvas of={Examples.Styled} />
+
+<Controls of={Examples.Styled} />
 ```
 
 ### 4. 관련된 Arg만 노출하기
@@ -311,6 +317,12 @@ Demo/               ← 복합 예제
 - `.stories.tsx` 파일에서 `tags: ['autodocs']`를 사용하지 마세요.
 - 현재 프로젝트는 `.guide.mdx` 파일을 통해 커스텀 문서화 페이지를 생성하고 있습니다.
 - `autodocs` 태그를 추가하면 자동 생성된 문서 페이지와 충돌하거나 에러가 발생할 수 있습니다.
+
+### 4. Description 블록 사용 규칙
+
+- `.guide.mdx` 파일에서 `<Description of={...} />` 블록을 사용하지 마세요.
+- 스토리에서 `HyperGlobe` 컴포넌트를 기반으로 사용하기 때문에, 코어 컴포넌트(예: `Graticule`, `MarkerFeature`)를 `Description`의 `of` 속성에 전달하면 올바른 설명이 표시되지 않습니다.
+- 대신, MDX 파일의 "개요" 섹션에 직접 마크다운으로 컴포넌트 설명을 작성하세요.
 
 ## 체크리스트
 

@@ -55,7 +55,12 @@
   - 3D 지구본 렌더링, Canvas 설정, 자식 컴포넌트 시스템, 인터랙션
   
 - **RegionFeature 컴포넌트**: `docs/hyperglobe/region-feature.md`
-  - 지역 폴리곤 렌더링, 삼각분할, 지오메트리 병합, 측면(extrusion) 생성
+  - 제거됨. 더 이상 존재하지 않음. RegionFeatureCollection으로 대체됨.
+
+- **RegionFeatureCollection 컴포넌트**: `docs/hyperglobe/region-feature-collection.md`
+  - 다중 지역 피처 렌더링, 데이터 로딩, 스타일링, 인터랙션
+  - RegionFeature 컴포넌트 대체
+  - 성능 최적화 적용됨
   
 - **Graticule 컴포넌트**: `docs/hyperglobe/graticule.md`
   - 경위선 격자, 좌표 변환, 구면 좌표계

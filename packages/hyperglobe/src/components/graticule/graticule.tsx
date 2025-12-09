@@ -21,9 +21,12 @@ export interface GraticuleProps {
 }
 
 /**
- * 격자무늬(Graticule) 컴포넌트
+ * 지구본 위에 경위선 격자를 표시하는 컴포넌트입니다.
  *
- * - 경선과 위선으로 이루어진 격자무늬를 지구본에 추가합니다.
+ * - 경선(세로선)과 위선(가로선)으로 구성된 격자무늬
+ * - 간격, 색상, 두께 커스터마이징 가능
+ *
+ * 주로 `HyperGlobe` 컴포넌트의 `graticule` prop을 통해 사용합니다.
  */
 export function Graticule({
   longitudeStep = 10,
