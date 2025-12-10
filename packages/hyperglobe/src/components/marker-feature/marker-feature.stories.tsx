@@ -70,7 +70,7 @@ export const MajorCities: Story = {
   },
   parameters: {
     controls: {
-      include: ['markers'],
+      include: ['marker'],
     },
   },
 };
@@ -119,7 +119,7 @@ export const CustomIcon: Story = {
   },
   parameters: {
     controls: {
-      include: ['markers'],
+      include: ['marker'],
     },
   },
 };
@@ -164,7 +164,7 @@ export const StyledMarkers: Story = {
   },
   parameters: {
     controls: {
-      include: ['markers'],
+      include: ['marker'],
     },
   },
 };
