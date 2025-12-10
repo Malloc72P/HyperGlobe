@@ -84,7 +84,7 @@ export function RouteFeature({
   segments = 500,
   style,
   animated = true,
-  animationDuration = 1000,
+  animationDuration = 2000,
   animationDelay = 0,
   objectScale = 1,
 }: RouteFeatureProps) {

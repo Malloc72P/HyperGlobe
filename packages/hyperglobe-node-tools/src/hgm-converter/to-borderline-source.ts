@@ -2,6 +2,9 @@ import { FeaturePolygons, RawBorderlineSource } from '@hyperglobe/interfaces';
 import { typedArrayToBase64 } from '../file';
 import { MathConstants, OrthographicProj } from '@hyperglobe/tools';
 
+/**
+ * 하나의 피쳐의 폴리곤 정보를 외곽선 소스로 변환합니다.
+ */
 export function toBorderlineSource(featurePolygons: FeaturePolygons[]): RawBorderlineSource {
   const strokeRadius = MathConstants.FEATURE_STROKE_Z_INDEX;
   const base64Polygons: string[] = [];

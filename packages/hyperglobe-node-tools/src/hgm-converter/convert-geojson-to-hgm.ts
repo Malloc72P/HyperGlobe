@@ -7,6 +7,9 @@ export interface ConvertOption {
   metadata?: any;
 }
 
+/**
+ * GeoJSON 데이터를 HGM 포맷으로 변환합니다.
+ */
 export function convertGeojsonToHgm({ geojson, metadata }: ConvertOption) {
   // 처리하기 쉽게 단순화된 객체로 변환
   const hgmFeatures = geojson.features.map(toSimpleFeature).map(toHgmFeature);

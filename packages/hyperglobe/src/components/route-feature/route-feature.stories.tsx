@@ -54,7 +54,7 @@ export const SeoulToLondon: Story = {
         lineWidth: 5,
         segments: 300,
         animated: true,
-        animationDuration: 1,
+        animationDuration: 3000,
         animationDelay: 0.5,
       },
     ],
@@ -93,48 +93,6 @@ export const StyledRoute: Story = {
           color: Colors.GRAY[5],
         },
         animated: false,
-      },
-    ],
-  },
-  parameters: {
-    controls: {
-      include: ['routes'],
-    },
-  },
-};
-
-/**
- * 애니메이션 설정
- */
-export const AnimatedRoute: Story = {
-  args: {
-    ...StorybookConstant.props.HyperGlobe,
-    camera: {
-      initialPosition: [183, 37],
-      minDistance: 8,
-    },
-    routes: [
-      {
-        id: 'fast-route',
-        from: { coordinate: [127, 37], label: 'Fast' },
-        to: { coordinate: [-122, 37.7749], label: 'End' },
-        maxHeight: 0.15,
-        lineWidth: 3,
-        style: { color: Colors.GRAY[5] },
-        animated: true,
-        animationDuration: 0.5, // 0.5초 (빠름)
-        animationDelay: 0,
-      },
-      {
-        id: 'slow-route',
-        from: { coordinate: [127, 37], label: 'Slow' },
-        to: { coordinate: [0, 51.5074], label: 'London' },
-        maxHeight: 0.15,
-        lineWidth: 3,
-        style: { color: Colors.GRAY[5] },
-        animated: true,
-        animationDuration: 3, // 3초 (느림)
-        animationDelay: 1, // 1초 딜레이
       },
     ],
   },
