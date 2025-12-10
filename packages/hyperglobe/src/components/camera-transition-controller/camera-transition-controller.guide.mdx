@@ -1,0 +1,35 @@
+import { Meta, Title, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as CameraTransitionExamples from './camera-transition-controller.stories';
+
+<Meta title="API/CameraTransition" of={CameraTransitionExamples} />
+
+<Title>CameraTransition</Title>
+
+### 개요
+
+`CameraTransition`은 지구본의 카메라를 지정된 경로를 따라 자동으로 이동시키는 API입니다.
+대권항로(Great Circle)를 따라 부드럽게 이동하며, 여러 지점을 순차적으로 방문할 수 있습니다.
+
+`HyperGlobe` 컴포넌트의 `ref`를 통해 `followPath` 메서드를 호출하여 사용합니다.
+
+```tsx
+const hyperglobeRef = useRef<HyperglobeRef>(null);
+
+// 경로를 따라 카메라 이동
+hyperglobeRef.current?.followPath(
+  [
+    { coordinate: [127, 37], duration: 2000 }, // 서울
+    { coordinate: [-122, 37], duration: 3000 }, // 샌프란시스코
+  ],
+  {
+    lockCamera: true,
+    onComplete: () => console.log('완료'),
+  }
+);
+```
+
+### 기본 사용법
+
+<Canvas of={CameraTransitionExamples.Basic} />
+
+<Controls of={CameraTransitionExamples.Basic} />

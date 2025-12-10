@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { ColorScaleModel } from './colorscale';
 import type { FeatureStyle } from './feature';
 import type { SvgStyle } from './svg';
+import { MarkerData } from 'src/components/marker-feature/marker-interface';
 
 // ============================================================================
 // 캔버스/컨테이너 설정
@@ -314,60 +315,13 @@ export interface RouteConfig {
 // ============================================================================
 
 /**
- * 개별 마커 설정
- */
-export interface MarkerInfo {
-  /**
-   * 마커 식별자 (React key로 사용)
-   */
-  id: string;
-
-  /**
-   * 마커 위치 (경도, 위도)
-   */
-  coordinate: Coordinate;
-
-  /**
-   * 아이콘 타입
-   * @default 'pin'
-   */
-  icon?: 'pin' | 'circle' | 'custom';
-
-  /**
-   * 사용자 정의 아이콘 SVG path (icon이 'custom'인 경우)
-   */
-  iconPath?: string;
-
-  /**
-   * 마커 라벨 텍스트
-   */
-  label?: string;
-
-  /**
-   * 마커 스타일
-   */
-  style?: SvgStyle;
-
-  /**
-   * 마커 크기 배율
-   * @default 1
-   */
-  scale?: number;
-
-  /**
-   * 사용자 정의 데이터
-   */
-  data?: unknown;
-}
-
-/**
  * 마커 전체 설정
  */
 export interface MarkerConfig {
   /**
    * 마커 목록
    */
-  items: MarkerInfo[];
+  items: MarkerData[];
 
   /**
    * 기본 스케일
@@ -384,12 +338,7 @@ export interface MarkerConfig {
   /**
    * 마커 클릭 핸들러
    */
-  onMarkerClick?: (marker: MarkerInfo) => void;
-
-  /**
-   * 마커 호버 핸들러
-   */
-  onMarkerHover?: (marker: MarkerInfo | null) => void;
+  onMarkerClick?: (marker: MarkerData) => void;
 }
 
 // ============================================================================

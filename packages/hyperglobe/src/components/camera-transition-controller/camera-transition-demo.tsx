@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { HyperGlobe, Colors, HyperglobeRef } from '../../src';
-
-export interface CameraTransitionDemoProps {}
+import { HyperGlobe } from '../hyperglobe';
+import { Colors } from '../../lib';
+import type { HyperglobeRef } from '../../types/camera';
 
 /**
  * 카메라 트랜지션 데모
@@ -11,13 +11,11 @@ export interface CameraTransitionDemoProps {}
  */
 export function CameraTransitionDemo() {
   const hyperglobeRef = useRef<HyperglobeRef>(null);
-  const [progress, setProgress] = useState(0);
   const [currentPoint, setCurrentPoint] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const startBasicTransition = () => {
     setIsAnimating(true);
-    setProgress(0);
     setCurrentPoint(-1);
 
     hyperglobeRef.current?.followPath(
@@ -30,11 +28,9 @@ export function CameraTransitionDemo() {
         lockCamera: true,
         onPathPointReached: (index) => {
           setCurrentPoint(index);
-          console.log(`도착: 지점 ${index + 1}`);
         },
         onComplete: () => {
           setIsAnimating(false);
-          console.log('투어 완료!');
         },
       }
     );
@@ -43,7 +39,6 @@ export function CameraTransitionDemo() {
   const cancel = () => {
     hyperglobeRef.current?.cancelTransition();
     setIsAnimating(false);
-    setProgress(0);
     setCurrentPoint(-1);
   };
 
@@ -60,9 +55,6 @@ export function CameraTransitionDemo() {
       </div>
 
       <div style={{ display: 'flex', gap: '20px', fontSize: '14px' }}>
-        <div>
-          <strong>진행률:</strong> {progress}%
-        </div>
         <div>
           <strong>현재 지점:</strong> {currentPoint >= 0 ? currentPoint + 1 : '-'}
         </div>
@@ -95,9 +87,6 @@ export function CameraTransitionDemo() {
             color: Colors.GRAY[8],
             fillColor: Colors.GRAY[3],
           },
-        }}
-        onReady={() => {
-          console.log('카메라 트랜지션 데모 렌더링 완료');
         }}
       />
     </div>

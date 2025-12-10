@@ -8,12 +8,7 @@ import { MarkerData } from './marker-interface';
 import { useMarkerShape } from './use-marker-shape';
 import { useSvgStyle } from 'src/hooks/use-svg-style';
 
-export interface MarkerFeatureProps extends MarkerData {
-  defaultScale?: number;
-  showLabels?: boolean;
-  onMarkerClick?: (marker: MarkerData) => void;
-  onMarkerHover?: (marker: MarkerData | null) => void;
-}
+export interface MarkerFeatureProps extends MarkerData {}
 
 /**
  * 지구본 위에 특정 지점을 아이콘과 라벨로 표시하는 컴포넌트입니다.
@@ -32,7 +27,6 @@ export function MarkerFeature({
   label,
   style,
   scale: _scale,
-  defaultScale = 1,
   showLabels = true,
   onMarkerClick,
 }: MarkerFeatureProps) {
@@ -68,7 +62,7 @@ export function MarkerFeature({
     setIsVisible(dotProduct > 0.1);
   });
 
-  const scale = appliedStyle.scale || defaultScale;
+  const scale = appliedStyle.scale || 1;
   const iconSize = 24 * scale;
 
   // 마커가 지구 뒤편에 있으면 렌더링하지 않음

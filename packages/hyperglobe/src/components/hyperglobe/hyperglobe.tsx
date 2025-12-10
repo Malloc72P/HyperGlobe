@@ -414,20 +414,18 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
               />
             ))}
             {/* Markers */}
-            {marker?.items.map((marker) => (
+            {marker?.items.map((item) => (
               <MarkerFeature
-                key={marker.id}
-                coordinate={marker.coordinate}
-                icon={marker.icon}
-                iconPath={marker.iconPath}
-                label={marker.label}
-                style={marker.style}
-                scale={marker.scale}
-                defaultScale={marker.defaultScale}
-                showLabels={marker.showLabels}
-                onMarkerClick={
-                  marker.onMarkerClick ? () => marker.onMarkerClick?.(marker) : undefined
-                }
+                key={item.id}
+                id={item.id}
+                coordinate={item.coordinate}
+                icon={item.icon}
+                iconPath={item.iconPath}
+                label={item.label}
+                style={item.style}
+                scale={item.scale}
+                showLabels={item.showLabels}
+                onMarkerClick={item.onMarkerClick ? () => item.onMarkerClick?.(item) : undefined}
               />
             ))}{' '}
           </group>
