@@ -1,6 +1,6 @@
 import Delaunator from 'delaunator';
 import type { Coordinate, VectorCoordinate } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '../projections/orthographic';
+import { CoordinateConverter } from '../projections/coord-converter';
 import { distance2D } from '../math/magnitude';
 
 /**
@@ -221,7 +221,7 @@ export function delaunayTriangulate({
   const filteredIndices = filterOuterTriangles(delaunator, coordinates);
 
   // 5. 경위도 좌표를 3D 구면 좌표로 변환
-  const vertices = OrthographicProj.projects(allPoints, radius);
+  const vertices = CoordinateConverter.converts(allPoints, radius);
 
   return {
     vertices,

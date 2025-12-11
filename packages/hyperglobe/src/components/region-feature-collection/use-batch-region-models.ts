@@ -4,7 +4,7 @@ import type {
   FeaturePolygons,
   VectorCoordinate,
 } from '@hyperglobe/interfaces';
-import { OrthographicProj, MathConstants } from '@hyperglobe/tools';
+import { CoordinateConverter, MathConstants } from '@hyperglobe/tools';
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store/main-store';
 import { getFeatureKey } from './use-merged-geometry';
@@ -88,7 +88,7 @@ function createRegionModel({
       if (i % 3 !== 0 || i + 2 >= array.length) return acc;
 
       const vector: VectorCoordinate = [curr, array[i + 1], array[i + 2]];
-      const coordinate = OrthographicProj.unproject(vector, MathConstants.FEATURE_STROKE_Z_INDEX);
+      const coordinate = CoordinateConverter.invert(vector, MathConstants.FEATURE_STROKE_Z_INDEX);
 
       acc.push(coordinate);
 

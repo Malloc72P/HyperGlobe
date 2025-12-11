@@ -2,9 +2,9 @@ import type { Coordinate, VectorCoordinate } from '@hyperglobe/interfaces';
 import { toRadian } from '../math/to-radian';
 import { magnitude3D } from '../math/magnitude';
 
-export class OrthographicProj {
+export class CoordinateConverter {
   /**
-   * 경위도 좌표를 3차원 직교좌표계의 좌표로 투영합니다.
+   * 경위도 좌표를 3차원 직교좌표계의 좌표로 변환합니다.
    *
    * @param coordinate - [경도, 위도] 형태의 좌표 (단위: 도)
    * @param radius - 구의 반지름 (기본값: 1)
@@ -13,16 +13,16 @@ export class OrthographicProj {
    * @example
    * ```ts
    * // 경도 0도, 위도 0도 (아프리카 기니만 앞바다)
-   * project([0, 0]); // [1, 0, 0]
+   * convert([0, 0]); // [1, 0, 0]
    *
    * // 경도 90도, 위도 0도 (인도양)
-   * project([90, 0]); // [0, 0, 1]
+   * convert([90, 0]); // [0, 0, 1]
    *
    * // 경도 0도, 위도 90도 (북극점)
-   * project([0, 90]); // [0, 1, 0]
+   * convert([0, 90]); // [0, 1, 0]
    * ```
    */
-  public static project(coordinate: Coordinate, radius = 1): VectorCoordinate {
+  public static convert(coordinate: Coordinate, radius = 1): VectorCoordinate {
     const longitude = -1 * coordinate[0];
     const latitude = coordinate[1];
 
@@ -41,12 +41,12 @@ export class OrthographicProj {
     return [x, y, z];
   }
 
-  public static projects(coordinates: Coordinate[], radius = 1): VectorCoordinate[] {
-    return coordinates.map((coord) => this.project(coord, radius));
+  public static converts(coordinates: Coordinate[], radius = 1): VectorCoordinate[] {
+    return coordinates.map((coord) => this.convert(coord, radius));
   }
 
   /**
-   * 3차원 직교좌표를 경위도 좌표로 역투영합니다.
+   * 3차원 직교좌표를 경위도 좌표로 역변환합니다.
    *
    * @param vector - [x, y, z] 형태의 3차원 직교좌표
    * @param radius - 구의 반지름 (기본값: 1)
@@ -55,16 +55,16 @@ export class OrthographicProj {
    * @example
    * ```ts
    * // [1, 0, 0] → 경도 0도, 위도 0도
-   * unproject([1, 0, 0]); // [0, 0]
+   * invert([1, 0, 0]); // [0, 0]
    *
    * // [0, 0, 1] → 경도 90도, 위도 0도
-   * unproject([0, 0, 1]); // [90, 0]
+   * invert([0, 0, 1]); // [90, 0]
    *
    * // [0, 1, 0] → 경도 0도, 위도 90도 (북극점)
-   * unproject([0, 1, 0]); // [0, 90]
+   * invert([0, 1, 0]); // [0, 90]
    * ```
    */
-  public static unproject(vector: VectorCoordinate, radius = 1): Coordinate {
+  public static invert(vector: VectorCoordinate, radius = 1): Coordinate {
     const [x, y, z] = vector;
 
     // 정규화 (반지름이 1이 아닐 경우를 대비)
@@ -78,7 +78,7 @@ export class OrthographicProj {
     // 경도 계산: arctan2(z, x)
     const longitude = Math.atan2(normalizedZ, normalizedX) * (180 / Math.PI);
 
-    // project 함수에서 경도에 -1을 곱했으므로, 역투영 시 다시 -1을 곱함
+    // convert 함수에서 경도에 -1을 곱했으므로, 역변환 시 다시 -1을 곱함
     return [-longitude, latitude];
   }
 

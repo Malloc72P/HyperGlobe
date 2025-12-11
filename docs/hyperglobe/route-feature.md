@@ -219,11 +219,11 @@ routes={routes.map((route, index) => ({
 
 ```typescript
 const fromVector = new Vector3(
-  ...OrthographicProj.project(from, globeRadius)
+  ...CoordinateConverter.convert(from, globeRadius)
 )
 ```
 
-`OrthographicProj.project()`:
+`CoordinateConverter.convert()`:
 - 입력: `[경도, 위도]`, 반지름
 - 출력: `[x, y, z]` 3D 좌표
 - `@hyperglobe/tools` 패키지에서 제공

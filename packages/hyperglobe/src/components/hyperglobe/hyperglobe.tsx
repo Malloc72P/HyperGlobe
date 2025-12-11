@@ -1,7 +1,7 @@
 'use client';
 
 import { Coordinate } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import {
@@ -158,7 +158,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         initialCameraPosition[0] - 90,
         initialCameraPosition[1],
       ];
-      return OrthographicProj.project(adjustedCoordinate, 5);
+      return CoordinateConverter.convert(adjustedCoordinate, 5);
     }, [initialCameraPosition]);
 
     // === 컨트롤 설정 ===

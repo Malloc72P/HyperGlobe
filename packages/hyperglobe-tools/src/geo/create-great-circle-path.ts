@@ -1,5 +1,5 @@
 import { Coordinate } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '../projections';
+import { CoordinateConverter } from '../projections';
 import { Vector3 } from 'three';
 
 /**
@@ -11,8 +11,8 @@ export function createGreatCirclePath(
   segments: number
 ): Vector3[] {
   const globeRadius = 1; // 정규화된 반지름 (Three.js sphere의 기본 반지름)
-  const fromVector = new Vector3(...OrthographicProj.project(from, globeRadius));
-  const toVector = new Vector3(...OrthographicProj.project(to, globeRadius));
+  const fromVector = new Vector3(...CoordinateConverter.convert(from, globeRadius));
+  const toVector = new Vector3(...CoordinateConverter.convert(to, globeRadius));
 
   const pathPoints: Vector3[] = [];
 

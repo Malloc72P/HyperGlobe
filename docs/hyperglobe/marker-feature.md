@@ -158,9 +158,9 @@ export interface MarkersConfig {
 경위도 → 3D 카르테시안 좌표:
 
 ```typescript
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 
-const coords = OrthographicProj.project(coordinate, 1);
+const coords = CoordinateConverter.convert(coordinate, 1);
 const position = new THREE.Vector3(coords[0], coords[1], coords[2]);
 ```
 

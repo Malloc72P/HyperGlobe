@@ -1,4 +1,4 @@
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 import { Html } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useMemo, useState } from 'react';
@@ -36,7 +36,7 @@ export function MarkerFeature({
   const [appliedStyle] = useSvgStyle({ style });
 
   const position = useMemo(() => {
-    const coords = OrthographicProj.project(coordinate, 1);
+    const coords = CoordinateConverter.convert(coordinate, 1);
     return new THREE.Vector3(coords[0], coords[1], coords[2]);
   }, [coordinate]);
 

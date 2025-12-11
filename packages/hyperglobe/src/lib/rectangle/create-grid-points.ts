@@ -1,5 +1,5 @@
 import type { VectorCoordinate } from '@hyperglobe/interfaces';
-import { OrthographicProj } from '../../../../hyperglobe-tools/src';
+import { CoordinateConverter } from '../../../../hyperglobe-tools/src';
 
 export interface CreateGridVectorsParam {
   /**
@@ -42,7 +42,7 @@ export function createGridPoints({
   fillRadius,
 }: CreateGridVectorsParam) {
   // 네 변을 보간하여 엣지 생성(맨 위행의 점들과 맨 아래행의 점들을 생성.)
-  const [topEdge, bottomEdge] = OrthographicProj.interpolates(
+  const [topEdge, bottomEdge] = CoordinateConverter.interpolates(
     [
       [leftTop, rightTop],
       [leftBottom, rightBottom],
@@ -54,7 +54,7 @@ export function createGridPoints({
   // 그리드 포인트 생성 (앞서 생성한 점을 이용해서 각 열을 보간)
   const gridPoints: VectorCoordinate[] = [];
   for (let i = 0; i <= subdivisions; i++) {
-    const rowPoints = OrthographicProj.interpolate(
+    const rowPoints = CoordinateConverter.interpolate(
       topEdge[i],
       bottomEdge[i],
       subdivisions,

@@ -106,24 +106,24 @@ calcProgress(3, 0, 2000);  // 1
 - 카메라 전환 애니메이션
 - 부드러운 상태 전환
 
-### 투영 변환 (projections/)
+### 좌표 변환 (projections/)
 
-#### OrthographicProj.project(coordinate, radius)
+#### CoordinateConverter.convert(coordinate, radius)
 경위도 좌표를 3D 직교좌표계로 변환합니다.
 
 ```typescript
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 
 // 경도 0도, 위도 0도 (아프리카 기니만)
-OrthographicProj.project([0, 0]);
+CoordinateConverter.convert([0, 0]);
 // → [1, 0, 0]
 
 // 경도 90도, 위도 0도
-OrthographicProj.project([90, 0]);
+CoordinateConverter.convert([90, 0]);
 // → [0, 0, 1]
 
 // 북극점
-OrthographicProj.project([0, 90]);
+CoordinateConverter.convert([0, 90]);
 // → [0, 1, 0]
 ```
 
@@ -142,11 +142,11 @@ z = cos(φ) * sin(λ) * radius
 - GeoJSON → 3D 메시 변환
 - 지구본 표면 좌표 계산
 
-#### OrthographicProj.projects(coordinates, radius)
+#### CoordinateConverter.converts(coordinates, radius)
 여러 경위도 좌표를 한 번에 3D 직교좌표계로 변환합니다.
 
 ```typescript
-OrthographicProj.projects([[0, 0], [90, 0], [0, 90]]);
+CoordinateConverter.converts([[0, 0], [90, 0], [0, 90]]);
 // → [[1, 0, 0], [0, 0, 1], [0, 1, 0]]
 ```
 
@@ -154,11 +154,11 @@ OrthographicProj.projects([[0, 0], [90, 0], [0, 90]]);
 - 다중 좌표 일괄 변환
 - 폴리곤 경계선 변환
 
-#### OrthographicProj.unproject(vector, radius)
+#### CoordinateConverter.invert(vector, radius)
 3D 직교좌표를 경위도로 역변환합니다.
 
 ```typescript
-OrthographicProj.unproject([1, 0, 0]);
+CoordinateConverter.invert([1, 0, 0]);
 // → [0, 0] (경도 0도, 위도 0도)
 ```
 
@@ -166,13 +166,13 @@ OrthographicProj.unproject([1, 0, 0]);
 - 마우스 피킹 결과 변환
 - 3D 위치 → 지리 좌표
 
-#### OrthographicProj.interpolate(start, end, segments, radius)
+#### CoordinateConverter.interpolate(start, end, segments, radius)
 두 3D 벡터 사이를 구면을 따라 보간합니다. 선형 보간 후 구 표면에 투영하는 방식입니다.
 
 ```typescript
 const start = [1, 0, 0];  // 경도 0도
 const end = [0, 1, 0];    // 북극
-const points = OrthographicProj.interpolate(start, end, 5);
+const points = CoordinateConverter.interpolate(start, end, 5);
 // 두 점 사이를 5개의 세그먼트로 나눈 점들 반환
 ```
 
@@ -180,7 +180,7 @@ const points = OrthographicProj.interpolate(start, end, 5);
 - 구면 경로 생성
 - 부드러운 곡선 보간
 
-#### OrthographicProj.interpolates(coordinatePairs, segments, radius)
+#### CoordinateConverter.interpolates(coordinatePairs, segments, radius)
 여러 좌표 쌍에 대해 구면 보간을 수행합니다.
 
 ```typescript
@@ -188,7 +188,7 @@ const pairs = [
   [[1, 0, 0], [0, 1, 0]],
   [[0, 0, 1], [-1, 0, 0]]
 ];
-OrthographicProj.interpolates(pairs, 10);
+CoordinateConverter.interpolates(pairs, 10);
 // 각 쌍에 대해 보간된 점들의 배열 반환
 ```
 
@@ -577,7 +577,7 @@ const sideGeometry = createSideGeometry({
 
 ```
 GeoJSON (경위도)
-    ↓ OrthographicProj.project()
+    ↓ CoordinateConverter.convert()
 3D 직교좌표
     ↓ BufferGeometry
 GPU 메모리

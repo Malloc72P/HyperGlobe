@@ -1,4 +1,4 @@
-import { createGreatCirclePath, OrthographicProj } from '@hyperglobe/tools';
+import { createGreatCirclePath, CoordinateConverter } from '@hyperglobe/tools';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { useFrame, useThree } from '@react-three/fiber';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
@@ -119,9 +119,9 @@ export const CameraTransitionController = forwardRef<
         // Globe가 Y축으로 -90도 회전되어 있으므로, 카메라 좌표도 조정
         const adjustedCoordinate: Coordinate = [point.coordinate[0] - 90, point.coordinate[1]];
 
-        // 현재 카메라 방향을 경위도 좌표로 변환 (역투영)
+        // 현재 카메라 방향을 경위도 좌표로 변환 (역변환)
         // previousPoint는 이미 정규화된 방향 벡터
-        const fromCoordinate = OrthographicProj.unproject([
+        const fromCoordinate = CoordinateConverter.invert([
           previousPoint.x,
           previousPoint.y,
           previousPoint.z,
@@ -129,7 +129,7 @@ export const CameraTransitionController = forwardRef<
 
         // 목표 지점의 방향 벡터 (세그먼트 수 계산을 위해)
         const targetDirection = new Vector3(
-          ...OrthographicProj.project(adjustedCoordinate, 1)
+          ...CoordinateConverter.convert(adjustedCoordinate, 1)
         ).normalize();
 
         // 이전 지점과 목표 지점 사이의 각도 계산, 이 각도로 세그먼트 수 결정

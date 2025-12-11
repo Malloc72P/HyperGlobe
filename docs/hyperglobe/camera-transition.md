@@ -176,7 +176,7 @@ export interface CameraTransitionControllerRef {
 ```
 
 #### 의존성:
-- `@hyperglobe/tools`의 `OrthographicProj`
+- `@hyperglobe/tools`의 `CoordinateConverter`
 - `@react-three/fiber`의 `useFrame`, `useThree`
 - Three.js의 `Vector3`, `Camera`
 
@@ -378,7 +378,7 @@ function calculateSegments(distance: number): number {
 ## 관련 문서
 
 - [HyperGlobe 컴포넌트](./hyperglobe-component.md)
-- [수학 라이브러리](./math-libraries.md) - `createGreatCirclePath`, `OrthographicProj`
+- [수학 라이브러리](./math-libraries.md) - `createGreatCirclePath`, `CoordinateConverter`
 
 1. **카메라 회전**: 카메라가 바라보는 방향도 제어
 2. **곡선 경로**: 베지어 곡선 등 다양한 경로 타입 지원
@@ -390,4 +390,4 @@ function calculateSegments(distance: number): number {
 
 - [HyperGlobe 컴포넌트](./hyperglobe-component.md)
 - [RouteFeature 컴포넌트](./route-feature.md)
-- [수학 라이브러리](./math-libraries.md) - `OrthographicProj` 활용
+- [수학 라이브러리](./math-libraries.md) - `CoordinateConverter` 활용

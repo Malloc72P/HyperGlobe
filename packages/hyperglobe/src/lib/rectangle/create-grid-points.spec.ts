@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { OrthographicProj } from '../../../../hyperglobe-tools/src';
+import { CoordinateConverter } from '../../../../hyperglobe-tools/src';
 import type { Coordinate } from '@hyperglobe/interfaces';
 import { createGridPoints } from './create-grid-points';
 import { magnitude3D } from '../../../../hyperglobe-tools/src';
@@ -14,7 +14,7 @@ describe('createGridPoints', () => {
       [0, 0], // 좌하단
     ];
     const fillRadius = 1;
-    const corners = OrthographicProj.projects(coords, fillRadius);
+    const corners = CoordinateConverter.converts(coords, fillRadius);
 
     // When
     const result = createGridPoints({
@@ -39,7 +39,7 @@ describe('createGridPoints', () => {
       [-10, -20],
     ];
     const fillRadius = 1;
-    const corners = OrthographicProj.projects(coords, fillRadius);
+    const corners = CoordinateConverter.converts(coords, fillRadius);
 
     // When
     const result = createGridPoints({
@@ -64,7 +64,7 @@ describe('createGridPoints', () => {
       [0, -30],
     ];
     const fillRadius = 1;
-    const corners = OrthographicProj.projects(coords, fillRadius);
+    const corners = CoordinateConverter.converts(coords, fillRadius);
 
     // When
     const result = createGridPoints({
@@ -98,7 +98,7 @@ describe('createGridPoints', () => {
       [-20, -40],
     ];
     const fillRadius = 1;
-    const corners = OrthographicProj.projects(coords, fillRadius);
+    const corners = CoordinateConverter.converts(coords, fillRadius);
 
     // When
     const result = createGridPoints({
@@ -123,7 +123,7 @@ describe('createGridPoints', () => {
       [-15, -25],
     ];
     const fillRadius = 1.005;
-    const corners = OrthographicProj.projects(coords, fillRadius);
+    const corners = CoordinateConverter.converts(coords, fillRadius);
 
     // When
     const result = createGridPoints({
