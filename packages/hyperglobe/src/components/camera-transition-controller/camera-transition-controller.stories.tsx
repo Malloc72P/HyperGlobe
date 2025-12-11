@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HyperGlobe } from '../hyperglobe';
-import { StorybookConstant } from '../../constants';
 import { CameraTransitionDemo } from './camera-transition-demo';
+import { CameraTransitionDemoCode } from './camera-transition-demo.code';
 
 /**
  * CameraTransition은 지구본 카메라를 경로를 따라 자동으로 이동시키는 API입니다.
@@ -25,16 +25,13 @@ type Story = StoryObj<typeof meta>;
 /**
  * 기본 카메라 트랜지션
  */
-export const Basic: Story = {
-  args: {
-    ...StorybookConstant.props.HyperGlobe,
-    camera: {
-      initialPosition: [127, 37],
-    },
-  },
+export const Basic = {
+  render: () => <CameraTransitionDemo />,
   parameters: {
-    controls: {
-      include: ['camera'],
+    docs: {
+      source: {
+        code: CameraTransitionDemoCode,
+      },
     },
   },
 };

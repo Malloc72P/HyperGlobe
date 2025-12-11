@@ -1,0 +1,6 @@
+.controls {
+  display: flex;
+  padding: 16px;
+  flex-direction: column;
+  gap: 12px;
+}
