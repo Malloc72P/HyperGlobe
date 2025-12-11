@@ -386,6 +386,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 idField={region?.idField}
                 colorscale={colorscale?.model}
                 extrusion={region?.extrusion}
+                transition={region?.transition}
               />
             )}
             {/* Graticule */}

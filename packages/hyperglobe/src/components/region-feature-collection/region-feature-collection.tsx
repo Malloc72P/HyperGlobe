@@ -9,6 +9,7 @@ import { useMergedGeometry } from './use-merged-geometry';
 import { useBatchRegionModels } from './use-batch-region-models';
 import { HoveredRegionOverlay } from './hovered-region-overlay';
 import { ColorScaleModel } from '../../types';
+import { useRegionTransition, type RegionTransitionConfig } from './use-region-transition';
 
 export interface RegionFeatureCollectionProps {
   /**
@@ -80,6 +81,13 @@ export interface RegionFeatureCollectionProps {
      */
     color?: string;
   };
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
+   */
+  transition?: RegionTransitionConfig;
 }
 
 /**
@@ -123,6 +131,7 @@ export function RegionFeatureCollection({
   idField,
   valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
+  transition,
 }: RegionFeatureCollectionProps) {
   /** 스타일 병합 (기본값 + 사용자 지정) */
   const mergedStyle = useMemo(
@@ -160,6 +169,13 @@ export function RegionFeatureCollection({
   /** R-Tree에 배치 등록 (호버 감지용) */
   useBatchRegionModels({ features, data, idField });
 
+  /** 페이드 인 트랜지션 */
+  const { opacity: transitionOpacity } = useRegionTransition({
+    features,
+    transition,
+    targetOpacity: mergedStyle.fillOpacity,
+  });
+
   if (!mergedGeometry) return null;
 
   return (
@@ -170,7 +186,7 @@ export function RegionFeatureCollection({
           transparent
           side={THREE.DoubleSide}
           color={mergedGeometry.useVertexColors ? 'white' : mergedStyle.fillColor}
-          opacity={mergedStyle.fillOpacity}
+          opacity={transitionOpacity}
           vertexColors={mergedGeometry.useVertexColors}
         />
       </mesh>
@@ -182,7 +198,7 @@ export function RegionFeatureCollection({
             transparent
             side={THREE.DoubleSide}
             color={extrusion?.color ?? Colors.GRAY[8]}
-            opacity={1}
+            opacity={transitionOpacity / mergedStyle.fillOpacity}
           />
         </mesh>
       )}
@@ -193,6 +209,8 @@ export function RegionFeatureCollection({
         segments
         color={mergedStyle.color}
         lineWidth={mergedStyle.lineWidth}
+        opacity={transitionOpacity}
+        transparent
       />
 
       {/* 호버 오버레이 */}

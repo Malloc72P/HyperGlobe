@@ -127,6 +127,9 @@ export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDe
           extrusion: {
             color: styles.regionExtrusionColor,
           },
+          transition: {
+            duration: 1000,
+          },
         }}
         onReady={() => {
           console.log('HyperGlobe 렌더링 완료');

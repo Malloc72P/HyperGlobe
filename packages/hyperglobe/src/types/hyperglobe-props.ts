@@ -4,6 +4,7 @@ import type { ColorScaleModel } from './colorscale';
 import type { FeatureStyle } from './feature';
 import type { SvgStyle } from './svg';
 import { MarkerData } from 'src/components/marker-feature/marker-interface';
+import type { RegionTransitionConfig } from 'src/components/region-feature-collection';
 
 // ============================================================================
 // 캔버스/컨테이너 설정
@@ -186,6 +187,14 @@ export interface RegionConfig {
      */
     color?: string;
   };
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
+   * - 기본값: { enabled: true, duration: 500, easing: 'ease-out' }
+   */
+  transition?: RegionTransitionConfig;
 }
 
 // ============================================================================
