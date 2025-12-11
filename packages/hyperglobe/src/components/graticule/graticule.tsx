@@ -1,5 +1,5 @@
-import { toRadian } from '../../../../hyperglobe-tools/src';
-import { GraticuleLine } from './graticule-line';
+import { Line } from '@react-three/drei';
+import { useMergedGraticuleGeometry } from './use-merged-graticule-geometry';
 
 export interface GraticuleProps {
   /**
@@ -27,6 +27,10 @@ export interface GraticuleProps {
  * - 간격, 색상, 두께 커스터마이징 가능
  *
  * 주로 `HyperGlobe` 컴포넌트의 `graticule` prop을 통해 사용합니다.
+ *
+ * ### 최적화
+ * - 모든 경위선을 하나의 Line으로 병합하여 드로우콜 최소화
+ * - 기존: 54개 Line 객체 → 최적화 후: 1개 Line 객체
  */
 export function Graticule({
   longitudeStep = 10,
@@ -34,35 +38,10 @@ export function Graticule({
   lineColor = '#808080',
   lineWidth = 1.2,
 }: GraticuleProps) {
-  return (
-    <group>
-      {/* 위선 */}
-      {Array.from({ length: 90 / latitudeStep }).map((_, i) => {
-        const currentLat = Math.floor(i * latitudeStep);
-        const y = Math.sin(toRadian(currentLat));
+  const points = useMergedGraticuleGeometry({
+    longitudeStep,
+    latitudeStep,
+  });
 
-        return (
-          <group key={`graticule-lat-${i}`}>
-            <GraticuleLine y={y} rotateX={toRadian(90)} color={lineColor} lineWidth={lineWidth} />
-            <GraticuleLine y={-y} rotateX={toRadian(90)} color={lineColor} lineWidth={lineWidth} />
-          </group>
-        );
-      })}
-
-      {/* 경선 */}
-      {Array.from({ length: 180 / longitudeStep }).map((_, i) => {
-        const currentLongitude = Math.floor(i * longitudeStep);
-
-        return (
-          <group key={`graticule-lon-${i}`}>
-            <GraticuleLine
-              rotateY={toRadian(currentLongitude)}
-              color={lineColor}
-              lineWidth={lineWidth}
-            />
-          </group>
-        );
-      })}
-    </group>
-  );
+  return <Line points={points} segments color={lineColor} lineWidth={lineWidth} />;
 }
