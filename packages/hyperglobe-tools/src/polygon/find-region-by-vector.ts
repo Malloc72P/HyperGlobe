@@ -1,7 +1,7 @@
 import RBush from 'rbush';
 import { RegionModel, VectorCoordinate } from '@hyperglobe/interfaces';
 import { Euler, Matrix4, Vector3 } from 'three';
-import { CoordinateConverter } from '../projections';
+import { CoordinateConverter } from '../coordinate';
 import { isPointInPolygon } from './is-point-in-polygon';
 
 export interface FindRegionByVectorOptions {

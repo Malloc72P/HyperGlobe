@@ -1,5 +1,5 @@
 import { Coordinate } from '@hyperglobe/interfaces';
-import { CoordinateConverter } from '../projections';
+import { CoordinateConverter } from '../coordinate';
 import { Vector3 } from 'three';
 
 /**

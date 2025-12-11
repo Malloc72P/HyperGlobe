@@ -1,6 +1,6 @@
 import Delaunator from 'delaunator';
 import type { Coordinate, VectorCoordinate } from '@hyperglobe/interfaces';
-import { CoordinateConverter } from '../projections/coord-converter';
+import { CoordinateConverter } from '../coordinate';
 import { distance2D } from '../math/magnitude';
 
 /**

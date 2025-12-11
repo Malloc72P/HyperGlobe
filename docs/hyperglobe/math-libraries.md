@@ -106,7 +106,7 @@ calcProgress(3, 0, 2000);  // 1
 - 카메라 전환 애니메이션
 - 부드러운 상태 전환
 
-### 좌표 변환 (projections/)
+### 좌표 변환 (coordinate/)
 
 #### CoordinateConverter.convert(coordinate, radius)
 경위도 좌표를 3D 직교좌표계로 변환합니다.
@@ -165,36 +165,6 @@ CoordinateConverter.invert([1, 0, 0]);
 **사용처:**
 - 마우스 피킹 결과 변환
 - 3D 위치 → 지리 좌표
-
-#### CoordinateConverter.interpolate(start, end, segments, radius)
-두 3D 벡터 사이를 구면을 따라 보간합니다. 선형 보간 후 구 표면에 투영하는 방식입니다.
-
-```typescript
-const start = [1, 0, 0];  // 경도 0도
-const end = [0, 1, 0];    // 북극
-const points = CoordinateConverter.interpolate(start, end, 5);
-// 두 점 사이를 5개의 세그먼트로 나눈 점들 반환
-```
-
-**사용처:**
-- 구면 경로 생성
-- 부드러운 곡선 보간
-
-#### CoordinateConverter.interpolates(coordinatePairs, segments, radius)
-여러 좌표 쌍에 대해 구면 보간을 수행합니다.
-
-```typescript
-const pairs = [
-  [[1, 0, 0], [0, 1, 0]],
-  [[0, 0, 1], [-1, 0, 0]]
-];
-CoordinateConverter.interpolates(pairs, 10);
-// 각 쌍에 대해 보간된 점들의 배열 반환
-```
-
-**사용처:**
-- 다중 경로 일괄 처리
-- 폴리곤 외곽선 보간
 
 ### 폴리곤 처리 (polygon/)
 
