@@ -1,5 +1,7 @@
 import { Line } from '@react-three/drei';
 import { useMergedGraticuleGeometry } from './use-merged-graticule-geometry';
+import { useFeatureTransition } from '../../hooks/use-feature-transition';
+import type { FeatureTransitionConfig } from '../../types/transition';
 
 export interface GraticuleProps {
   /**
@@ -18,6 +20,12 @@ export interface GraticuleProps {
    * 일반 격자선 두께
    */
   lineWidth?: number;
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - 경위선이 로드될 때 서서히 나타나는 효과를 적용합니다.
+   */
+  transition?: FeatureTransitionConfig;
 }
 
 /**
@@ -37,11 +45,30 @@ export function Graticule({
   latitudeStep = 10,
   lineColor = '#808080',
   lineWidth = 1.2,
+  transition,
 }: GraticuleProps) {
   const points = useMergedGraticuleGeometry({
     longitudeStep,
     latitudeStep,
   });
 
-  return <Line points={points} segments color={lineColor} lineWidth={lineWidth} />;
+  const { opacity } = useFeatureTransition({
+    deps: [points],
+    transition: {
+      easing: 'ease-in-out',
+      duration: 500,
+      ...transition,
+    },
+  });
+
+  return (
+    <Line
+      points={points}
+      segments
+      color={lineColor}
+      lineWidth={Math.min(lineWidth, 2)}
+      transparent
+      opacity={opacity}
+    />
+  );
 }

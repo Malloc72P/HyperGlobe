@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { getEasingFunction } from '../lib/easing';
-import type { FeatureTransitionConfig } from '../types/transition';
+import type { FeatureTransitionConfig, TransitionEasing } from '../types/transition';
 
 export interface UseFeatureTransitionOptions {
   /**
@@ -37,7 +37,7 @@ export interface UseFeatureTransitionResult {
 }
 
 const DEFAULT_DURATION = 500;
-const DEFAULT_EASING = 'ease-out' as const;
+const DEFAULT_EASING: TransitionEasing = 'linear' as const;
 
 /**
  * 피처의 페이드 인 트랜지션을 관리하는 범용 훅

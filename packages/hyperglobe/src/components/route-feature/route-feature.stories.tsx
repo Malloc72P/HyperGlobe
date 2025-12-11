@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RouteStoryComponent } from './route-feature-story';
 import { Colors } from '../../lib';
 import { HyperGlobe } from '../hyperglobe';
 import { StorybookConstant } from '../../constants';
@@ -58,7 +57,6 @@ export const SeoulToLondon: Story = {
         animationDelay: 0.5,
       },
     ],
-    graticule: true,
   },
   parameters: {
     controls: {

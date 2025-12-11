@@ -72,3 +72,53 @@ export const StyledGraticule: Story = {
     },
   },
 };
+
+/**
+ * 페이드 인 트랜지션 효과
+ */
+export const WithTransition: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 10,
+      latitudeStep: 10,
+      lineColor: '#808080',
+      lineWidth: 1.2,
+      transition: {
+        enabled: true,
+        duration: 1000,
+        easing: 'ease-out',
+      },
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};
+
+/**
+ * 빠른 페이드 인
+ */
+export const FastTransition: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 15,
+      latitudeStep: 15,
+      lineColor: '#4470cc',
+      lineWidth: 2,
+      transition: {
+        enabled: true,
+        duration: 500,
+        easing: 'ease-in-out',
+      },
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};

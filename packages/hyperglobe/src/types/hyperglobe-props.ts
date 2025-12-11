@@ -228,6 +228,13 @@ export interface GraticuleConfig {
    * @default 1.2
    */
   lineWidth?: number;
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - 경위선이 로드될 때 서서히 나타나는 효과를 적용합니다.
+   */
+  transition?: FeatureTransitionConfig;
 }
 
 // ============================================================================

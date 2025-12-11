@@ -412,6 +412,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 latitudeStep={graticuleConfig.latitudeStep}
                 lineColor={graticuleConfig.lineColor}
                 lineWidth={graticuleConfig.lineWidth}
+                transition={graticuleConfig.transition}
               />
             )}
             {/* Routes */}
