@@ -598,6 +598,27 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    */
   showLoadingUI?: boolean;
 
+  /**
+   * 지연 로딩(Lazy Loading) 활성화 여부
+   *
+   * - true: 컴포넌트가 뷰포트에 들어왔을 때만 HGM 파일을 로드하고 렌더링 시작
+   * - false: 컴포넌트가 마운트되는 즉시 로드 및 렌더링
+   *
+   * @default true
+   */
+  lazyLoad?: boolean;
+
+  /**
+   * 지연 로딩 감지 임계값 (0.0 ~ 1.0)
+   *
+   * - 컴포넌트가 뷰포트에 얼마나 보일 때 로드를 시작할지 설정
+   * - 0.1 = 컴포넌트의 10%가 보이면 로드 시작
+   * - 1.0 = 컴포넌트가 완전히 보여야 로드 시작
+   *
+   * @default 0.1
+   */
+  lazyLoadThreshold?: number;
+
   // === 이벤트 ===
 
   /**

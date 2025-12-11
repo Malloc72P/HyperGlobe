@@ -17,6 +17,7 @@ import type { CameraTransitionControllerRef } from '../camera-transition-control
 import { UiConstant } from 'src/constants';
 import { NoToneMapping, Vector3, type DirectionalLight } from 'three';
 import { useThrottle } from '../../hooks/use-throttle';
+import { useIntersectionObserver } from '../../hooks/use-intersection-observer';
 import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
 import { FpsCounter, FpsDisplay } from '../fps-counter';
 import { LoadingUI } from '../loading-ui';
@@ -100,6 +101,8 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       tooltip,
       showFpsCounter = true,
       showLoadingUI = true,
+      lazyLoad = true,
+      lazyLoadThreshold = 0.1,
 
       // 이벤트
       onReady,
@@ -119,12 +122,21 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     const [cameraControllerReady, setCameraControllerReady] = useState(false);
     const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
 
+    // === Intersection Observer (Lazy Loading) ===
+    const [intersectionRef, isIntersecting] = useIntersectionObserver({
+      threshold: lazyLoadThreshold,
+      triggerOnce: true,
+    });
+
+    // lazyLoad가 비활성화된 경우 항상 로드 가능한 것으로 간주
+    const shouldLoad = !lazyLoad || isIntersecting;
+
     // === HGM 로딩 ===
     const [hgm] = useHGM({ rawHgmBlob });
 
-    // hgmUrl이 변경되면 HGM 파일을 다시 로드
+    // hgmUrl이 변경되거나 shouldLoad가 true가 되면 HGM 파일을 로드
     useEffect(() => {
-      if (!hgmUrl) return;
+      if (!hgmUrl || !shouldLoad) return;
 
       // 이전 데이터 초기화
       setRawHgmBlob(null);
@@ -137,7 +149,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         .catch((err) => {
           console.error(`Failed to load HGM file: ${hgmUrl}`, err);
         });
-    }, [hgmUrl]);
+    }, [hgmUrl, shouldLoad]);
 
     // === Store ===
     const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -317,7 +329,11 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     // === Render ===
     return (
       <div
-        ref={rootElementRef}
+        ref={(node) => {
+          // rootElementRef와 intersectionRef 모두에 할당
+          (rootElementRef as any).current = node;
+          (intersectionRef as any).current = node;
+        }}
         style={{ position: 'relative', overflow: 'hidden' }}
         onPointerMove={onPointerMove}
       >
