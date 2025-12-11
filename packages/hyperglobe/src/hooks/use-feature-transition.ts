@@ -1,46 +1,21 @@
-import type { HGMFeature } from '@hyperglobe/interfaces';
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
-import { getEasingFunction } from '../../lib/easing';
+import { getEasingFunction } from '../lib/easing';
+import type { FeatureTransitionConfig } from '../types/transition';
 
-/**
- * 트랜지션 이징 타입
- */
-export type TransitionEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
-
-/**
- * Region 트랜지션 설정
- */
-export interface RegionTransitionConfig {
-  /**
-   * 트랜지션 활성화 여부
-   * @default true
-   */
-  enabled?: boolean;
-
-  /**
-   * 트랜지션 지속 시간 (ms)
-   * @default 500
-   */
-  duration?: number;
-
-  /**
-   * 이징 함수 타입
-   * @default 'ease-out'
-   */
-  easing?: TransitionEasing;
-}
-
-export interface UseRegionTransitionOptions {
+export interface UseFeatureTransitionOptions {
   /**
    * 트랜지션 설정
    */
-  transition?: RegionTransitionConfig;
+  transition?: FeatureTransitionConfig;
 
   /**
-   * 피처 배열 (변경 시 트랜지션 재시작)
+   * 트랜지션을 트리거할 의존성
+   *
+   * - 이 배열의 값이 변경될 때마다 트랜지션이 재시작됩니다.
+   * - 예: 피처 배열, 데이터 객체 등
    */
-  features: HGMFeature[];
+  deps: unknown[];
 
   /**
    * 목표 투명도
@@ -49,7 +24,7 @@ export interface UseRegionTransitionOptions {
   targetOpacity?: number;
 }
 
-export interface UseRegionTransitionResult {
+export interface UseFeatureTransitionResult {
   /**
    * 현재 opacity 값 (0~1)
    */
@@ -61,30 +36,40 @@ export interface UseRegionTransitionResult {
   isTransitioning: boolean;
 }
 
-const DEFAULT_DURATION = 200;
-const DEFAULT_EASING: TransitionEasing = 'ease-in';
+const DEFAULT_DURATION = 500;
+const DEFAULT_EASING = 'ease-out' as const;
 
 /**
- * Region 피처의 페이드 인 트랜지션을 관리하는 훅
+ * 피처의 페이드 인 트랜지션을 관리하는 범용 훅
  *
- * features가 변경될 때마다 opacity를 0에서 targetOpacity까지 애니메이션합니다.
+ * deps가 변경될 때마다 opacity를 0에서 targetOpacity까지 애니메이션합니다.
  *
  * @example
  * ```tsx
- * const { opacity, isTransitioning } = useRegionTransition({
- *   features,
+ * // Region 피처에 적용
+ * const { opacity } = useFeatureTransition({
+ *   deps: [features],
  *   transition: { duration: 500, easing: 'ease-out' },
  *   targetOpacity: 0.8,
  * });
  *
  * <meshBasicMaterial opacity={opacity} transparent />
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Marker 피처에 적용
+ * const { opacity } = useFeatureTransition({
+ *   deps: [markers],
+ *   transition: { duration: 300, easing: 'ease-in-out' },
+ * });
+ * ```
  */
-export function useRegionTransition({
+export function useFeatureTransition({
   transition,
-  features,
+  deps,
   targetOpacity = 1,
-}: UseRegionTransitionOptions): UseRegionTransitionResult {
+}: UseFeatureTransitionOptions): UseFeatureTransitionResult {
   const enabled = transition?.enabled ?? true;
   const duration = transition?.duration ?? DEFAULT_DURATION;
   const easing = transition?.easing ?? DEFAULT_EASING;
@@ -100,9 +85,23 @@ export function useRegionTransition({
     targetOpacity,
   });
 
-  // features 변경 시 트랜지션 시작
+  // deps 변경 시 트랜지션 시작
   useEffect(() => {
-    if (!enabled || features.length === 0) {
+    if (!enabled) {
+      setOpacity(targetOpacity);
+      return;
+    }
+
+    // deps가 비어있거나 모든 값이 falsy면 트랜지션 시작 안 함
+    const hasValidDeps =
+      deps.length > 0 &&
+      deps.some((dep) => {
+        if (Array.isArray(dep)) return dep.length > 0;
+        if (dep && typeof dep === 'object') return Object.keys(dep).length > 0;
+        return !!dep;
+      });
+
+    if (!hasValidDeps) {
       setOpacity(targetOpacity);
       return;
     }
@@ -114,10 +113,10 @@ export function useRegionTransition({
       easingFn: getEasingFunction(easing),
       targetOpacity,
     };
-
     setOpacity(0);
     setIsTransitioning(true);
-  }, [features, enabled, easing, targetOpacity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, enabled, easing, targetOpacity]);
 
   // 매 프레임 opacity 업데이트
   useFrame(() => {

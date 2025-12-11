@@ -3,6 +3,7 @@ export * from './components';
 
 // Hooks
 export * from './hooks/use-colorscale';
+export * from './hooks/use-feature-transition';
 
 // Types
 export type {

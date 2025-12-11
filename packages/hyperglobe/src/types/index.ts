@@ -4,3 +4,4 @@ export * from './events';
 export * from './feature';
 export * from './hyperglobe-props';
 export * from './svg';
+export * from './transition';

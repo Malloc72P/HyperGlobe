@@ -8,8 +8,8 @@ import type { FeatureStyle } from '../../types/feature';
 import { useMergedGeometry } from './use-merged-geometry';
 import { useBatchRegionModels } from './use-batch-region-models';
 import { HoveredRegionOverlay } from './hovered-region-overlay';
-import { ColorScaleModel } from '../../types';
-import { useRegionTransition, type RegionTransitionConfig } from './use-region-transition';
+import { ColorScaleModel, FeatureTransitionConfig } from '../../types';
+import { useFeatureTransition } from '../../hooks/use-feature-transition';
 
 export interface RegionFeatureCollectionProps {
   /**
@@ -87,7 +87,7 @@ export interface RegionFeatureCollectionProps {
    *
    * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
    */
-  transition?: RegionTransitionConfig;
+  transition?: FeatureTransitionConfig;
 }
 
 /**
@@ -170,8 +170,8 @@ export function RegionFeatureCollection({
   useBatchRegionModels({ features, data, idField });
 
   /** 페이드 인 트랜지션 */
-  const { opacity: transitionOpacity } = useRegionTransition({
-    features,
+  const { opacity: transitionOpacity } = useFeatureTransition({
+    deps: [features],
     transition,
     targetOpacity: mergedStyle.fillOpacity,
   });
