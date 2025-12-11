@@ -12,13 +12,13 @@ export function toBorderlineSource(featurePolygons: FeaturePolygons[]): RawBorde
   // 각 폴리곤을 구면에 변환하고, 외곽선의 정점 위치 계산
   for (const polygon of featurePolygons) {
     const positions: number[] = [];
-    const projectedPoints = CoordinateConverter.converts(polygon, strokeRadius);
+    const convertedPoints = CoordinateConverter.converts(polygon, strokeRadius);
 
     // 이 폴리곤 내부에서만 선분 생성
-    for (let i = 0; i < projectedPoints.length; i++) {
-      const point = projectedPoints[i];
-      const nextIndex = (i + 1) % projectedPoints.length;
-      const nextPoint = projectedPoints[nextIndex];
+    for (let i = 0; i < convertedPoints.length; i++) {
+      const point = convertedPoints[i];
+      const nextIndex = (i + 1) % convertedPoints.length;
+      const nextPoint = convertedPoints[nextIndex];
 
       if (!point || !nextPoint) continue;
 

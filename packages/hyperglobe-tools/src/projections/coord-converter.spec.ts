@@ -75,11 +75,11 @@ describe('CoordinateConverter', () => {
       const original: Coordinate = [126.978, 37.566];
 
       // convert로 3D 좌표로 변환
-      const projected = CoordinateConverter.convert(original);
-      console.log('서울 converted:', projected);
+      const converted = CoordinateConverter.convert(original);
+      console.log('서울 converted:', converted);
 
       // invert로 다시 경위도로 변환
-      const inverted = CoordinateConverter.invert(projected);
+      const inverted = CoordinateConverter.invert(converted);
       console.log('서울 inverted:', inverted);
 
       // 원본과 비교
@@ -99,11 +99,11 @@ describe('CoordinateConverter', () => {
       ];
 
       cities.forEach((original, index) => {
-        const projected = CoordinateConverter.convert(original);
-        const inverted = CoordinateConverter.invert(projected);
+        const converted = CoordinateConverter.convert(original);
+        const inverted = CoordinateConverter.invert(converted);
 
         console.log(`\n도시 ${index}:`, original);
-        console.log('converted:', projected);
+        console.log('converted:', converted);
         console.log('inverted:', inverted);
 
         // 극점이 아닌 경우에만 경도 검증
