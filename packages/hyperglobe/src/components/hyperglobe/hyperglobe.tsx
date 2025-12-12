@@ -145,7 +145,9 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
 
       fetch(hgmUrl)
         .then((res) => res.blob())
-        .then(setRawHgmBlob)
+        .then((blob) => {
+          setRawHgmBlob(blob);
+        })
         .catch((err) => {
           console.error(`Failed to load HGM file: ${hgmUrl}`, err);
         });
@@ -154,10 +156,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     // === Store ===
     const tooltipRef = useMainStore((s) => s.tooltipRef);
     const cleanMainStore = useMainStore((s) => s.clean);
-    const setLoading = useMainStore((s) => s.setLoading);
-
-    // === Derived State ===
-    const isLoading = hgm === null;
+    const loading = useMainStore((s) => s.loading);
 
     // === 카메라 설정 ===
     const initialCameraPosition = camera?.initialPosition ?? [0, 0];
@@ -308,18 +307,13 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       };
     }, [cleanMainStore]);
 
-    // 로딩 상태 동기화
-    useEffect(() => {
-      setLoading(isLoading);
-    }, [isLoading, setLoading]);
-
     // onReady 호출 (hgm 로드 완료 + 카메라 컨트롤러 준비 완료 후)
     useEffect(() => {
-      if (!isLoading && cameraControllerReady && !onReadyCalledRef.current && onReady) {
+      if (!loading && cameraControllerReady && !onReadyCalledRef.current && onReady) {
         onReady();
         onReadyCalledRef.current = true;
       }
-    }, [isLoading, cameraControllerReady, onReady]);
+    }, [loading, cameraControllerReady, onReady]);
 
     // 카메라 컨트롤러 마운트 핸들러
     const handleCameraControllerMount = useCallback(() => {
@@ -338,7 +332,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         onPointerMove={onPointerMove}
       >
         {/* 로딩 UI */}
-        {showLoadingUI && <LoadingUI loading={isLoading} />}
+        {showLoadingUI && <LoadingUI loading={loading} />}
 
         {/* 툴팁 */}
         {tooltipConfig && (
@@ -444,6 +438,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 scale={item.scale}
                 showLabels={item.showLabels}
                 onMarkerClick={item.onMarkerClick ? () => item.onMarkerClick?.(item) : undefined}
+                transition={item.transition}
               />
             ))}{' '}
           </group>

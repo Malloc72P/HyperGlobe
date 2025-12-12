@@ -1,5 +1,5 @@
 import type { HGMFeature } from '@hyperglobe/interfaces';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import { UiConstant } from '../../constants';
@@ -10,6 +10,7 @@ import { useBatchRegionModels } from './use-batch-region-models';
 import { HoveredRegionOverlay } from './hovered-region-overlay';
 import { ColorScaleModel, FeatureTransitionConfig } from '../../types';
 import { useFeatureTransition } from '../../hooks/use-feature-transition';
+import { useMainStore } from 'src/store';
 
 export interface RegionFeatureCollectionProps {
   /**
@@ -174,6 +175,7 @@ export function RegionFeatureCollection({
     deps: [features],
     transition,
     targetOpacity: mergedStyle.fillOpacity,
+    waitForLoading: false,
   });
 
   if (!mergedGeometry) return null;

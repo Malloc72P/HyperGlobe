@@ -140,6 +140,10 @@ export const StyledMarkers: Story = {
           coordinate: [-74.006, 40.7128],
           label: 'New York',
           icon: 'circle',
+          transition: {
+            enabled: true,
+            duration: 200000,
+          },
           style: {
             fill: Colors.BLUE[6],
             stroke: 'white',

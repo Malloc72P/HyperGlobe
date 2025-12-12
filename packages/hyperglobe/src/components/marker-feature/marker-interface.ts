@@ -1,4 +1,5 @@
 import { Coordinate } from '@hyperglobe/interfaces';
+import { FeatureTransitionConfig } from 'src/types';
 import { SvgStyle } from 'src/types/svg';
 
 /**
@@ -42,4 +43,12 @@ export interface MarkerData {
 
   /** 마커 클릭 이벤트 핸들러 */
   onMarkerClick?: (marker: MarkerData) => void;
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
+   * - 기본값: { enabled: true, duration: 500, easing: 'ease-out' }
+   */
+  transition?: FeatureTransitionConfig;
 }

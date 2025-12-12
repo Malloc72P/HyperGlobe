@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { MarkerData } from './marker-interface';
 import { useMarkerShape } from './use-marker-shape';
 import { useSvgStyle } from 'src/hooks/use-svg-style';
+import { useFeatureTransition } from 'src/hooks/use-feature-transition';
+import { useMainStore } from 'src/store';
 
 export interface MarkerFeatureProps extends MarkerData {}
 
@@ -29,11 +31,17 @@ export function MarkerFeature({
   scale: _scale,
   showLabels = true,
   onMarkerClick,
+  transition,
 }: MarkerFeatureProps) {
   const { camera } = useThree();
   const [isVisible, setIsVisible] = useState(true);
   const [iconShape] = useMarkerShape({ icon, iconPath });
   const [appliedStyle] = useSvgStyle({ style });
+
+  const { isTransitioning, opacity } = useFeatureTransition({
+    transition,
+    deps: [coordinate, icon, label, appliedStyle],
+  });
 
   const position = useMemo(() => {
     const coords = CoordinateConverter.convert(coordinate, 1);
@@ -83,6 +91,7 @@ export function MarkerFeature({
             textAlign: 'center',
             cursor: onMarkerClick ? 'pointer' : 'default',
             userSelect: 'none',
+            opacity,
           }}
         >
           {/* SVG 아이콘 */}

@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import { getEasingFunction } from '../lib/easing';
 import type { FeatureTransitionConfig, TransitionEasing } from '../types/transition';
+import { useMainStore } from 'src/store';
 
 export interface UseFeatureTransitionOptions {
   /**
@@ -22,6 +23,7 @@ export interface UseFeatureTransitionOptions {
    * @default 1
    */
   targetOpacity?: number;
+  waitForLoading?: boolean;
 }
 
 export interface UseFeatureTransitionResult {
@@ -69,7 +71,9 @@ export function useFeatureTransition({
   transition,
   deps,
   targetOpacity = 1,
+  waitForLoading = true,
 }: UseFeatureTransitionOptions): UseFeatureTransitionResult {
+  const loading = useMainStore((s) => s.loading);
   const enabled = transition?.enabled ?? true;
   const duration = transition?.duration ?? DEFAULT_DURATION;
   const easing = transition?.easing ?? DEFAULT_EASING;
@@ -106,6 +110,11 @@ export function useFeatureTransition({
       return;
     }
 
+    if (waitForLoading && loading) {
+      // 로딩 중이면 트랜지션 시작 안 함
+      return;
+    }
+
     // 트랜지션 시작
     transitionRef.current = {
       startTime: performance.now(),
@@ -116,7 +125,7 @@ export function useFeatureTransition({
     setOpacity(0);
     setIsTransitioning(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, enabled, easing, targetOpacity]);
+  }, [...deps, enabled, easing, targetOpacity, loading]);
 
   // 매 프레임 opacity 업데이트
   useFrame(() => {

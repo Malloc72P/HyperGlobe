@@ -34,6 +34,7 @@ export function useBatchRegionModels({
   const insertRegionModel = useMainStore((s) => s.insertRegionModel);
   const removeRegionModel = useMainStore((s) => s.removeRegionModel);
   const findRegionModelById = useMainStore((s) => s.findRegionModelById);
+  const setLoading = useMainStore((s) => s.setLoading);
 
   // 등록된 모델들을 추적 (cleanup용)
   const registeredModelsRef = useRef<RegionModel[]>([]);
@@ -56,6 +57,7 @@ export function useBatchRegionModels({
       newModels.push(model);
     }
 
+    setLoading(false);
     registeredModelsRef.current = newModels;
 
     // Cleanup: 컴포넌트 언마운트 시 R-Tree에서 제거
