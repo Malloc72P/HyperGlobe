@@ -44,6 +44,10 @@ export const MajorCities: Story = {
             fill: Colors.PINK[5],
             stroke: Colors.GRAY[10],
           },
+          transition: {
+            delay: 400,
+            duration: 200,
+          },
         },
         {
           id: 'tokyo',
@@ -54,6 +58,10 @@ export const MajorCities: Story = {
             fill: Colors.BLUE[5],
             stroke: Colors.GRAY[10],
           },
+          transition: {
+            delay: 700,
+            duration: 400,
+          },
         },
         {
           id: 'beijing',
@@ -63,6 +71,10 @@ export const MajorCities: Story = {
           style: {
             fill: Colors.GRAY[5],
             stroke: Colors.GRAY[10],
+          },
+          transition: {
+            delay: 1000,
+            duration: 600,
           },
         },
       ],
@@ -99,6 +111,9 @@ export const CustomIcon: Story = {
             stroke: Colors.GRAY[7],
             scale: 1.5,
           },
+          transition: {
+            delay: 200,
+          },
         },
         {
           id: 'romania',
@@ -112,6 +127,9 @@ export const CustomIcon: Story = {
             fill: Colors.PINK[5],
             stroke: Colors.PINK[8],
             scale: 1.5,
+          },
+          transition: {
+            delay: 400,
           },
         },
       ],
@@ -140,15 +158,12 @@ export const StyledMarkers: Story = {
           coordinate: [-74.006, 40.7128],
           label: 'New York',
           icon: 'circle',
-          transition: {
-            enabled: true,
-            duration: 200000,
-          },
+          transition: {},
           style: {
             fill: Colors.BLUE[6],
             stroke: 'white',
             strokeWidth: 2,
-            scale: 1.2,
+            scale: 3,
           },
         },
         {

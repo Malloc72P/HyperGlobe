@@ -23,6 +23,11 @@ export interface UseFeatureTransitionOptions {
    * @default 1
    */
   targetOpacity?: number;
+
+  /**
+   * 로딩이 완료될 때까지 트랜지션 시작을 대기할지 여부
+   * @default true
+   */
   waitForLoading?: boolean;
 }
 
@@ -39,6 +44,7 @@ export interface UseFeatureTransitionResult {
 }
 
 const DEFAULT_DURATION = 500;
+const DEFAULT_DELAY = 0;
 const DEFAULT_EASING: TransitionEasing = 'linear' as const;
 
 /**
@@ -75,6 +81,7 @@ export function useFeatureTransition({
 }: UseFeatureTransitionOptions): UseFeatureTransitionResult {
   const loading = useMainStore((s) => s.loading);
   const enabled = transition?.enabled ?? true;
+  const delay = transition?.delay ?? DEFAULT_DELAY;
   const duration = transition?.duration ?? DEFAULT_DURATION;
   const easing = transition?.easing ?? DEFAULT_EASING;
 
@@ -116,16 +123,17 @@ export function useFeatureTransition({
     }
 
     // 트랜지션 시작
-    transitionRef.current = {
-      startTime: performance.now(),
-      isActive: true,
-      easingFn: getEasingFunction(easing),
-      targetOpacity,
-    };
-    setOpacity(0);
-    setIsTransitioning(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, enabled, easing, targetOpacity, loading]);
+    setTimeout(() => {
+      transitionRef.current = {
+        startTime: performance.now(),
+        isActive: true,
+        easingFn: getEasingFunction(easing),
+        targetOpacity,
+      };
+      setOpacity(0);
+      setIsTransitioning(true);
+    }, delay);
+  }, [...deps, enabled, easing, targetOpacity, loading, delay]);
 
   // 매 프레임 opacity 업데이트
   useFrame(() => {

@@ -22,6 +22,12 @@ export interface FeatureTransitionConfig {
   duration?: number;
 
   /**
+   * 트랜지션 지연 시간 (ms)
+   * @default 0
+   */
+  delay?: number;
+
+  /**
    * 이징 함수 타입
    * @default 'ease-out'
    */
