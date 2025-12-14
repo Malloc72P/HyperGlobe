@@ -16,7 +16,7 @@ MarkerFeature는 지구본 위에 **소수의 중요 지점을 마커와 라벨*
 import { HyperGlobe } from 'hyperglobe';
 
 function CityMarkers() {
-  const markers = {
+  const marker = {
     items: [
       {
         id: 'seoul',
@@ -50,7 +50,7 @@ function CityMarkers() {
   return (
     <HyperGlobe
       hgmUrl="/maps/nations-mid.hgm"
-      markers={markers}
+      markers={marker}
     />
   );
 }
@@ -130,10 +130,10 @@ export interface MarkerConfig {
 }
 ```
 
-### MarkersConfig 인터페이스
+### MarkerConfig 인터페이스
 
 ```typescript
-export interface MarkersConfig {
+export interface MarkerConfig {
   /** 마커 목록 */
   items: MarkerConfig[];
   

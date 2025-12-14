@@ -175,6 +175,8 @@ export interface CameraTransitionControllerRef {
 }
 ```
 
+> **참고**: 실제 구현에서는 `onMount` 콜백을 통해 컴포넌트가 준비되었음을 상위 컴포넌트에 알립니다.
+
 #### 의존성:
 - `@hyperglobe/tools`의 `CoordinateConverter`
 - `@react-three/fiber`의 `useFrame`, `useThree`
@@ -202,28 +204,36 @@ interface TransitionState {
 1. `forwardRef`를 사용하여 ref 지원 추가
 2. `HyperglobeRef` 타입 구현
 3. 내부에서 `CameraTransitionController` 컴포넌트 사용
-4. OrbitControls에 `enabled` prop 바인딩
+4. OrbitControls에 `enabled` prop 바인딩 (`!isLocked`)
 5. `useImperativeHandle`로 `followPath`, `cancelTransition` 메서드 노출
 
 ```tsx
 export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>(
   function HyperGlobe(props, ref) {
-    // ... 기존 코드 ...
+    const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);
+    const [isLocked, setIsLocked] = useState(false);
+    const [cameraControllerReady, setCameraControllerReady] = useState(false);
     
-    const followPathRef = useRef<...>(null);
-    const cancelTransitionRef = useRef<...>(null);
-    
-    useImperativeHandle(ref, () => ({
-      followPath: (path, options) => followPathRef.current?.(path, options),
-      cancelTransition: () => cancelTransitionRef.current?.(),
-    }));
+    // ref로 메서드 노출
+    useImperativeHandle(
+      ref,
+      () => ({
+        followPath: (path, options) => {
+          cameraTransitionRef.current?.followPath(path, options);
+        },
+        cancelTransition: () => {
+          cameraTransitionRef.current?.cancelTransition();
+        },
+      }),
+      []
+    );
     
     return (
       <Canvas>
         <CameraTransitionController
+          ref={cameraTransitionRef}
           onLockChange={setIsLocked}
-          onFollowPathReady={(fn) => { followPathRef.current = fn; }}
-          onCancelTransitionReady={(fn) => { cancelTransitionRef.current = fn; }}
+          onMount={() => setCameraControllerReady(true)}
           onCameraPositionChange={(position) => {
             // 카메라 위치에 맞춰 조명 위치 동기화
             lightRef.current?.position.copy(position);
@@ -271,12 +281,13 @@ export function getEasingFunction(
 2. 현재 어느 구간에 있는지 판단
 3. 구간 내 진행률 계산
 4. 이징 함수 적용
-5. `lerpVectors`로 생성된 포인트들 사이에서 보간 (선형 보간)
+5. 사전 계산된 SLERP 포인트들 사이에서 선형 보간
 6. 카메라 위치 업데이트 및 지구 중심을 바라보도록 설정
 7. distance 값에 따라 카메라 거리 조정
 
-> **참고**: 실제 구현에서는 SLERP(구면 선형 보간) 대신 `lerpVectors`(선형 보간)를 사용합니다. 
-> 짧은 구간에서는 두 방식의 차이가 미미하며, 선형 보간이 더 간단하고 성능상 유리합니다.
+> **참고**: 실제 구현에서는 `createGreatCirclePath`를 사용하여 SLERP(구면 선형 보간) 기반으로 경로 포인트를 미리 생성합니다. 
+> 각 구간의 세그먼트 수는 두 지점 사이의 각도에 비례하여 동적으로 결정됩니다.
+> 런타임에는 사전 계산된 포인트들 사이를 단순 선형 보간하여 성능을 최적화합니다.
 
 ```ts
 // 의사 코드
@@ -297,12 +308,14 @@ const updateCamera = (deltaTime: number) => {
       // 3. 이징 적용 (캐시된 함수 사용)
       const easedProgress = state.easingFn(rawProgress);
       
-      // 4. 경로상의 위치 계산
+      // 4. 경로상의 위치 계산 (사전 계산된 SLERP 포인트 배열 사용)
       const segmentPoints = state.segmentPointsCache.get(i);
       const pointIndex = Math.floor(easedProgress * (segmentPoints.length - 1));
       const localProgress = (easedProgress * (segmentPoints.length - 1)) % 1;
       
-      // 5. 보간 (카메라 position에 직접 lerp 적용)
+      // 5. 선형 보간 (카메라 position에 직접 lerp 적용)
+      const currentPoint = segmentPoints[pointIndex];
+      const nextPoint = segmentPoints[Math.min(pointIndex + 1, segmentPoints.length - 1)];
       camera.position.lerpVectors(currentPoint, nextPoint, localProgress);
       
       // 6. 카메라가 지구 중심을 바라보도록 설정
@@ -338,9 +351,9 @@ const updateCamera = (deltaTime: number) => {
 - [x] `CameraTransitionController` 컴포넌트 구현
 - [x] `HyperGlobe` 컴포넌트에 ref 지원 추가
 - [x] Storybook 스토리 작성 및 수동 테스트
+- [x] 문서화 작성
 - [ ] 단위 테스트 작성
 - [ ] E2E 테스트 작성
-- [x] 문서화 업데이트
 
 ## 주의사항
 
@@ -354,31 +367,28 @@ const updateCamera = (deltaTime: number) => {
 1. **totalDuration 캐싱**: 매 프레임 재계산 대신 초기화 시 한 번만 계산
 2. **이징 함수 캐싱**: 함수 조회를 초기화 시 한 번만 수행
 3. **Vector3 객체 재사용**: `camera.position.lerpVectors()` 직접 호출로 새 객체 생성 최소화
-4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 생성하여 `segmentPointsCache`에 캐시
+4. **경로 포인트 미리 계산**: 모든 세그먼트 포인트를 초기화 시 SLERP로 생성하여 `segmentPointsCache`에 캐시
 
 #### segments 수 동적 조정
 ```ts
 const SEGMENTS_PER_UNIT_DISTANCE = 20; // 거리 단위당 세그먼트 수
 
-// 두 좌표 사이의 대략적인 거리를 계산 (Vector3.angleTo 사용)
-function estimateDistance(from: Vector3, to: Vector3): number {
-  return from.angleTo(to);
+// 각도에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
+function calculateSegments(angularDistance: number): number {
+  return Math.min(200, Math.max(10, Math.floor(angularDistance * SEGMENTS_PER_UNIT_DISTANCE)));
 }
 
-// 거리에 비례하여 세그먼트 수 결정 (최소 10, 최대 200)
-function calculateSegments(distance: number): number {
-  return Math.min(200, Math.max(10, Math.floor(distance * SEGMENTS_PER_UNIT_DISTANCE)));
-}
+// 실제 사용 예시
+const angularDistance = previousPoint.angleTo(targetDirection); // Three.js Vector3.angleTo()
+const segments = calculateSegments(angularDistance);
 ```
 
-짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
+두 지점 사이의 각도는 Three.js의 `Vector3.angleTo()` 메서드로 직접 계산하며, 이 각도에 비례하여 세그먼트 수를 결정합니다. 짧은 거리는 적은 세그먼트를, 긴 거리는 많은 세그먼트를 사용하여 성능과 품질의 균형을 맞춥니다.
+
+> **참고**: `createGreatCirclePath`가 SLERP를 사용하여 대권항로 상의 포인트들을 생성하므로, 
+> 런타임에는 이미 생성된 포인트들 사이를 단순 선형 보간(`lerpVectors`)하는 것만으로 충분히 부드러운 애니메이션을 구현할 수 있습니다.
 
 ## 향후 확장 가능성
-
-## 관련 문서
-
-- [HyperGlobe 컴포넌트](./hyperglobe-component.md)
-- [수학 라이브러리](./math-libraries.md) - `createGreatCirclePath`, `CoordinateConverter`
 
 1. **카메라 회전**: 카메라가 바라보는 방향도 제어
 2. **곡선 경로**: 베지어 곡선 등 다양한 경로 타입 지원
@@ -390,4 +400,4 @@ function calculateSegments(distance: number): number {
 
 - [HyperGlobe 컴포넌트](./hyperglobe-component.md)
 - [RouteFeature 컴포넌트](./route-feature.md)
-- [수학 라이브러리](./math-libraries.md) - `CoordinateConverter` 활용
+- [수학 라이브러리](./math-libraries.md) - `CoordinateConverter`, `createGreatCirclePath` 활용
