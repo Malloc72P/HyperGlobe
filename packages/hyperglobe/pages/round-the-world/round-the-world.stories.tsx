@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RoundTheWorld } from './round-the-world';
+import { RoundTheWorld, RoundTheWorldProps } from './round-the-world';
 
 const meta = {
   title: 'Demo/RoundTheWorld',
@@ -8,7 +8,7 @@ const meta = {
     layout: 'fullscreen',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof RoundTheWorld>;
+} satisfies Meta<RoundTheWorldProps>;
 
 export default meta;
 1;

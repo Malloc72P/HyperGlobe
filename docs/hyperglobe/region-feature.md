@@ -196,7 +196,7 @@ function DataVisualization() {
 
 #### @hyperglobe/tools
 - `delaunayTriangulate`: 폴리곤 삼각분할 (CLI 전처리 단계에서 사용)
-- `OrthographicProj`: 경위도 ↔ 3D 좌표 변환
+- `CoordinateConverter`: 경위도 ↔ 3D 좌표 변환
 
 #### Three.js
 - `BufferGeometry`: 최적화된 지오메트리 표현

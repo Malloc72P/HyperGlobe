@@ -2,121 +2,60 @@
 
 ## 개요
 
-`HyperGlobe`는 WebGL 기반 3D 지구본을 렌더링하는 루트 컴포넌트입니다. Three.js와 React Three Fiber를 기반으로 구현되었습니다.
+WebGL 기반 3D 지구본을 렌더링하는 루트 컴포넌트입니다. Three.js와 React Three Fiber 기반으로 구현되었으며, Props 기반 설정 방식을 사용합니다.
 
-## 주요 기능
+**파일**: `packages/hyperglobe/src/components/hyperglobe/hyperglobe.tsx`
 
-### 기본 렌더링
-- WebGL Canvas를 통한 3D 지구본 렌더링
-- OrbitControls를 통한 카메라 조작 (회전, 줌)
-- 조명 설정 (DirectionalLight)
+**사용 예시**: Storybook의 `HyperGlobe` 스토리 참조
 
-### 자식 컴포넌트 시스템
-- `HyperGlobe` 컴포넌트만 사용하면 빈 지구본이 렌더링됩니다
-- 다양한 피쳐 컴포넌트를 자식으로 추가하여 지구본을 구성합니다:
-  - `RegionFeature`: 국가/지역 폴리곤
-  - `Graticule`: 경위선 격자
-  - `LineFeature`: 선 피쳐
-  - 기타 3D 오브젝트
+### 주요 기능
 
-### 인터랙션
-- 툴팁 시스템: 호버 시 정보 표시
-- 호버 이벤트: `onHoverChanged` 콜백을 통한 이벤트 처리
-- 로딩 UI: 데이터 로딩 중 표시
-
-### 성능 모니터링
-- FPS 카운터 (선택적 표시)
+- 3D 지구본 렌더링 (WebGL)
+- HGM 파일 자동 로딩 및 파싱
+- Region, Route, Marker 피처 렌더링
+- 경위선 격자 (Graticule)
+- 컬러스케일 데이터 시각화
+- 카메라 컨트롤 및 트랜지션
+- 툴팁, 로딩 UI, FPS 카운터
 
 ## Props
 
-### 레이아웃 관련
-- `id`: Canvas 요소의 id
-- `size`: 지구본 크기 (기본값: '100%')
-- `maxSize`: 최대 크기
-- `style`: Canvas 스타일
+**타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts`
 
-### 지구본 스타일
-- `globeStyle`: 지구본 공통 스타일 설정
-- `wireframe`: 와이어프레임 모드
+> **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
-### UI 옵션
-- `loading`: 로딩 UI 표시 여부
-- `tooltipOptions`: 툴팁 설정
-- `showFpsCounter`: FPS 카운터 표시 여부
+### 피처별 상세 문서
 
-### 이벤트
-- `onHoverChanged`: 호버된 지역 변경 시 호출
+- **Region**: [RegionFeatureCollection](./region-feature-collection.md)
+- **Graticule**: [Graticule](./graticule.md)
+- **Routes**: [RouteFeature](./route-feature.md)
+- **Markers**: [MarkerFeature](./marker-feature.md)
+- **ColorScale**: [ColorScale 시스템](./colorscale.md)
 
-## 사용 예시
-
-### 기본 사용
-```tsx
-import { HyperGlobe } from 'hyperglobe';
-
-function App() {
-  return (
-    <HyperGlobe size="800px">
-      {/* 자식 컴포넌트 추가 */}
-    </HyperGlobe>
-  );
-}
-```
-
-### 피쳐와 함께 사용
-```tsx
-import { HyperGlobe, RegionFeature, Graticule } from 'hyperglobe';
-
-function App() {
-  return (
-    <HyperGlobe size="800px">
-      <Graticule />
-      {features.map(feature => (
-        <RegionFeature key={feature.id} feature={feature} />
-      ))}
-    </HyperGlobe>
-  );
-}
-```
-
-### 호버 이벤트 처리
-```tsx
-function App() {
-  const handleHoverChange = (region) => {
-    console.log('Hovered region:', region);
-  };
-
-  return (
-    <HyperGlobe 
-      size="800px"
-      onHoverChanged={handleHoverChange}
-    >
-      {/* 자식 컴포넌트 */}
-    </HyperGlobe>
-  );
-}
-```
-
-## 기술 세부사항
+## 동작 원리
 
 ### 렌더링 파이프라인
-1. React Three Fiber의 `Canvas` 컴포넌트로 WebGL 컨텍스트 생성
-2. `OrbitControls`로 카메라 제어 설정
-3. `Globe` 컴포넌트로 지구본 구체 렌더링
-4. 자식 컴포넌트들이 Three.js 씬에 추가됨
 
-### 색상 공간 설정
-- `outputColorSpace`: SRGBColorSpace
-- `gl.outputColorSpace`: LinearSRGBColorSpace
-- `toneMapping`: NoToneMapping
+1. `hgmUrl`로 HGM 파일 fetch
+2. `useHGM` 훅으로 HGM 파싱
+3. React Three Fiber `Canvas`에서 WebGL 렌더링
+4. `RegionFeatureCollection`으로 지역 피처 렌더링 (지오메트리 병합 최적화)
+5. 기타 피처 (Graticule, Routes, Markers) 렌더링
+6. `onReady` 콜백 호출
 
-이 설정은 색상 재현의 정확성과 일관성을 보장합니다.
+### 주요 특징
 
-### 상태 관리
-- Zustand 기반 메인 스토어 사용
-- 툴팁, 호버 상태 등을 전역으로 관리
+- **색상 공간**: NoToneMapping (정확한 색상 재현)
+- **상태 관리**: Zustand 기반 메인 스토어 (툴팁, 호버, R-Tree)
+- **지연 로딩**: Intersection Observer 기반 lazy load 지원
+- **카메라 제어**: OrbitControls + 명령형 트랜지션 API
 
 ## 관련 문서
-- [RegionFeature 컴포넌트](./region-feature.md)
-- [Graticule 컴포넌트](./graticule.md)
-- [ColorScale 시스템](./colorscale.md)
-- [수학 라이브러리](./math-libraries.md)
+
+- [RegionFeatureCollection](./region-feature-collection.md) - 지역 피쳐 렌더링
+- [Graticule](./graticule.md) - 경위선 격자
+- [RouteFeature](./route-feature.md) - 라우트 피쳐
+- [MarkerFeature](./marker-feature.md) - 마커 피쳐
+- [ColorScale 시스템](./colorscale.md) - 데이터 시각화
+- [카메라 트랜지션](./camera-transition.md) - 명령형 카메라 API
+- [메인 스토어](./main-store.md) - 상태 관리

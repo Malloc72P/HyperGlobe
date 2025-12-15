@@ -1,0 +1,73 @@
+import { Meta, Title, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as TooltipExamples from './tooltip.stories';
+
+<Meta title="Components/Tooltip" of={TooltipExamples} />
+
+<Title>Tooltip</Title>
+
+### 개요
+
+`Tooltip`은 지구본 위에서 마우스를 호버했을 때 해당 지역의 정보를 표시하는 컴포넌트입니다.
+호버된 지역의 ID와 이름을 기본적으로 표시하며, 스타일과 텍스트를 커스터마이징할 수 있습니다.
+
+주로 `HyperGlobe` 컴포넌트의 `tooltip` prop을 통해 설정합니다.
+`true`를 전달하면 기본 스타일로 표시되고, 객체를 전달하면 상세 설정이 가능합니다.
+
+### 기본 사용법
+
+`tooltip: true`를 전달하면 기본 스타일의 툴팁이 표시됩니다.
+지역 위에 마우스를 올려보세요.
+
+<Canvas of={TooltipExamples.Basic} />
+
+<Controls of={TooltipExamples.Basic} />
+
+### 스타일 커스터마이징
+
+`style` 속성을 통해 툴팁의 배경색, 글자색, 패딩, 테두리 등을 변경할 수 있습니다.
+
+<Canvas of={TooltipExamples.StyledTooltip} />
+
+<Controls of={TooltipExamples.StyledTooltip} />
+
+### 커스텀 텍스트
+
+`text` 속성에 함수를 전달하면 호버된 지역 데이터를 기반으로 원하는 텍스트를 표시할 수 있습니다.
+함수는 `RegionModel` 객체를 인자로 받아 문자열을 반환합니다.
+
+<Canvas of={TooltipExamples.CustomText} />
+
+<Controls of={TooltipExamples.CustomText} />
+
+- RegionModel의 properties를 통해 HGM 지도데이터에서 기본 제공하는 속성을 사용할 수 있습니다.
+- nations 지도의 경우, 다음과 같은 속성들이 포함되어 있습니다.
+
+  ```
+  id
+  name
+  nameEn
+  isoA2
+  isoA3
+  continent
+  ```
+
+<br />
+
+- 이를 활용하여 툴팁에 다양한 정보를 표시할 수 있습니다.
+
+  ```tsx
+  <HyperGlobe
+      tooltip={{
+              text: (region) => {
+                  const { continent, isoA2, isoA3 } = region.properties;
+
+                  return `${region.name} (${continent}) [${isoA2}, ${isoA3}]`;
+              }
+          }}
+      }
+  />
+  ```
+
+<br />
+
+- 지도에 따라 속성 정보가 다를 수 있으니, HGM 파일의 메타데이터를 참고하여 적절한 속성을 사용하세요.

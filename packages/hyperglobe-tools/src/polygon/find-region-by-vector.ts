@@ -1,7 +1,7 @@
 import RBush from 'rbush';
 import { RegionModel, VectorCoordinate } from '@hyperglobe/interfaces';
 import { Euler, Matrix4, Vector3 } from 'three';
-import { OrthographicProj } from '../projections';
+import { CoordinateConverter } from '../coordinate';
 import { isPointInPolygon } from './is-point-in-polygon';
 
 export interface FindRegionByVectorOptions {
@@ -13,7 +13,7 @@ export interface FindRegionByVectorOptions {
 export function findRegionByVector({ rotation, vector, rTree }: FindRegionByVectorOptions) {
   // 월드 좌표.
   // 이 좌표는 회전이 적용된 후의 좌표이다.
-  // 해당 좌표의 경위도 좌표를 구하려면, 회전을 상쇄시키고 역투영해야한다.
+  // 해당 좌표의 경위도 좌표를 구하려면, 회전을 상쇄시키고 역변환해야한다.
   const point = vector;
 
   // 회전 상쇄를 위한 회전행렬에 대한 역행렬 계산
@@ -25,8 +25,8 @@ export function findRegionByVector({ rotation, vector, rTree }: FindRegionByVect
   const localPoint = new Vector3(point.x, point.y, point.z).applyMatrix4(inverseMatrix);
   const { x, y, z } = localPoint;
 
-  // 역투영
-  const coordinate = OrthographicProj.unproject([x, y, z]);
+  // 역변환
+  const coordinate = CoordinateConverter.invert([x, y, z]);
   let foundRegion: null | RegionModel = null;
   const searchResult = rTree
     .search({

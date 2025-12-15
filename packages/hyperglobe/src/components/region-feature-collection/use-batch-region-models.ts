@@ -4,7 +4,7 @@ import type {
   FeaturePolygons,
   VectorCoordinate,
 } from '@hyperglobe/interfaces';
-import { OrthographicProj, MathConstants } from '@hyperglobe/tools';
+import { CoordinateConverter, MathConstants } from '@hyperglobe/tools';
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store/main-store';
 import { getFeatureKey } from './use-merged-geometry';
@@ -34,6 +34,7 @@ export function useBatchRegionModels({
   const insertRegionModel = useMainStore((s) => s.insertRegionModel);
   const removeRegionModel = useMainStore((s) => s.removeRegionModel);
   const findRegionModelById = useMainStore((s) => s.findRegionModelById);
+  const setLoading = useMainStore((s) => s.setLoading);
 
   // 등록된 모델들을 추적 (cleanup용)
   const registeredModelsRef = useRef<RegionModel[]>([]);
@@ -56,6 +57,7 @@ export function useBatchRegionModels({
       newModels.push(model);
     }
 
+    setLoading(false);
     registeredModelsRef.current = newModels;
 
     // Cleanup: 컴포넌트 언마운트 시 R-Tree에서 제거
@@ -88,7 +90,7 @@ function createRegionModel({
       if (i % 3 !== 0 || i + 2 >= array.length) return acc;
 
       const vector: VectorCoordinate = [curr, array[i + 1], array[i + 2]];
-      const coordinate = OrthographicProj.unproject(vector, MathConstants.FEATURE_STROKE_Z_INDEX);
+      const coordinate = CoordinateConverter.invert(vector, MathConstants.FEATURE_STROKE_Z_INDEX);
 
       acc.push(coordinate);
 

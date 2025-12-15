@@ -1,24 +1,124 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { HyperGlobe } from '../..';
-import { StorybookConstant } from '../../constants/storybook-constant';
-import { Graticule } from './graticule';
+import type { Meta, StoryObj } from '@storybook/react';
+import { HyperGlobe } from '../hyperglobe';
+import { StorybookConstant } from '../../constants';
 
+/**
+ * Graticule은 지구본 위에 경위선 격자를 표시하는 컴포넌트입니다.
+ *
+ * - 경선과 위선 간격 조절 가능
+ * - 격자선 색상과 두께 커스터마이징
+ * - HyperGlobe의 graticule prop으로 설정
+ */
 const meta = {
   title: 'Components/Graticule',
-  component: Graticule,
-  tags: ['autodocs'],
-  decorators: [
-    (Story) => <HyperGlobe {...StorybookConstant.props.HyperGlobe}>{Story()}</HyperGlobe>,
-  ],
-} satisfies Meta<typeof Graticule>;
+  component: HyperGlobe,
+  parameters: {
+    layout: 'fullscreen',
+  },
+} satisfies Meta<typeof HyperGlobe>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const GraticuleStory: Story = {
-  name: 'Graticule',
+/**
+ * 기본 경위선 격자
+ */
+export const Basic: Story = {
   args: {
-    latitudeStep: 10,
-    longitudeStep: 10,
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: true,
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};
+
+/**
+ * 격자 간격 조절
+ */
+export const CustomStep: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 30,
+      latitudeStep: 30,
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};
+
+/**
+ * 격자선 스타일 커스터마이징
+ */
+export const StyledGraticule: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 15,
+      latitudeStep: 15,
+      lineColor: '#4470cc',
+      lineWidth: 2,
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};
+
+/**
+ * 페이드 인 트랜지션 효과
+ */
+export const WithTransition: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 10,
+      latitudeStep: 10,
+      lineColor: '#808080',
+      lineWidth: 1.2,
+      transition: {
+        enabled: true,
+        duration: 1000,
+        easing: 'ease-out',
+      },
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
+  },
+};
+
+/**
+ * 빠른 페이드 인
+ */
+export const FastTransition: Story = {
+  args: {
+    ...StorybookConstant.props.HyperGlobe,
+    graticule: {
+      longitudeStep: 15,
+      latitudeStep: 15,
+      lineColor: '#4470cc',
+      lineWidth: 2,
+      transition: {
+        enabled: true,
+        duration: 500,
+        easing: 'ease-in-out',
+      },
+    },
+  },
+  parameters: {
+    controls: {
+      include: ['graticule'],
+    },
   },
 };

@@ -26,10 +26,12 @@ export interface MainStore {
   // R-Tree
   tree: RBush<RegionModel>;
   loading: boolean;
-  setLoading: (loading: boolean) => void;
+  regionLoading: boolean;
   /**
    * Mutations
    */
+  setLoading: (loading: boolean) => void;
+  setRegionLoading: (loading: boolean) => void;
   init: () => void;
   // 툴팁 ref 등록
   registerTooltipRef: (ref: RefObject<HTMLDivElement | null>) => void;
@@ -54,7 +56,9 @@ export const createMainStore = (): StoreApi<MainStore> => {
     getTooltipPosition: null,
     tree: new RBush<RegionModel>(),
     loading: true,
+    regionLoading: false,
     setLoading: (loading: boolean) => set({ loading }),
+    setRegionLoading: (loading: boolean) => set({ regionLoading: loading }),
     init: () => {
       const { tree, clearRTree } = get();
 

@@ -1,10 +1,14 @@
 import { Coordinate } from '@hyperglobe/interfaces';
+import { FeatureTransitionConfig } from 'src/types';
 import { SvgStyle } from 'src/types/svg';
 
 /**
  * 마커 데이터
  */
 export interface MarkerData {
+  /** 마커 아이디 */
+  id: string;
+
   /** 마커 위치 (경도, 위도) */
   coordinate: Coordinate;
 
@@ -33,4 +37,18 @@ export interface MarkerData {
 
   /** 사용자 정의 데이터 */
   data?: any;
+
+  /** 마커 라벨 표시 여부 */
+  showLabels?: boolean;
+
+  /** 마커 클릭 이벤트 핸들러 */
+  onMarkerClick?: (marker: MarkerData) => void;
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
+   * - 기본값: { enabled: true, duration: 500, easing: 'ease-out' }
+   */
+  transition?: FeatureTransitionConfig;
 }

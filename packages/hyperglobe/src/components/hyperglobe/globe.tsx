@@ -1,6 +1,7 @@
 import { findRegionByVector } from '@hyperglobe/tools';
 import { UiConstant } from 'src/constants';
 import { useThrottle } from 'src/hooks/use-throttle';
+import { Colors } from 'src/lib';
 import { useMainStore } from 'src/store';
 import type { OnHoverChangedFn } from 'src/types/events';
 
@@ -84,7 +85,7 @@ export function Globe({
   onHoverChanged,
   position = [0, 0, 0],
   segments = [64, 32],
-  color = '#0077be',
+  color = Colors.GRAY[1],
 }: GlobeProps) {
   const rTree = useMainStore((s) => s.tree);
   const setHoveredRegion = useMainStore((s) => s.setHoveredRegion);

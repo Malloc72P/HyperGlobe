@@ -1,5 +1,5 @@
 import type { HGMFeature } from '@hyperglobe/interfaces';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Line } from '@react-three/drei';
 import { UiConstant } from '../../constants';
@@ -8,7 +8,9 @@ import type { FeatureStyle } from '../../types/feature';
 import { useMergedGeometry } from './use-merged-geometry';
 import { useBatchRegionModels } from './use-batch-region-models';
 import { HoveredRegionOverlay } from './hovered-region-overlay';
-import { ColorScaleModel } from '../../types';
+import { ColorScaleModel, FeatureTransitionConfig } from '../../types';
+import { useFeatureTransition } from '../../hooks/use-feature-transition';
+import { useMainStore } from 'src/store';
 
 export interface RegionFeatureCollectionProps {
   /**
@@ -31,17 +33,16 @@ export interface RegionFeatureCollectionProps {
    *
    * - 컬러스케일 적용에 사용됩니다.
    * - 기본적으로 피쳐의 id와 매핑됩니다.
-   * - 국가별 세계지도의 경우, 기본적으로 iso-a3 코드가 id로 사용됩니다.
    * - 만약 피쳐의 특정 속성(properties)의 값을 키로 사용하고 싶다면, `idField` prop을 사용하세요.
    *
    * @example
    * ```tsx
-   * // ISO-A3 키 사용 (기본)
+   * // Feature의 id 속성 사용(기본값)
    * data={{ KOR: 51780000, JPN: 125800000 }}
    *
-   * // ISO-A2 키 사용 (idField와 함께)
+   * // isoA2 속성을 키로 사용하는 경우(idField 지정)
    * data={{ KR: 51780000, JP: 125800000 }}
-   * idField="ISO_A2"
+   * idField="isoA2"
    * ```
    */
   data?: Record<string, number>;
@@ -81,6 +82,13 @@ export interface RegionFeatureCollectionProps {
      */
     color?: string;
   };
+
+  /**
+   * 페이드 인 트랜지션 설정
+   *
+   * - features가 로드될 때 스르륵 나타나는 효과를 적용합니다.
+   */
+  transition?: FeatureTransitionConfig;
 }
 
 /**
@@ -124,6 +132,7 @@ export function RegionFeatureCollection({
   idField,
   valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
+  transition,
 }: RegionFeatureCollectionProps) {
   /** 스타일 병합 (기본값 + 사용자 지정) */
   const mergedStyle = useMemo(
@@ -161,6 +170,14 @@ export function RegionFeatureCollection({
   /** R-Tree에 배치 등록 (호버 감지용) */
   useBatchRegionModels({ features, data, idField });
 
+  /** 페이드 인 트랜지션 */
+  const { opacity: transitionOpacity } = useFeatureTransition({
+    deps: [features],
+    transition,
+    targetOpacity: mergedStyle.fillOpacity,
+    waitForLoading: false,
+  });
+
   if (!mergedGeometry) return null;
 
   return (
@@ -171,7 +188,7 @@ export function RegionFeatureCollection({
           transparent
           side={THREE.DoubleSide}
           color={mergedGeometry.useVertexColors ? 'white' : mergedStyle.fillColor}
-          opacity={mergedStyle.fillOpacity}
+          opacity={transitionOpacity}
           vertexColors={mergedGeometry.useVertexColors}
         />
       </mesh>
@@ -183,7 +200,7 @@ export function RegionFeatureCollection({
             transparent
             side={THREE.DoubleSide}
             color={extrusion?.color ?? Colors.GRAY[8]}
-            opacity={1}
+            opacity={transitionOpacity / mergedStyle.fillOpacity}
           />
         </mesh>
       )}
@@ -194,6 +211,8 @@ export function RegionFeatureCollection({
         segments
         color={mergedStyle.color}
         lineWidth={mergedStyle.lineWidth}
+        opacity={transitionOpacity}
+        transparent
       />
 
       {/* 호버 오버레이 */}

@@ -1,0 +1,27 @@
+.button {
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &[data-variant='primary'] {
+    background: #029cfd;
+    color: white;
+  }
+
+  &[data-variant='secondary'] {
+    background: #eee;
+    color: black;
+  }
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+
+  &:active {
+    filter: brightness(0.9);
+  }
+}

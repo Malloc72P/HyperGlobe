@@ -1,4 +1,4 @@
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 import { Html } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useMemo, useState } from 'react';
@@ -7,16 +7,20 @@ import * as THREE from 'three';
 import { MarkerData } from './marker-interface';
 import { useMarkerShape } from './use-marker-shape';
 import { useSvgStyle } from 'src/hooks/use-svg-style';
+import { useFeatureTransition } from 'src/hooks/use-feature-transition';
+import { useMainStore } from 'src/store';
 
-export interface MarkerFeatureProps extends MarkerData {
-  defaultScale?: number;
-  showLabels?: boolean;
-  onMarkerClick?: (marker: MarkerData) => void;
-  onMarkerHover?: (marker: MarkerData | null) => void;
-}
+export interface MarkerFeatureProps extends MarkerData {}
 
 /**
- * 마커 컴포넌트
+ * 지구본 위에 특정 지점을 아이콘과 라벨로 표시하는 컴포넌트입니다.
+ *
+ * - HTML 기반 렌더링 (drei/Html 사용)
+ * - SVG 아이콘 지원 (기본 아이콘 및 커스텀 경로)
+ * - 지구 반대편 자동 숨김 처리
+ * - 클릭 및 호버 이벤트 지원
+ *
+ * 주로 `HyperGlobe` 컴포넌트의 `markers` prop을 통해 데이터 객체 형태로 전달하여 사용합니다.
  */
 export function MarkerFeature({
   coordinate,
@@ -25,17 +29,22 @@ export function MarkerFeature({
   label,
   style,
   scale: _scale,
-  defaultScale = 1,
   showLabels = true,
   onMarkerClick,
+  transition,
 }: MarkerFeatureProps) {
   const { camera } = useThree();
   const [isVisible, setIsVisible] = useState(true);
   const [iconShape] = useMarkerShape({ icon, iconPath });
   const [appliedStyle] = useSvgStyle({ style });
 
+  const { isTransitioning, opacity } = useFeatureTransition({
+    transition,
+    deps: [coordinate, icon, label, appliedStyle],
+  });
+
   const position = useMemo(() => {
-    const coords = OrthographicProj.project(coordinate, 1);
+    const coords = CoordinateConverter.convert(coordinate, 1);
     return new THREE.Vector3(coords[0], coords[1], coords[2]);
   }, [coordinate]);
 
@@ -61,7 +70,7 @@ export function MarkerFeature({
     setIsVisible(dotProduct > 0.1);
   });
 
-  const scale = appliedStyle.scale || defaultScale;
+  const scale = appliedStyle.scale || 1;
   const iconSize = 24 * scale;
 
   // 마커가 지구 뒤편에 있으면 렌더링하지 않음
@@ -82,6 +91,7 @@ export function MarkerFeature({
             textAlign: 'center',
             cursor: onMarkerClick ? 'pointer' : 'default',
             userSelect: 'none',
+            opacity,
           }}
         >
           {/* SVG 아이콘 */}

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Graticule, HyperGlobe, RegionFeatureCollection, useColorScale, useHGM } from '../../src';
+import { useEffect, useMemo, useState } from 'react';
+import { HyperGlobe, useColorScale } from '../../src';
 
 interface ColorScaleBarDemoProps {
   /**
@@ -22,9 +22,6 @@ export function ColorScaleBarDemo({
   formatType = 'fixed',
   theme = 'blue',
 }: ColorScaleBarDemoProps) {
-  const [loading, setLoading] = useState(false);
-  const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
-  const [hgm] = useHGM({ rawHgmBlob });
   const [gdpData, setGdpData] = useState<any[]>([]);
 
   // 테마별 색상 설정 (더 옅은 톤)
@@ -55,7 +52,7 @@ export function ColorScaleBarDemo({
     ],
   };
 
-  const { colorscale, resolveFeatureData } = useColorScale({
+  const { colorscale } = useColorScale({
     steps: colorSteps[theme],
     nullColor: '#e5e7eb',
     data: gdpData,
@@ -69,56 +66,64 @@ export function ColorScaleBarDemo({
     fixed: (value: number) => `${value.toFixed(2)}%`,
   };
 
+  // dataMap 형식으로 변환 (Record<string, number>)
+  const dataMap = useMemo(() => {
+    if (!gdpData.length) return undefined;
+
+    const gdpGrowth: Record<string, { value: number }> = {};
+    for (const item of gdpData) {
+      gdpGrowth[item.id] = { value: item.value };
+    }
+
+    return { gdpGrowth };
+  }, [gdpData]);
+
   useEffect(() => {
-    setLoading(true);
-
-    (async function () {
-      const [hgmBlob, gdpGrowth] = await Promise.all([
-        fetch('/maps/nations-mid.hgm').then((res) => res.blob()),
-        fetch('/data/gdp-growth.json').then((res) => res.json()),
-      ]);
-
-      setRawHgmBlob(hgmBlob);
-      setGdpData(gdpGrowth);
-
-      setTimeout(() => setLoading(false), 300);
-    })();
+    fetch('/data/gdp-growth.json')
+      .then((res) => res.json())
+      .then(setGdpData);
   }, []);
 
   return (
     <div>
       <HyperGlobe
+        hgmUrl="/maps/nations-mid.hgm"
         id="colorscale-demo-globe"
         size="100%"
         maxSize={900}
         style={{ margin: '0 auto' }}
-        loading={loading}
-        globeStyle={{
-          color: '#f6f6f6',
-          metalness: 0,
-          roughness: 0,
-        }}
-        tooltipOptions={{
-          distance: 12,
-          text: (region: any) => {
-            const value = region.data?.value;
-            return `${region.name}(${!value ? 'No Data' : value?.toFixed(2) + '%'})`;
+        globe={{
+          style: {
+            color: '#f6f6f6',
+            metalness: 0,
+            roughness: 0,
           },
         }}
-      >
-        {hgm && (
-          <RegionFeatureCollection
-            features={hgm.features}
-            colorscale={colorscale}
-            data={gdpData.reduce((acc, item) => {
-              acc[item.id] = { value: item.value };
-              return acc;
-            }, {})}
-            idField="isoA2"
-          />
-        )}
-        <Graticule />
-      </HyperGlobe>
+        dataMap={dataMap}
+        region={{
+          dataKey: 'gdpGrowth',
+          idField: 'isoA2',
+        }}
+        colorscale={{
+          model: colorscale,
+          dataKey: 'gdpGrowth',
+        }}
+        colorscaleBar={{
+          position: 'bottom-right',
+          formatLabel: formatters[formatType],
+        }}
+        tooltip={{
+          distance: 12,
+          text: (region) => {
+            const value = region.data?.value;
+            return `${region.name}(${value == null ? 'No Data' : value?.toFixed(2) + '%'})`;
+          },
+        }}
+        graticule
+        onReady={() => {
+          console.log('ColorScaleBar 데모 렌더링 완료');
+        }}
+      />
     </div>
   );
 }

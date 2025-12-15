@@ -2,128 +2,47 @@
 
 ## 개요
 
-HyperGlobe는 지리 데이터를 3D로 시각화하기 위해 다양한 수학 및 지오메트리 라이브러리를 사용합니다. 이 문서는 프로젝트에서 사용하는 주요 라이브러리와 함수들을 정리합니다.
+HyperGlobe에서 지리 데이터 3D 시각화에 사용하는 수학/지오메트리 라이브러리 참고 문서입니다.
+
+**파일**: `packages/hyperglobe-tools/src/`
 
 ## @hyperglobe/tools 패키지
 
-HyperGlobe 프로젝트 내부에서 개발한 수학 및 지오메트리 유틸리티 패키지입니다.
+HyperGlobe 프로젝트의 수학/지오메트리 유틸리티 패키지입니다.
 
-### 수학 유틸리티 (math/)
+> 상세 API: `packages/hyperglobe-tools/src/` 참고
 
-#### toRadian(degree)
-도(degree)를 라디안(radian)으로 변환합니다.
+### 주요 유틸리티
 
-```typescript
-import { toRadian } from '@hyperglobe/tools';
+**수학 (math/)**:
+- `toRadian`: 도 → 라디안 변환
+- `magnitude2D/3D`: 벡터 크기 계산
+- `distance2D`: 2D 거리 계산
+- `roundCoordinates`: 좌표 반올림
+- `calcProgress`: 애니메이션 진행률 계산
 
-toRadian(90);   // π/2 ≈ 1.5708
-toRadian(180);  // π ≈ 3.1416
-toRadian(360);  // 2π ≈ 6.2832
-```
+**좌표 변환 (coordinate/)**:
+- `CoordinateConverter.convert`: 경위도 → 3D 직교좌표
+- `CoordinateConverter.converts`: 다중 좌표 변환
 
-**사용처:**
-- 삼각함수 계산
-- 회전 변환
-- 구면 좌표 계산
+**지오메트리 (geometry/)**:
 
-#### magnitude2D(vector)
-2차원 벡터의 크기(길이)를 계산합니다.
-
-```typescript
-import { magnitude2D } from '@hyperglobe/tools';
-
-magnitude2D([3, 4]);  // 5
-magnitude2D([1, 1]);  // √2 ≈ 1.414
-```
-
-**공식:** `√(x² + y²)`
-
-**사용처:**
-- 2D 벡터 정규화
-- 평면 거리 계산
-
-#### magnitude3D(vector)
-3차원 벡터의 크기(길이)를 계산합니다.
-
-```typescript
-import { magnitude3D } from '@hyperglobe/tools';
-
-magnitude3D([3, 4, 0]);     // 5
-magnitude3D([1, 1, 1]);     // √3 ≈ 1.732
-```
-
-**공식:** `√(x² + y² + z²)`
-
-**사용처:**
-- 벡터 정규화
-- 거리 계산
-- 크기 비교
-
-#### distance2D(p1, p2)
-2차원 평면에서 두 점 사이의 거리를 계산합니다.
-
-```typescript
-import { distance2D } from '@hyperglobe/tools';
-
-distance2D([0, 0], [3, 4]);  // 5
-```
-
-**공식:** `√((x₂-x₁)² + (y₂-y₁)²)`
-
-**사용처:**
-- Delaunay 삼각분할
-- 경계 상자 계산
-
-#### roundCoordinate(coord)
-좌표를 반올림하여 부동소수점 오차를 제거합니다.
-
-```typescript
-import { roundCoordinate } from '@hyperglobe/tools';
-
-roundCoordinate([127.123456789, 37.987654321]);
-// [127.1235, 37.9877] (소수점 4자리)
-```
-
-**사용처:**
-- 좌표 비교
-- 중복 제거
-- 정밀도 제한
-
-#### calcProgress(elapsedTime, startTime, animationDuration)
-애니메이션 진행률(0~1)을 계산합니다.
-
-```typescript
-import { calcProgress } from '@hyperglobe/tools';
-
-// 1초 경과, 시작 시간 0, 총 2000ms 애니메이션
-calcProgress(1, 0, 2000);  // 0.5
-
-// 3초 경과, 시작 시간 0, 총 2000ms 애니메이션 (최대 1)
-calcProgress(3, 0, 2000);  // 1
-```
-
-**사용처:**
-- 카메라 전환 애니메이션
-- 부드러운 상태 전환
-
-### 투영 변환 (projections/)
-
-#### OrthographicProj.project(coordinate, radius)
+#### CoordinateConverter.convert(coordinate, radius)
 경위도 좌표를 3D 직교좌표계로 변환합니다.
 
 ```typescript
-import { OrthographicProj } from '@hyperglobe/tools';
+import { CoordinateConverter } from '@hyperglobe/tools';
 
 // 경도 0도, 위도 0도 (아프리카 기니만)
-OrthographicProj.project([0, 0]);
+CoordinateConverter.convert([0, 0]);
 // → [1, 0, 0]
 
 // 경도 90도, 위도 0도
-OrthographicProj.project([90, 0]);
+CoordinateConverter.convert([90, 0]);
 // → [0, 0, 1]
 
 // 북극점
-OrthographicProj.project([0, 90]);
+CoordinateConverter.convert([0, 90]);
 // → [0, 1, 0]
 ```
 
@@ -142,11 +61,11 @@ z = cos(φ) * sin(λ) * radius
 - GeoJSON → 3D 메시 변환
 - 지구본 표면 좌표 계산
 
-#### OrthographicProj.projects(coordinates, radius)
+#### CoordinateConverter.converts(coordinates, radius)
 여러 경위도 좌표를 한 번에 3D 직교좌표계로 변환합니다.
 
 ```typescript
-OrthographicProj.projects([[0, 0], [90, 0], [0, 90]]);
+CoordinateConverter.converts([[0, 0], [90, 0], [0, 90]]);
 // → [[1, 0, 0], [0, 0, 1], [0, 1, 0]]
 ```
 
@@ -154,11 +73,11 @@ OrthographicProj.projects([[0, 0], [90, 0], [0, 90]]);
 - 다중 좌표 일괄 변환
 - 폴리곤 경계선 변환
 
-#### OrthographicProj.unproject(vector, radius)
+#### CoordinateConverter.invert(vector, radius)
 3D 직교좌표를 경위도로 역변환합니다.
 
 ```typescript
-OrthographicProj.unproject([1, 0, 0]);
+CoordinateConverter.invert([1, 0, 0]);
 // → [0, 0] (경도 0도, 위도 0도)
 ```
 
@@ -166,39 +85,9 @@ OrthographicProj.unproject([1, 0, 0]);
 - 마우스 피킹 결과 변환
 - 3D 위치 → 지리 좌표
 
-#### OrthographicProj.interpolate(start, end, segments, radius)
-두 3D 벡터 사이를 구면을 따라 보간합니다. 선형 보간 후 구 표면에 투영하는 방식입니다.
-
-```typescript
-const start = [1, 0, 0];  // 경도 0도
-const end = [0, 1, 0];    // 북극
-const points = OrthographicProj.interpolate(start, end, 5);
-// 두 점 사이를 5개의 세그먼트로 나눈 점들 반환
-```
-
-**사용처:**
-- 구면 경로 생성
-- 부드러운 곡선 보간
-
-#### OrthographicProj.interpolates(coordinatePairs, segments, radius)
-여러 좌표 쌍에 대해 구면 보간을 수행합니다.
-
-```typescript
-const pairs = [
-  [[1, 0, 0], [0, 1, 0]],
-  [[0, 0, 1], [-1, 0, 0]]
-];
-OrthographicProj.interpolates(pairs, 10);
-// 각 쌍에 대해 보간된 점들의 배열 반환
-```
-
-**사용처:**
-- 다중 경로 일괄 처리
-- 폴리곤 외곽선 보간
-
 ### 폴리곤 처리 (polygon/)
 
-#### delaunayTriangulate(polygon)
+#### delaunayTriangulate(options)
 폴리곤을 Delaunay 삼각분할합니다. 내부적으로 `delaunator` 라이브러리를 사용합니다.
 
 ```typescript
@@ -211,7 +100,10 @@ const polygon = [
   [127.0, 38.5]
 ];
 
-const result = delaunayTriangulate(polygon);
+const result = delaunayTriangulate({
+  outerRing: polygon,
+  holes: [],  // 홀(구멍) 배열 (선택사항)
+});
 // {
 //   vertices: Float32Array,  // 3D 좌표 [x,y,z,x,y,z,...]
 //   indices: Uint32Array     // 삼각형 인덱스
@@ -574,7 +466,7 @@ const sideGeometry = createSideGeometry({
 
 ```
 GeoJSON (경위도)
-    ↓ OrthographicProj.project()
+    ↓ CoordinateConverter.convert()
 3D 직교좌표
     ↓ BufferGeometry
 GPU 메모리
