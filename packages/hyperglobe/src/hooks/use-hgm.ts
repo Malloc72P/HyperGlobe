@@ -1,16 +1,21 @@
 import type { HGM, RawHGMFile } from '@hyperglobe/interfaces';
 import { useState, useEffect } from 'react';
 import { base64ToFloat32Array, base64ToUInt32Array } from 'src/lib';
+import { useMainStore } from 'src/store';
 
 export interface UseHgmOptions {
   rawHgmBlob?: Blob | null;
 }
 
 export function useHGM({ rawHgmBlob }: UseHgmOptions) {
+  const setLoading = useMainStore((s) => s.setLoading);
+
   const [hgm, setHGM] = useState<HGM | null>(null);
 
   useEffect(() => {
     if (!rawHgmBlob) return;
+
+    setLoading(true);
 
     const hgmData = rawHgmBlob.stream().pipeThrough(new DecompressionStream('gzip'));
 

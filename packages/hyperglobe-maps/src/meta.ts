@@ -44,7 +44,7 @@ export const BuildMapMeta: BuildMapMetaType = {
       },
       {
         resolution: 'extra-high',
-        simplifyPercent: 90,
+        simplifyPercent: 70,
         precision: 0.0001,
       },
     ],
