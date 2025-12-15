@@ -2,206 +2,55 @@
 
 ## 개요
 
-RouteFeature는 3D 지구본 위에 시작점부터 끝점까지 대권항로(Great Circle Route)를 따라 경로를 그리는 컴포넌트입니다. `@react-three/drei`의 `Line` 컴포넌트를 사용하여 간단하고 효율적으로 경로를 렌더링하며, 포물선 형태의 높이 프로필을 적용합니다.
+3D 지구본 위에 대권항로(Great Circle Route)를 따라 경로를 그리는 컴포넌트입니다. 포물선 형태의 높이 프로필을 적용합니다.
 
-## 사용법
+**파일**: `packages/hyperglobe/src/components/route-feature/`
 
-`HyperGlobe` 컴포넌트의 `routes` prop을 사용합니다:
+**사용 예시**: Storybook의 `RouteFeature` 스토리 참조
 
-```tsx
-import { HyperGlobe } from 'hyperglobe';
+### 주요 기능
 
-function FlightRoutes() {
-  const routes = [
-    {
-      id: 'seoul-london',
-      from: {
-        coordinate: [126.978, 37.5665],
-        label: '서울',
-        style: { fill: '#3B82F6' },
-      },
-      to: {
-        coordinate: [-0.1278, 51.5074],
-        label: '런던',
-        style: { fill: '#3B82F6' },
-      },
-      maxHeight: 0.3,
-      lineWidth: 3,
-      animationDuration: 2000,
-    },
-    {
-      id: 'seoul-newyork',
-      from: { coordinate: [126.978, 37.5665] },
-      to: { coordinate: [-74.006, 40.7128], label: '뉴욕' },
-      maxHeight: 0.4,
-      lineWidth: 3,
-      animationDelay: 500,
-    },
-  ];
+- SLERP 기반 대권항로 생성
+- 포물선 높이 프로필
+- 애니메이션 지원
+- 시작점/끝점 마커 표시
 
-  return (
-    <HyperGlobe
-      hgmUrl="/maps/nations-mid.hgm"
-      routes={routes}
-    />
-  );
-}
-```
+## Props
 
-## 인터페이스
+**타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts` (`RouteConfig`)
 
-```typescript
-interface RoutePoint {
-  coordinate: Coordinate;  // 좌표 [경도, 위도]
-  label?: string;          // 마커 라벨 (설정 시 MarkerFeature 렌더링)
-  style?: SvgStyle;        // 마커 스타일
-}
+> **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
-interface RouteFeatureProps {
-  from: RoutePoint;              // 시작점 정보
-  to: RoutePoint;                // 끝점 정보
-  maxHeight: number;             // 최대 높이 (중간점)
-  lineWidth: number;             // 선 너비
-  segments?: number;             // 경로 보간 개수 (기본값: 500)
-  style?: FeatureStyle;          // 색상, 투명도 등 스타일 옵션
-  animated?: boolean;            // 애니메이션 활성화 여부 (기본값: true)
-  animationDuration?: number;    // 애니메이션 지속 시간 (밀리초, 기본값: 1000)
-  animationDelay?: number;       // 애니메이션 시작 딜레이 (밀리초, 기본값: 0)
-  objectScale?: number;          // 도형 크기 스케일 (기본값: 1)
-}
-```
-
-> **참고**: `minHeight`는 내부적으로 `UiConstant.feature.strokeRadius - 1`로 고정되어 있습니다.
-
-## 주요 기능
+## 구현 원리
 
 ### 1. 대권항로 생성 (SLERP)
 
-시작점(from)에서 끝점(to)까지 구면 상의 최단 경로인 대권항로를 따라 경로 점들 `P = [P1, P2, ..., Pn]`을 생성합니다.
+구면 선형 보간(Spherical Linear Interpolation)으로 최단 경로 생성:
+- `segments` 파라미터로 점의 개수 제어 (기본: 500)
+- `@hyperglobe/tools`의 `createGreatCirclePath` 사용
 
-- 점의 개수는 `segments` 파라미터로 제어 (기본값: 500)
-- **구면 선형 보간**(Spherical Linear Interpolation, SLERP) 사용
+### 2. 높이 프로필 (포물선)
 
-#### SLERP 공식
+Sin 함수로 부드러운 포물선 형태 생성:
+- 시작/끝: `minHeight`
+- 중간: `maxHeight`
+- 공식: `height = minHeight + (maxHeight - minHeight) * sin(πt)`
 
-```typescript
-slerp(v1, v2, t) = (sin((1-t)*θ) / sin(θ)) * v1 + (sin(t*θ) / sin(θ)) * v2
-```
+### 3. 애니메이션
 
-여기서:
-- `θ`: 두 벡터 사이의 각도
-- `t`: 보간 파라미터 (0 ~ 1)
-
-### 2. 높이 프로필 (포물선 프로필)
-
-경로의 각 점은 sin 함수를 사용하여 부드러운 포물선 형태의 높이 프로필을 형성합니다:
-
-- **시작점 P1**: `minHeight`
-- **중간점 P[n/2]**: `maxHeight` (최고점)
-- **끝점 Pn**: `minHeight`
-
-```typescript
-// sin(πt)는 0에서 시작해서 0.5에서 최대값 1, 1에서 다시 0
-const heightFactor = Math.sin(t * Math.PI);
-const height = minHeight + (maxHeight - minHeight) * heightFactor;
-```
-
-### 3. Line 렌더링 및 애니메이션
-
-`@react-three/drei`의 `Line` 컴포넌트를 사용하여 경로를 렌더링합니다.
-
-#### 애니메이션 동작 원리
-
-- `Line` 컴포넌트의 `geometry.instanceCount`를 조절하여 그릴 세그먼트 수를 제어
-- 애니메이션 시작 시 `instanceCount`를 0으로 설정하고, 진행률에 따라 점차 증가
-- 경로의 선두에는 화살촉(ConeGeometry)이 함께 이동하며, 회전 행렬을 사용해 진행 방향을 바라봄
-- `objectScale` prop으로 화살촉 크기 조절 가능
+`Line` 컴포넌트의 `instanceCount` 조절로 구현:
+- 진행률에 따라 `instanceCount` 증가
+- 화살촉(ConeGeometry)이 선두에서 이동
+- HGM 로딩 완료 후 시작
 
 ### 4. MarkerFeature 통합
 
-`from` 또는 `to`에 `label`이 설정된 경우, 해당 지점에 `MarkerFeature`가 자동으로 렌더링됩니다.
+`from`/`to`에 `label` 설정 시 자동으로 마커 렌더링
 
-### 5. 로딩 상태 연동
+## 관련 문서
 
-RouteFeature의 애니메이션은 **HyperGlobe의 HGM 로딩이 완료된 후에** 시작됩니다. 이를 통해 지도와 라우트가 동시에 나타나는 자연스러운 사용자 경험을 제공합니다.
-
-### 6. 애니메이션 재시작
-
-다음 props가 변경되면 애니메이션이 처음부터 다시 시작됩니다:
-- `from`, `to` (좌표 변경)
-- `minHeight`, `maxHeight` (높이 프로필 변경)
-- `segments` (세그먼트 개수 변경)
-- `objectScale` (화살촉 크기 변경)
-
-## 파라미터 가이드
-
-### segments (세그먼트 개수)
-
-경로의 부드러움을 결정합니다:
-
-- **500** (기본값): 부드러운 애니메이션을 위한 기본값
-- **100-200**: 짧은 거리나 성능이 중요한 경우
-- **1000+**: 매우 긴 경로나 극도로 정밀한 시각화
-
-### maxHeight
-
-경로의 최고점 높이를 결정합니다:
-
-- **0.05 ~ 0.1**: 낮은 호 (단거리)
-- **0.2 ~ 0.3**: 표준 높이 (중거리)
-- **0.4 ~ 0.5**: 높은 호 (장거리)
-
-**지구 반지름 대비 상대값**:
-- 0.01 = 지구 반지름의 1%
-- 0.5 = 지구 반지름의 50%
-
-### lineWidth (선 굵기)
-
-화면에 표시되는 선의 픽셀 너비:
-
-- **2-3**: 얇은 선 (세밀한 경로망)
-- **4-5**: 표준 굵기 (단일 경로 강조)
-- **6+**: 두꺼운 선 (주요 경로)
-
-### 애니메이션 관련 파라미터
-
-#### animationDuration (밀리초)
-
-경로를 완전히 그리는데 걸리는 시간:
-
-- **500**: 빠른 애니메이션
-- **1000** (기본값): 표준 속도
-- **2000+**: 느린 애니메이션
-
-#### animationDelay (밀리초)
-
-애니메이션 시작 전 대기 시간. 여러 경로를 순차적으로 그릴 때 유용:
-
-```tsx
-// 순차적 경로 그리기
-routes={routes.map((route, index) => ({
-  ...route,
-  animationDuration: 1000,
-  animationDelay: (index + 1) * 1000 + 200,
-}))}
-```
-
-## 구현 특징
-
-### 장점
-
-✅ **간결한 코드**: 핵심 로직이 훅으로 분리되어 가독성 높음  
-✅ **우수한 성능**: Line 컴포넌트 사용으로 가볍고 빠름  
-✅ **유지보수 용이**: 복잡한 메시 생성 로직 없음  
-✅ **안정적**: drei의 검증된 컴포넌트 활용  
-✅ **애니메이션 지원**: 경로를 점진적으로 그리는 애니메이션 내장  
-✅ **마커 통합**: 시작/끝점에 자동 마커 표시  
-✅ **화살촉 지원**: 애니메이션 시 경로 선두에 화살촉 표시 (진행 방향으로 자동 회전)
-
-### 제한사항
-
-- 3D 입체감 없음 (선만 표시)
-- 너비 프로필 미지원 (일정한 굵기)
+- [HyperGlobe 컴포넌트](./hyperglobe-component.md)
+- [MarkerFeature](./marker-feature.md)
 
 ## 기술적 세부사항
 

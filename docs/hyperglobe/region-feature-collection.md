@@ -8,60 +8,22 @@
 
 **사용 예시**: Storybook의 `RegionFeatureCollection` 스토리 참조
 
-### 성능 비교
-
-| 항목 | 개별 메시 방식 | RegionFeatureCollection |
-|------|--------------|------------------------|
-| 드로우콜 (200개 국가) | ~600 | ~6 |
-| 국가별 색상 | ❌ 개별 메시 필요 | ✅ Vertex Color |
-| ColorScale 지원 | ✅ | ✅ |
-| 호버 지원 | ✅ | ✅ (오버레이 방식) |
-
-## 사용법
-
-`HyperGlobe` 컴포넌트의 `region` prop 사용:
-
-```tsx
-<HyperGlobe
-  hgmUrl="/maps/nations-mid.hgm"
-  dataMap={{ gdp: { KOR: 1800000, JPN: 4900000 } }}
-  region={{
-    dataKey: 'gdp',
-    idField: 'ISO_A3',
-    style: { fillColor: '#3b82f6' },
-    hoverStyle: { fillColor: '#60a5fa' },
-  }}
-  colorscale={{ model: colorscale }}
-/>
-```
+**성능**: 개별 메시 방식 대비 드로우콜 ~100배 감소 (200개 국가 기준: ~600 → ~6)
 
 ## 주요 기능
 
-### 지오메트리 병합
-- 모든 지역의 상단면/측면/외곽선을 각각 하나의 `BufferGeometry`로 병합
-- 드로우콜 최소화: 국가별 개별 메시 → 3개의 병합된 메시
+- **지오메트리 병합**: 모든 지역을 3개 메시로 병합 (상단/측면/외곽선)
+- **Vertex Color**: 국가별 색상 표현, ColorScale 연동
+- **호버 오버레이**: 호버 시 별도 지오메트리 동적 생성
 
-### Vertex Color
-- 국가별 색상을 위해 **Vertex Color** 사용
-- 각 국가의 모든 정점에 동일 색상 할당 → 단색 면
-- ColorScale 연동 가능
-
-### 호버 오버레이
-- 호버된 국가만 별도 지오메트리로 동적 생성
+### 성능 비교
 - `polygonOffset`으로 Z-fighting 방지
 
 ## Props
 
 **타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts` (`RegionConfig`)
 
-| Prop | 타입 | 설명 |
-|------|------|------|
-| `dataKey` | `string` | dataMap에서 사용할 데이터 키 |
-| `idField` | `string` | 피처 ID로 사용할 속성명 (미설정 시 `feature.id`) |
-| `style` | `FeatureStyle` | 기본 스타일 |
-| `hoverStyle` | `FeatureStyle` | 호버 스타일 |
-| `extrusion` | `{ color?: string }` | 측면 옵션 |
-| `extrusion` | `{ color?: string }` | `{ color: Colors.GRAY[8] }` | 측면 옵션 |
+> **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
 ## 구현 원리
 

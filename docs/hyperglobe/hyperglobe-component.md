@@ -22,22 +22,7 @@ WebGL 기반 3D 지구본을 렌더링하는 루트 컴포넌트입니다. Three
 
 **타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts`
 
-### 주요 Props
-
-| 카테고리 | Props | 설명 |
-|---------|-------|------|
-| **필수** | `hgmUrl` | HGM 파일 URL |
-| **컨테이너** | `id`, `size`, `maxSize`, `style` | Canvas 설정 |
-| **Globe** | `globe` | 구체 스타일, 와이어프레임 |
-| **Camera** | `camera` | 초기 위치, 거리 제한 |
-| **Controls** | `controls` | 줌, 회전, 팬 활성화 |
-| **피처** | `region`, `routes`, `markers`, `graticule` | 렌더링할 피처들 |
-| **데이터** | `dataMap`, `colorscale`, `colorscaleBar` | 데이터 시각화 |
-| **UI** | `tooltip`, `showFpsCounter`, `showLoadingUI` | UI 옵션 |
-| **Lazy Load** | `lazyLoad`, `lazyLoadThreshold` | 지연 로딩 |
-| **이벤트** | `onReady`, `onHoverChanged` | 콜백 함수 |
-
-> **상세 Props**: 각 피처별 상세 설정은 타입 정의 파일 또는 Storybook 참조
+> **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
 ### 피처별 상세 문서
 

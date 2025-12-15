@@ -53,17 +53,7 @@ const { colorscale } = useColorScale({
 - `from` 이상, `to` 미만: `[0, 100)`, `[100, 500)`, `[500, ∞)`
 - 생략된 값은 무한대로 처리
 
-### 주요 Props
-
-| Prop | 타입 | 설명 |
-|------|------|------|
-| `steps` | `ColorScaleStepOptions[]` | 컬러스케일 구간 배열 (필수) |
-| `nullColor` | `string` | null 값 색상 |
-| `data` | `any[]` | 최솟값/최댓값 계산용 데이터 |
-| `itemResolver` | `function` | 피처-데이터 매칭 함수 |
-| `valueResolver` | `function` | 값 추출 함수 |
-
-> **상세 타입**: 타입 정의 파일 또는 Storybook 참조
+> **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
 ## 사용 예시
 
@@ -146,15 +136,6 @@ interface ColorscaleConfig {
 ## ColorScaleBar
 
 **타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts` (`ColorscaleBarConfig`)
-
-### 주요 Props
-
-| Prop | 타입 | 설명 |
-|------|------|------|
-| `show` | `boolean` | 표시 여부 |
-| `position` | `'top-left'` \| `'top-right'` \| ... | 위치 |
-| `title` | `string` | 제목 |
-| `formatLabel` | `(value: number) => string` | 레이블 포맷 함수 |
 
 > **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 
