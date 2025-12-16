@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "prepare:storybook": "tsx ./scripts/prepare-storybook.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
@@ -29,6 +30,9 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@babel/parser": "^7.28.5",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
     "@hyperglobe/maps": "workspace:*",

@@ -3,6 +3,8 @@ import { HyperGlobe } from '../hyperglobe';
 import { CameraTransitionDemo } from './camera-transition-demo';
 import { CameraTransitionDemoCode } from './camera-transition-demo.code';
 
+export const DUMMY = true;
+
 /**
  * CameraTransition은 지구본 카메라를 경로를 따라 자동으로 이동시키는 API입니다.
  *

@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ColorScaleBarDemo } from './colorscale-bar-demo';
 
+export const DUMMY = true;
+
 const meta = {
   title: 'Demo/ColorScaleBar',
   component: ColorScaleBarDemo,
