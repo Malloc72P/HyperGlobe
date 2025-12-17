@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Nations2Demo } from './nations2.demo';
 import { mapsInfo } from '@hyperglobe/maps';
+import { DUMMY_CODE } from './nations2.demo.dummy';
 
-export const DUMMY = true;
+const DUMMY = true;
 
 const meta = {
   title: 'Demo/Nations2',
@@ -25,6 +26,13 @@ export const Demo: Story = {
     map: {
       control: 'select',
       options: mapOptions,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: DUMMY_CODE,
+      },
     },
   },
 };

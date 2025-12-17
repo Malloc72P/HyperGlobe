@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { RoundTheWorld, RoundTheWorldProps } from './round-the-world.demo';
+import { DUMMY_CODE } from './round-the-world.demo.dummy';
 
-export const DUMMY = true;
+const DUMMY = true;
 
 const meta = {
   title: 'Demo/RoundTheWorld',
@@ -18,4 +19,11 @@ type Story = StoryObj<typeof meta>;
 
 export const RoundTheWorldStoryMeta: Story = {
   args: {},
+  parameters: {
+    docs: {
+      source: {
+        code: DUMMY_CODE,
+      },
+    },
+  },
 };

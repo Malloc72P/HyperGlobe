@@ -29,3 +29,4 @@ dist-ssr
 
 storybook-static/
 public/maps
+*.dummy.ts

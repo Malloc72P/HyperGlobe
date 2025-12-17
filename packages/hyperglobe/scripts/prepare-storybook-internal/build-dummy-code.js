@@ -13,9 +13,13 @@ export function buildDummyCode({ currentPath, storyConfig }) {
   const demoPath = demoFromImportRegex.exec(storyConfig)?.groups?.path;
   const resolvedDemoPath = path.resolve(currentPath, '../', demoPath + '.tsx');
   const dummyCodePath = path.resolve(currentPath, '../', demoPath + '.dummy.ts');
-  const demoText = fs.readFileSync(resolvedDemoPath, 'utf-8');
+  const demoText = fs
+    .readFileSync(resolvedDemoPath, 'utf-8')
+    .replaceAll('`', '\\`')
+    .replaceAll('$', '\\$')
+    .replaceAll(/(?:\.\.\/)+src|\.\/src/g, '@hyperglobe/core');
 
-  const dummyCode = `export const DUMMY_CODE = ${demoText}`;
+  const dummyCode = `export const DUMMY_CODE = \`${demoText}\`;`;
 
   fs.writeFileSync(dummyCodePath, dummyCode, 'utf-8');
 }

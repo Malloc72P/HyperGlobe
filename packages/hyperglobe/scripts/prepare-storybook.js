@@ -24,7 +24,7 @@ function prepareStorybook() {
   travel(demoPath, ({ currentPath, storyConfig }) => {
     buildDummyCode({ currentPath, storyConfig });
   });
-  //   travel(srcPath, ({ currentPath, storyConfig }) => {
-  //     // console.log(currentPath, storyConfig);
-  //   });
+  travel(srcPath, ({ currentPath, storyConfig }) => {
+    buildDummyCode({ currentPath, storyConfig });
+  });
 }
