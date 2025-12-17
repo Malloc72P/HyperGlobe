@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Nations2Demo } from './nations2';
+import { Nations2Demo } from './nations2.demo';
 import { mapsInfo } from '@hyperglobe/maps';
 
 export const DUMMY = true;

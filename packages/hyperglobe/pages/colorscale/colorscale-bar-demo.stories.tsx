@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ColorScaleBarDemo } from './colorscale-bar-demo';
+import { ColorScaleBarDemo } from './colorscale-bar.demo';
 
 export const DUMMY = true;
 

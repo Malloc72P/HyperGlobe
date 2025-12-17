@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { RoundTheWorld, RoundTheWorldProps } from './round-the-world';
+import { RoundTheWorld, RoundTheWorldProps } from './round-the-world.demo';
 
 export const DUMMY = true;
 
