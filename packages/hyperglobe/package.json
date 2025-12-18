@@ -11,6 +11,8 @@
     "./hyperglobe.css": "./dist/hyperglobe.css"
   },
   "scripts": {
+    "predev": "pnpm run prepare:storybook",
+    "prebuild": "pnpm run prepare:storybook",
     "dev": "storybook dev -p 6006",
     "build": "tsc && vite build",
     "build:docs": "storybook build",
