@@ -52,7 +52,7 @@ export function CameraTransitionDemo() {
         id="hyperglobe-canvas"
         size="100%"
         maxSize={900}
-        style={{ margin: '0 auto' }}
+        style={{ margin: '0 auto', maxWidth: 400 }}
         globe={{
           style: {
             color: Colors.GRAY[1],
