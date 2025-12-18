@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HyperGlobe } from '../hyperglobe';
-import { CameraTransitionDemo } from './camera-transition-demo';
-import { CameraTransitionDemoCode } from './camera-transition-demo.code';
+import { CameraTransitionDemo } from './camera-transition.demo';
+import { DUMMY_CODE } from './camera-transition.demo.dummy';
+
+const DUMMY = true;
 
 /**
  * CameraTransition은 지구본 카메라를 경로를 따라 자동으로 이동시키는 API입니다.
@@ -30,7 +32,7 @@ export const Basic = {
   parameters: {
     docs: {
       source: {
-        code: CameraTransitionDemoCode,
+        code: DUMMY_CODE,
       },
     },
   },

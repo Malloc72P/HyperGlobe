@@ -1,5 +1,17 @@
-export const CameraTransitionDemoCode = `
-function CameraTransitionDemo() {
+import { useRef, useState } from 'react';
+import { HyperGlobe } from '../../../src';
+import { Colors } from '../../lib';
+import type { HyperglobeRef } from '../../types/camera';
+import { StoryButton } from '../../../.storybook/ui/story-button';
+import classes from './camera-transition-demo.module.css';
+
+/**
+ * 카메라 트랜지션 데모
+ *
+ * - 지정된 경로를 따라 카메라가 자동으로 이동합니다.
+ * - 대권항로(Great Circle)를 따라 부드럽게 이동합니다.
+ */
+export function CameraTransitionDemo() {
   const hyperglobeRef = useRef<HyperglobeRef>(null);
   const [currentPoint, setCurrentPoint] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -40,7 +52,7 @@ function CameraTransitionDemo() {
         id="hyperglobe-canvas"
         size="100%"
         maxSize={900}
-        style={{ margin: '0 auto' }}
+        style={{ margin: '0 auto', maxWidth: 400 }}
         globe={{
           style: {
             color: Colors.GRAY[1],
@@ -78,4 +90,4 @@ function CameraTransitionDemo() {
       </div>
     </div>
   );
-}`;
+}

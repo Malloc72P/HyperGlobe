@@ -1,7 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ColorScaleOptions } from './use-colorscale';
-import { ColorScaleStoryComponent } from './colorscale-story';
-import { Colors } from '../lib';
+import type { StoryObj } from '@storybook/react-vite';
+import { ColorScaleStoryComponent } from './colorscale-story.demo';
 import { snippets } from './use-colorscale-snippets';
 
 const meta = {
