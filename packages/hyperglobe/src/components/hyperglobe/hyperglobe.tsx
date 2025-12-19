@@ -40,6 +40,8 @@ import { MarkerFeature } from '../marker-feature';
 import { useHGM } from '../../hooks/use-hgm';
 import { useColorScaleBarConfig, useGraticuleConfig, useTooltipConfig } from './use-feature-config';
 import { useTooltipPosition } from './use-tooltip-position';
+import { useCamera } from './use-camera';
+import { useHyperGlobeConfig } from './use-hyperglobe-config';
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
 
 /**
@@ -70,34 +72,19 @@ export const HyperGlobe = forwardRef<HyperglobeRef, HyperGlobeProps>((props, ref
 const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
   (
     {
-      // 필수
       hgmUrl,
-
-      // 데이터
       dataMap,
-
-      // 캔버스/컨테이너
       id,
       size = '100%',
       maxSize,
       style,
-
-      // 지구본
       globe,
-
-      // 카메라
       camera,
-
-      // 컨트롤
       controls,
-
-      // 피쳐
       region,
       graticule,
       routes,
       marker,
-
-      // UI
       colorscale,
       colorscaleBar,
       tooltip,
@@ -105,24 +92,41 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       showLoadingUI = true,
       lazyLoad = true,
       lazyLoadThreshold = 0.1,
-
-      // 이벤트
       onReady,
     },
     ref
   ) => {
-    // === Refs ===
+    /**
+     * Configs
+     */
+    const {
+      cameraFov,
+      minDistance,
+      maxDistance,
+      initialCameraPosition,
+      enableZoom,
+      enableRotate,
+      enablePan,
+      globeStyle,
+      wireframe,
+    } = useHyperGlobeConfig({ controls, globe, camera });
+
+    const [graticuleConfig] = useGraticuleConfig(graticule);
+    const [tooltipConfig] = useTooltipConfig(tooltip);
+    const [colorscaleBarConfig] = useColorScaleBarConfig(colorscaleBar);
+
+    /** Refs */
     const rootElementRef = useRef<HTMLDivElement>(null);
     const lightRef = useRef<DirectionalLight>(null);
     const cameraTransitionRef = useRef<CameraTransitionControllerRef>(null);
     const onReadyCalledRef = useRef(false);
 
-    // === State ===
+    /** State */
     const [fps, setFps] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
     const [cameraControllerReady, setCameraControllerReady] = useState(false);
 
-    // === Intersection Observer (Lazy Loading) ===
+    /** 뷰 포트에 컴포넌트가 있는지 여부를 판단하는 훅 */
     const [intersectionRef, isIntersecting] = useIntersectionObserver({
       threshold: lazyLoadThreshold,
       triggerOnce: true,
@@ -131,85 +135,39 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     // lazyLoad가 비활성화된 경우 항상 로드 가능한 것으로 간주
     const shouldLoad = !lazyLoad || isIntersecting;
 
-    // === HGM 로딩 ===
+    /** HGM 로딩 */
     const [hgm] = useHGM({ hgmUrl, shouldLoad, onReadyCalledRef, setCameraControllerReady });
 
-    // === Store ===
+    /** Store */
     const tooltipRef = useMainStore((s) => s.tooltipRef);
     const cleanMainStore = useMainStore((s) => s.clean);
     const loading = useMainStore((s) => s.loading);
 
-    // === 카메라 설정 ===
-    const initialCameraPosition = camera?.initialPosition ?? [0, 0];
-    const cameraFov = 25;
-    const minDistance = Math.max(camera?.minDistance ?? 1.5, 1.5);
-    const maxDistance = Math.min(camera?.maxDistance ?? 10, 10);
-
-    const cameraVector = useMemo(() => {
-      const adjustedCoordinate: Coordinate = [
-        initialCameraPosition[0] - 90,
-        initialCameraPosition[1],
-      ];
-
-      return CoordinateConverter.convert(adjustedCoordinate, 5);
-    }, [initialCameraPosition]);
-
-    // === 컨트롤 설정 ===
-    const enableZoom = controls?.enableZoom ?? true;
-    const enableRotate = controls?.enableRotate ?? true;
-    const enablePan = controls?.enablePan ?? false;
-
-    // === 지구본 설정 ===
-    const globeStyle = globe?.style;
-    const wireframe = globe?.wireframe ?? false;
-
-    /**
-     * Configs
-     */
-    const [graticuleConfig] = useGraticuleConfig(graticule);
-    const [tooltipConfig] = useTooltipConfig(tooltip);
-    const [colorscaleBarConfig] = useColorScaleBarConfig(colorscaleBar);
-
-    /**
-     * Callbacks
-     */
+    /** Callbacks */
     const [onPointerMove] = useTooltipPosition({
       rootElementRef,
       tooltipRef,
       tooltipConfig,
     });
 
-    // === Region 데이터 ===
+    /** Camera 설정 */
+    const {
+      cameraVector,
+      callbacks: { handleLockChange, handleCameraPositionChange, handleCameraChange },
+    } = useCamera({
+      lightRef,
+      setIsLocked,
+      initialCameraPosition,
+    });
+
+    /** Region 데이터 */
     const regionData = useMemo(() => {
       if (!region?.dataKey || !dataMap) return undefined;
 
       return dataMap[region.dataKey];
     }, [region?.dataKey, dataMap]);
 
-    // === Callbacks ===
-    const handleLockChange = useCallback((locked: boolean) => {
-      setIsLocked(locked);
-    }, []);
-
-    const handleCameraPositionChange = useCallback((position: Vector3) => {
-      const light = lightRef.current;
-      if (!light) return;
-
-      light.position.set(0, 0, 0);
-      light.position.add(position);
-    }, []);
-
-    const handleCameraChange = useCallback((e: any) => {
-      const cameraObj = e?.target.object;
-      const light = lightRef.current;
-
-      if (!light || !cameraObj) return;
-
-      light.position.set(0, 0, 0);
-      light.position.add(cameraObj.position);
-    }, []);
-
-    // === Imperative Handle ===
+    /** Imperative Handle */
     useImperativeHandle(
       ref,
       () => ({
@@ -223,16 +181,14 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       []
     );
 
-    // === Effects ===
-
-    // 클린업
+    /** 클린업 */
     useEffect(() => {
       return () => {
         cleanMainStore();
       };
     }, [cleanMainStore]);
 
-    // onReady 호출 (hgm 로드 완료 + 카메라 컨트롤러 준비 완료 후)
+    /** onReady 호출 (hgm 로드 완료 + 카메라 컨트롤러 준비 완료 후) */
     useEffect(() => {
       if (!loading && cameraControllerReady && !onReadyCalledRef.current && onReady) {
         onReady();
@@ -240,7 +196,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       }
     }, [loading, cameraControllerReady, onReady]);
 
-    // 카메라 컨트롤러 마운트 핸들러
+    /** 카메라 컨트롤러 마운트 핸들러 */
     const handleCameraControllerMount = useCallback(() => {
       setCameraControllerReady(true);
     }, []);
