@@ -106,7 +106,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
 
       // 이벤트
       onReady,
-      onHoverChanged,
     },
     ref
   ) => {
@@ -120,7 +119,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     const [fps, setFps] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
     const [cameraControllerReady, setCameraControllerReady] = useState(false);
-    const [rawHgmBlob, setRawHgmBlob] = useState<Blob | null>(null);
 
     // === Intersection Observer (Lazy Loading) ===
     const [intersectionRef, isIntersecting] = useIntersectionObserver({
@@ -132,26 +130,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     const shouldLoad = !lazyLoad || isIntersecting;
 
     // === HGM 로딩 ===
-    const [hgm] = useHGM({ rawHgmBlob });
-
-    // hgmUrl이 변경되거나 shouldLoad가 true가 되면 HGM 파일을 로드
-    useEffect(() => {
-      if (!hgmUrl || !shouldLoad) return;
-
-      // 이전 데이터 초기화
-      setRawHgmBlob(null);
-      onReadyCalledRef.current = false;
-      setCameraControllerReady(false);
-
-      fetch(hgmUrl)
-        .then((res) => res.blob())
-        .then((blob) => {
-          setRawHgmBlob(blob);
-        })
-        .catch((err) => {
-          console.error(`Failed to load HGM file: ${hgmUrl}`, err);
-        });
-    }, [hgmUrl, shouldLoad]);
+    const [hgm] = useHGM({ hgmUrl, shouldLoad, onReadyCalledRef, setCameraControllerReady });
 
     // === Store ===
     const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -212,6 +191,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     // === Region 데이터 ===
     const regionData = useMemo(() => {
       if (!region?.dataKey || !dataMap) return undefined;
+
       return dataMap[region.dataKey];
     }, [region?.dataKey, dataMap]);
 
