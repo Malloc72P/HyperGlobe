@@ -132,11 +132,13 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       triggerOnce: true,
     });
 
-    // lazyLoad가 비활성화된 경우 항상 로드 가능한 것으로 간주
-    const shouldLoad = !lazyLoad || isIntersecting;
-
     /** HGM 로딩 */
-    const [hgm] = useHGM({ hgmUrl, shouldLoad, onReadyCalledRef, setCameraControllerReady });
+    const [hgm] = useHGM({
+      hgmUrl,
+      shouldLoad: !lazyLoad || isIntersecting, // lazyLoad가 비활성화된 경우 항상 로드 가능한 것으로 간주
+      onReadyCalledRef,
+      setCameraControllerReady,
+    });
 
     /** Store */
     const tooltipRef = useMainStore((s) => s.tooltipRef);
@@ -153,11 +155,17 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     /** Camera 설정 */
     const {
       cameraVector,
-      callbacks: { handleLockChange, handleCameraPositionChange, handleCameraChange },
+      callbacks: {
+        handleLockChange,
+        handleCameraPositionChange,
+        handleCameraChange,
+        handleCameraControllerMount,
+      },
     } = useCamera({
       lightRef,
       setIsLocked,
       initialCameraPosition,
+      setCameraControllerReady,
     });
 
     /** Region 데이터 */
@@ -195,11 +203,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         onReadyCalledRef.current = true;
       }
     }, [loading, cameraControllerReady, onReady]);
-
-    /** 카메라 컨트롤러 마운트 핸들러 */
-    const handleCameraControllerMount = useCallback(() => {
-      setCameraControllerReady(true);
-    }, []);
 
     // === Render ===
     return (

@@ -9,6 +9,7 @@ export interface UseCameraCallbacksProps {
   lightRef: RefObject<DirectionalLight | null>;
   setIsLocked: (locked: boolean) => void;
   initialCameraPosition: [number, number];
+  setCameraControllerReady: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function useCamera({
@@ -16,6 +17,7 @@ export function useCamera({
   lightRef,
   setIsLocked,
   initialCameraPosition,
+  setCameraControllerReady,
 }: UseCameraCallbacksProps) {
   const cameraVector = useMemo(() => {
     const adjustedCoordinate: Coordinate = [
@@ -48,8 +50,18 @@ export function useCamera({
     light.position.add(cameraObj.position);
   }, []);
 
+  /** 카메라 컨트롤러 마운트 핸들러 */
+  const handleCameraControllerMount = useCallback(() => {
+    setCameraControllerReady(true);
+  }, []);
+
   return {
     cameraVector,
-    callbacks: { handleLockChange, handleCameraPositionChange, handleCameraChange },
+    callbacks: {
+      handleLockChange,
+      handleCameraPositionChange,
+      handleCameraChange,
+      handleCameraControllerMount,
+    },
   };
 }
