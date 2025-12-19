@@ -38,6 +38,8 @@ import { ColorScaleBar } from '../colorscale-bar';
 import { RouteFeature } from '../route-feature';
 import { MarkerFeature } from '../marker-feature';
 import { useHGM } from '../../hooks/use-hgm';
+import { useColorScaleBarConfig, useGraticuleConfig, useTooltipConfig } from './use-feature-config';
+import { useTooltipPosition } from './use-tooltip-position';
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
 
 /**
@@ -148,6 +150,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         initialCameraPosition[0] - 90,
         initialCameraPosition[1],
       ];
+
       return CoordinateConverter.convert(adjustedCoordinate, 5);
     }, [initialCameraPosition]);
 
@@ -160,33 +163,21 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
     const globeStyle = globe?.style;
     const wireframe = globe?.wireframe ?? false;
 
-    // === Graticule 설정 ===
-    const graticuleConfig = useMemo<GraticuleConfig | null>(() => {
-      if (!graticule) return null;
-      if (graticule === true) return {};
-      return graticule;
-    }, [graticule]);
+    /**
+     * Configs
+     */
+    const [graticuleConfig] = useGraticuleConfig(graticule);
+    const [tooltipConfig] = useTooltipConfig(tooltip);
+    const [colorscaleBarConfig] = useColorScaleBarConfig(colorscaleBar);
 
-    // === Tooltip 설정 ===
-    const tooltipConfig = useMemo<TooltipConfig | null>(() => {
-      const defaultTooltipConfig = { show: true };
-
-      // 설정 아예 안하면 툴팁 표시하는걸로 간주
-      if (tooltip === null || tooltip === undefined) return defaultTooltipConfig;
-
-      if (!tooltip) return { show: false };
-
-      if (tooltip === true) return defaultTooltipConfig;
-
-      return tooltip;
-    }, [tooltip]);
-
-    // === ColorscaleBar 설정 ===
-    const colorscaleBarConfig = useMemo<ColorscaleBarConfig | null>(() => {
-      if (!colorscaleBar) return null;
-      if (colorscaleBar === true) return {};
-      return colorscaleBar;
-    }, [colorscaleBar]);
+    /**
+     * Callbacks
+     */
+    const [onPointerMove] = useTooltipPosition({
+      rootElementRef,
+      tooltipRef,
+      tooltipConfig,
+    });
 
     // === Region 데이터 ===
     const regionData = useMemo(() => {
@@ -217,52 +208,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       light.position.set(0, 0, 0);
       light.position.add(cameraObj.position);
     }, []);
-
-    // === Tooltip Position ===
-    const getTooltipPosition = useCallback(
-      ({ point, tooltipElement }: UpdateTooltipPositionFnParam) => {
-        const tooltipOffset = tooltipConfig?.distance ?? 10;
-        const rootElement = rootElementRef.current;
-
-        if (!rootElement || !tooltipElement) return null;
-
-        const rootRect = rootElement.getBoundingClientRect();
-        const tooltipRect = tooltipElement.getBoundingClientRect();
-        const tooltipWidth = tooltipRect.width;
-        const tooltipHeight = tooltipRect.height;
-
-        const nextPosition = {
-          x: point[0] - rootRect.left,
-          y: point[1] - rootRect.top,
-        };
-
-        nextPosition.x = nextPosition.x - tooltipWidth / 2;
-        nextPosition.y = nextPosition.y - tooltipHeight - tooltipOffset;
-
-        return nextPosition;
-      },
-      [tooltipConfig?.distance]
-    );
-
-    const onPointerMove = useThrottle({
-      fn: (e) => {
-        const tooltipElement = tooltipRef?.current;
-        const { clientX, clientY } = e;
-
-        if (!tooltipElement) return;
-
-        const tooltipPosition = getTooltipPosition({
-          point: [clientX, clientY],
-          tooltipElement,
-        });
-
-        if (tooltipPosition) {
-          const { x, y } = tooltipPosition;
-          tooltipElement.style.transform = `translate(${x}px, ${y}px)`;
-        }
-      },
-      delay: 50,
-    });
 
     // === Imperative Handle ===
     useImperativeHandle(
