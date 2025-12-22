@@ -44,38 +44,12 @@ export interface ColorScaleOptions {
    * 컬러스케일 구간에 대한 옵션
    */
   steps: ColorScaleStepOptions[];
-
-  /**
-   * 원본 데이터 배열
-   */
-  data?: any[];
-  /**
-   * 데이터에서 피쳐에 해당하는 항목을 찾는 함수
-   *
-   * - feature: HGMFeature
-   * - dataItem: 원본 데이터 배열의 항목
-   *
-   * @default (feature, item) => feature.id === item.id
-   */
-  itemResolver?: (feature: HGMFeature, dataItem: any) => boolean;
-  /**
-   * 원본 데이터에서 값을 추출하는 함수
-   *
-   * @default (dataItem) => dataItem.value
-   */
-  valueResolver?: (dataItem: any) => number | null | undefined;
 }
 
 /**
  * 컬러스케일 모델을 생성합니다.
  */
-export function useColorScale({
-  nullColor,
-  steps: stepOptions,
-  data,
-  itemResolver = (feature, item) => feature.id === item.id,
-  valueResolver = (dataItem) => dataItem.value,
-}: ColorScaleOptions) {
+export function useColorScale({ nullColor, steps: stepOptions }: ColorScaleOptions) {
   /**
    * 컬러스케일 모델
    */
@@ -94,17 +68,6 @@ export function useColorScale({
     let minValue = Infinity;
     let maxValue = -Infinity;
 
-    if (data && data.length > 0) {
-      for (const item of data) {
-        const value = valueResolver(item);
-
-        if (isSafeNumber(value)) {
-          minValue = Math.min(minValue, value);
-          maxValue = Math.max(maxValue, value);
-        }
-      }
-    }
-
     const colorScaleModel = {
       nullColor,
       steps: stepModels,
@@ -113,19 +76,7 @@ export function useColorScale({
     };
 
     return colorScaleModel;
-  }, [nullColor, stepOptions, data]);
-
-  const resolveFeatureData = useCallback(
-    (feature: HGMFeature) => {
-      const foundItem = data?.find((dataItem) => itemResolver(feature, dataItem));
-      const value = foundItem ? valueResolver(foundItem) : null;
-
-      return {
-        value,
-      };
-    },
-    [data, itemResolver, valueResolver]
-  );
+  }, [nullColor, stepOptions]);
 
   return {
     /**
@@ -136,13 +87,6 @@ export function useColorScale({
      * - 컬러스케일 규칙은 colorscale.steps에서 정의한 정보에 따라 결정됩니다.
      */
     colorscale,
-    /**
-     * 피쳐에 해당하는 데이터를 찾아 반환하는 함수
-     *
-     * - 반환되는 데이터는 { value: number | null } 형태입니다.
-     * - 값이 null인 피쳐에 대한 색상을 지정하려면 colorscale.nullColor를 사용하세요.
-     */
-    resolveFeatureData,
   };
 }
 

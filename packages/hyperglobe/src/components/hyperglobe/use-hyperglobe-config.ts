@@ -1,8 +1,16 @@
 import { ControlsConfig, HyperGlobeProps } from 'src/types';
 
-export type UseHyperGlobeConfigProps = Pick<HyperGlobeProps, 'controls' | 'globe' | 'camera'>;
+export type UseHyperGlobeConfigProps = Pick<
+  HyperGlobeProps,
+  'controls' | 'globe' | 'camera' | 'colorscale'
+>;
 
-export function useHyperGlobeConfig({ controls, globe, camera }: UseHyperGlobeConfigProps) {
+export function useHyperGlobeConfig({
+  controls,
+  globe,
+  camera,
+  colorscale,
+}: UseHyperGlobeConfigProps) {
   // === 카메라 설정 ===
   const cameraFov = 25;
   const minDistance = Math.max(camera?.minDistance ?? 1.5, 1.5);
@@ -18,6 +26,9 @@ export function useHyperGlobeConfig({ controls, globe, camera }: UseHyperGlobeCo
   const globeStyle = globe?.style;
   const wireframe = globe?.wireframe ?? false;
 
+  // === 컬러스케일 설정 ===
+  const { dataKey: colorscaleDataKey, ...colorscaleOptions } = colorscale ?? {};
+
   return {
     cameraFov,
     minDistance,
@@ -28,5 +39,7 @@ export function useHyperGlobeConfig({ controls, globe, camera }: UseHyperGlobeCo
     enablePan,
     globeStyle,
     wireframe,
+    colorscaleDataKey,
+    colorscaleOptions,
   };
 }

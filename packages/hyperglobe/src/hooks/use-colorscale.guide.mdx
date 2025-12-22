@@ -1,0 +1,18 @@
+import { Meta, Title, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as ColorScaleStory from './use-colorscale.stories';
+
+<Meta title="Hooks/ColorScale" of={ColorScaleStory} />
+
+<Title>ColorScale</Title>
+### 개요
+
+`ColorScale`은 지도 데이터의 값에 따라 스타일을 다르게 적용할 수 있는 기능입니다.
+이 기능을 사용하면 데이터에 기반한 시각적 표현을 쉽게 구현할 수 있습니다.
+
+`HyperGlobe` 컴포넌트의 `colorscale` 속성을 통해 설정합니다.
+
+### 기본 사용법
+
+<Canvas of={ColorScaleStory.Basic} />
+
+먼저 컬러스케일에서 사용할 데이터를 추가합니다.

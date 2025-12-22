@@ -22,7 +22,6 @@ const meta = {
 } satisfies Meta<typeof HyperGlobe>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
 
 /**
  * 기본 카메라 트랜지션
