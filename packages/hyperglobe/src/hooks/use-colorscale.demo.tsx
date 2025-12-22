@@ -30,18 +30,6 @@ export function ColorScaleStoryComponent() {
     nullColor: Colors.GRAY[3],
   });
 
-  // dataMap 형식으로 변환
-  const dataMap = useMemo(() => {
-    if (!gdpData.length) return undefined;
-
-    const gdpGrowth: Record<string, { value: number }> = {};
-    for (const item of gdpData) {
-      gdpGrowth[item.id] = { value: item.value };
-    }
-
-    return { gdpGrowth };
-  }, [gdpData]);
-
   useEffect(() => {
     fetch('/data/gdp-growth.json')
       .then((res) => res.json() as Promise<GdpGrowth[]>)
@@ -52,14 +40,17 @@ export function ColorScaleStoryComponent() {
     <div>
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        dataMap={dataMap}
+        dataMap={{
+          gdpGrowth: gdpData,
+        }}
         region={{
           dataKey: 'gdpGrowth',
-          idField: 'isoA2',
+          idField: 'isoA2', // region feature의 id 매핑용 필드
+          dataIdField: 'id', // data 항목의 id 필드
         }}
         colorscale={{
-          model: colorscale,
           dataKey: 'gdpGrowth',
+          model: colorscale,
         }}
         tooltip={{
           distance: 12,

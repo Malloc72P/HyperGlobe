@@ -56,6 +56,11 @@ export interface RegionFeatureCollectionProps {
   idField?: string;
 
   /**
+   * 피쳐의 데이터 항목 id로 사용할 속성 이름
+   */
+  dataIdField?: string;
+
+  /**
    * 피쳐의 값(value)으로 사용할 속성 이름
    *
    * - `data` prop과 매핑할 때 사용됩니다.
@@ -130,6 +135,7 @@ export function RegionFeatureCollection({
   colorscale,
   data,
   idField,
+  dataIdField,
   valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
   transition,
@@ -164,11 +170,12 @@ export function RegionFeatureCollection({
     colorscale,
     data,
     idField,
+    dataIdField,
     valueField,
   });
 
   /** R-Tree에 배치 등록 (호버 감지용) */
-  useBatchRegionModels({ features, data, idField });
+  useBatchRegionModels({ features, data, idField, dataIdField });
 
   /** 페이드 인 트랜지션 */
   const { opacity: transitionOpacity } = useFeatureTransition({

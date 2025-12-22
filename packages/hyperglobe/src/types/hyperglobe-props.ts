@@ -164,19 +164,25 @@ export interface RegionConfig {
   hoverStyle?: FeatureStyle;
 
   /**
-   * dataMap에서 사용할 데이터 키
+   * dataMap에서 사용할 데이터
    *
-   * - 이 키에 해당하는 데이터가 컬러스케일에 적용됩니다.
+   * dataMap에서 { myData: [...] } 형태로 데이터를 전달한 경우,
+   * dataKey를 'myData'로 설정하면, 해당 데이터를 피쳐에 매핑합니다.
+   *
+   * 피쳐에 매핑할 때, 기본적으로 피쳐의 id 속성과 데이터 항목의 id 속성을 비교합니다.
+   * 만약 피쳐와 데이터 항목의 id 속성 이름이 다르다면, 각각 idField, dataIdField를 사용할 수 있습니다.
    */
   dataKey?: string;
 
   /**
-   * 피쳐의 id로 사용할 속성 이름
-   *
-   * - dataMap의 데이터와 매핑할 때 사용됩니다.
-   * - 예: 'ISO_A2', 'ISO_A3'
+   * 리젼 피쳐의 id로 사용할 속성 이름
    */
   idField?: string;
+
+  /**
+   * 데이터의 아이디로 사용할 속성 이름
+   */
+  dataIdField?: string;
 
   /**
    * 측면(extrusion) 옵션

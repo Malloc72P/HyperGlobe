@@ -1,47 +1,31 @@
 'use client';
 
-import { Coordinate } from '@hyperglobe/interfaces';
-import { CoordinateConverter } from '@hyperglobe/tools';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import type { CameraTransitionControllerRef } from '../camera-transition-controller';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { UiConstant } from 'src/constants';
-import { NoToneMapping, Vector3, type DirectionalLight } from 'three';
-import { useThrottle } from '../../hooks/use-throttle';
-import { useIntersectionObserver } from '../../hooks/use-intersection-observer';
-import { useMainStore, type UpdateTooltipPositionFnParam } from '../../store';
-import { FpsCounter, FpsDisplay } from '../fps-counter';
-import { LoadingUI } from '../loading-ui';
-import { Tooltip } from '../tooltip';
-import type { CameraTransitionOptions, HyperglobeRef, PathPoint } from '../../types/camera';
-import type {
-  HyperGlobeProps,
-  TooltipConfig,
-  GraticuleConfig,
-  ColorscaleBarConfig,
-} from '../../types/hyperglobe-props';
-import { CameraTransitionController } from '../camera-transition-controller';
-import { Globe } from './globe';
 import { MainStoreProvider } from 'src/store/main-store-provider';
-import { RegionFeatureCollection } from '../region-feature-collection';
-import { Graticule } from '../graticule';
-import { ColorScaleBar } from '../colorscale-bar';
-import { RouteFeature } from '../route-feature';
-import { MarkerFeature } from '../marker-feature';
+import { NoToneMapping, type DirectionalLight } from 'three';
 import { useHGM } from '../../hooks/use-hgm';
-import { useColorScaleBarConfig, useGraticuleConfig, useTooltipConfig } from './use-feature-config';
-import { useTooltipPosition } from './use-tooltip-position';
+import { useIntersectionObserver } from '../../hooks/use-intersection-observer';
+import { useMainStore } from '../../store';
+import type { CameraTransitionOptions, HyperglobeRef, PathPoint } from '../../types/camera';
+import type { HyperGlobeProps } from '../../types/hyperglobe-props';
+import type { CameraTransitionControllerRef } from '../camera-transition-controller';
+import { CameraTransitionController } from '../camera-transition-controller';
+import { ColorScaleBar } from '../colorscale-bar';
+import { FpsCounter, FpsDisplay } from '../fps-counter';
+import { Graticule } from '../graticule';
+import { LoadingUI } from '../loading-ui';
+import { MarkerFeature } from '../marker-feature';
+import { RegionFeatureCollection } from '../region-feature-collection';
+import { RouteFeature } from '../route-feature';
+import { Tooltip } from '../tooltip';
+import { Globe } from './globe';
 import { useCamera } from './use-camera';
+import { useColorScaleBarConfig, useGraticuleConfig, useTooltipConfig } from './use-feature-config';
 import { useHyperGlobeConfig } from './use-hyperglobe-config';
+import { useTooltipPosition } from './use-tooltip-position';
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
 
 /**
@@ -278,6 +262,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 style={region?.style}
                 hoverStyle={region?.hoverStyle}
                 idField={region?.idField}
+                dataIdField={region?.dataIdField}
                 colorscale={colorscale?.model}
                 extrusion={region?.extrusion}
                 transition={region?.transition}
