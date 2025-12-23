@@ -8,20 +8,23 @@ import type { FeatureStyle } from '../../types/feature';
 import type { ColorScaleModel } from '../../types/colorscale';
 import { Colors } from '../../lib';
 import { computeFeatureStyle } from '../../hooks/use-feature-style';
+import { findById } from '@hyperglobe/tools';
 
 export interface HoveredRegionOverlayProps {
   /** 모든 features (호버된 feature를 찾기 위해 필요) */
   features: HGMFeature[];
   /** 기본 스타일 */
-  style: Required<FeatureStyle>;
+  style: FeatureStyle;
   /** 호버 시 적용될 스타일 */
-  hoverStyle: Required<FeatureStyle>;
+  hoverStyle: FeatureStyle;
   /** 컬러스케일 모델 */
   colorscale?: ColorScaleModel;
   /** feature별 데이터 */
-  data?: Record<string, number>;
+  data?: any[];
   /** feature의 id로 사용할 속성 이름 */
   idField?: string;
+  /** 데이터 항목의 id로 사용할 속성 이름 */
+  dataIdField?: string;
   /** extrusion 색상 */
   extrusionColor?: string;
 }
@@ -55,6 +58,7 @@ export function HoveredRegionOverlay({
   colorscale,
   data,
   idField,
+  dataIdField,
   extrusionColor = Colors.GRAY[8],
 }: HoveredRegionOverlayProps) {
   // 호버된 region ID 구독
@@ -80,7 +84,8 @@ export function HoveredRegionOverlay({
     if (!hoveredFeature) return hoverStyle;
 
     const key = getFeatureKey(hoveredFeature, idField);
-    const dataValue = data?.[key];
+    const foundData = data ? findById(data, key, dataIdField) : undefined;
+    const dataValue = foundData ? Number(foundData.value) : undefined;
 
     return computeFeatureStyle({
       style,
