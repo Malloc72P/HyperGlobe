@@ -19,9 +19,6 @@ const defaultHyperglobeProps: HyperGlobeProps = {
     style: {
       fillColor: Colors.BLUE[3],
     },
-    hoverStyle: {
-      fillColor: Colors.BLUE[5],
-    },
   },
 };
 

@@ -1,6 +1,8 @@
 import type { StoryObj } from '@storybook/react-vite';
-import { ColorScaleStoryComponent } from './colorscale-story.demo';
-import { snippets } from './use-colorscale-snippets';
+import { ColorScaleStoryComponent } from './use-colorscale.demo';
+import { DUMMY_CODE } from './use-colorscale.demo.dummy';
+
+const DUMMY = true;
 
 const meta = {
   title: 'Hooks/useColorScale',
@@ -10,11 +12,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const ColorScaleStory: Story = {
+export const Basic: Story = {
   name: 'ColorScale',
-  tags: ['autodocs'],
-  args: {
-    steps: [],
-  },
-  parameters: { docs: { source: { code: snippets } } },
+  args: {},
+  parameters: { docs: { source: { code: DUMMY_CODE } } },
 };

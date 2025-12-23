@@ -7,6 +7,7 @@ import { createSideGeometry } from '../../lib/geometry';
 import type { ColorScaleModel } from '../../types/colorscale';
 import type { FeatureStyle } from '../../types/feature';
 import { computeFeatureStyle } from '../../hooks/use-feature-style';
+import { findById } from '@hyperglobe/tools';
 
 export interface MergedGeometryResult {
   /** 병합된 상단 면 지오메트리 */
@@ -32,6 +33,8 @@ export interface UseMergedGeometryOptions {
   data?: any;
   /** feature의 id로 사용할 속성 이름 */
   idField?: string;
+  /** feature의 데이터 항목 id로 사용할 속성 이름 */
+  dataIdField?: string;
   /** feature의 값(value)으로 사용할 속성 이름 */
   valueField: string;
 }
@@ -114,6 +117,7 @@ export function useMergedGeometry({
   colorscale,
   data,
   idField,
+  dataIdField,
   valueField,
 }: UseMergedGeometryOptions): MergedGeometryResult | null {
   return useMemo(() => {
@@ -129,7 +133,7 @@ export function useMergedGeometry({
 
       if (useVertexColors) {
         const key = getFeatureKey(feature, idField);
-        const dataValue = data[key]?.[valueField];
+        const dataValue = findById(data, key, dataIdField)?.[valueField];
 
         // 해당 피쳐의 스타일 계산(컬러스케일 고려)
         const featureStyle = computeFeatureStyle({

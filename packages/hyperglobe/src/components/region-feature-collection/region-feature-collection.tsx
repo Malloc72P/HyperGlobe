@@ -45,7 +45,7 @@ export interface RegionFeatureCollectionProps {
    * idField="isoA2"
    * ```
    */
-  data?: Record<string, number>;
+  data?: any[];
 
   /**
    * 피쳐의 id로 사용할 속성 이름
@@ -54,6 +54,11 @@ export interface RegionFeatureCollectionProps {
    * - 예: 'iso-a2'
    */
   idField?: string;
+
+  /**
+   * 피쳐의 데이터 항목 id로 사용할 속성 이름
+   */
+  dataIdField?: string;
 
   /**
    * 피쳐의 값(value)으로 사용할 속성 이름
@@ -130,6 +135,7 @@ export function RegionFeatureCollection({
   colorscale,
   data,
   idField,
+  dataIdField,
   valueField = 'value',
   extrusion = { color: Colors.GRAY[8] },
   transition,
@@ -146,16 +152,6 @@ export function RegionFeatureCollection({
     [style]
   );
 
-  /** 병합된 지오메트리에 대한 호버 스타일 */
-  const mergedHoverStyle = useMemo(
-    () => ({
-      ...mergedStyle,
-      lineWidth: UiConstant.polygonFeature.default.hoverStyle.lineWidth ?? mergedStyle.lineWidth,
-      ...hoverStyle,
-    }),
-    [mergedStyle, hoverStyle]
-  );
-
   /** 지오메트리 병합 (colorscale + data 전달) */
   const mergedGeometry = useMergedGeometry({
     features,
@@ -164,11 +160,12 @@ export function RegionFeatureCollection({
     colorscale,
     data,
     idField,
+    dataIdField,
     valueField,
   });
 
   /** R-Tree에 배치 등록 (호버 감지용) */
-  useBatchRegionModels({ features, data, idField });
+  useBatchRegionModels({ features, data, idField, dataIdField });
 
   /** 페이드 인 트랜지션 */
   const { opacity: transitionOpacity } = useFeatureTransition({
@@ -219,10 +216,11 @@ export function RegionFeatureCollection({
       <HoveredRegionOverlay
         features={features}
         style={mergedStyle}
-        hoverStyle={mergedHoverStyle}
+        hoverStyle={hoverStyle || {}}
         colorscale={colorscale}
         data={data}
         idField={idField}
+        dataIdField={dataIdField}
         extrusionColor={extrusion?.color}
       />
     </group>

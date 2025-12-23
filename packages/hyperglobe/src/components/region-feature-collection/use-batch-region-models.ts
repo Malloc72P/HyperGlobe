@@ -4,7 +4,7 @@ import type {
   FeaturePolygons,
   VectorCoordinate,
 } from '@hyperglobe/interfaces';
-import { CoordinateConverter, MathConstants } from '@hyperglobe/tools';
+import { CoordinateConverter, findById, MathConstants } from '@hyperglobe/tools';
 import { useEffect, useRef } from 'react';
 import { useMainStore } from '../../store/main-store';
 import { getFeatureKey } from './use-merged-geometry';
@@ -14,10 +14,13 @@ export interface UseBatchRegionModelsOptions {
   features: HGMFeature[];
 
   /** 리젼에 연결할 추가 데이터 */
-  data?: Record<string, any>;
+  data?: any[];
 
   /** 피쳐의 id로 사용할 속성 이름 */
   idField?: string;
+
+  /** 데이터 항목의 id로 사용할 속성 이름 */
+  dataIdField?: string;
 }
 
 /**
@@ -30,6 +33,7 @@ export function useBatchRegionModels({
   features,
   data,
   idField,
+  dataIdField,
 }: UseBatchRegionModelsOptions): void {
   const insertRegionModel = useMainStore((s) => s.insertRegionModel);
   const removeRegionModel = useMainStore((s) => s.removeRegionModel);
@@ -52,7 +56,7 @@ export function useBatchRegionModels({
       }
 
       // RegionModel 생성
-      const model = createRegionModel({ feature, data, idField });
+      const model = createRegionModel({ feature, data, idField, dataIdField });
       insertRegionModel(model);
       newModels.push(model);
     }
@@ -77,10 +81,12 @@ function createRegionModel({
   feature,
   data,
   idField,
+  dataIdField,
 }: {
   feature: HGMFeature;
-  data?: Record<string, any>;
+  data?: any[];
   idField?: string;
+  dataIdField?: string;
 }): RegionModel {
   const width = Math.abs(feature.bbox.maxX - feature.bbox.minX);
   const height = Math.abs(feature.bbox.maxY - feature.bbox.minY);
@@ -109,7 +115,7 @@ function createRegionModel({
 
   if (data) {
     const key = getFeatureKey(feature, idField);
-    const foundData = data[key];
+    const foundData = findById(data, key, dataIdField);
 
     if (foundData) {
       regionModel.data = foundData;

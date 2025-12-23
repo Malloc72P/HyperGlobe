@@ -16,7 +16,7 @@ interface GdpGrowth {
  * - 컬러스케일은 지도 데이터의 값에 따라 스타일을 다르게 적용할 수 있는 기능입니다.
  * - 이 예제에서는 useColorScale 훅을 사용하여 컬러스케일을 적용하는 방법을 보여줍니다.
  */
-export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
+export function ColorScaleStoryComponent() {
   const [gdpData, setGdpData] = useState<any[]>([]);
   const { colorscale } = useColorScale({
     steps: [
@@ -28,21 +28,7 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
       { from: 5, color: '#78a9e2' },
     ],
     nullColor: Colors.GRAY[3],
-    data: gdpData,
-    itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
   });
-
-  // dataMap 형식으로 변환
-  const dataMap = useMemo(() => {
-    if (!gdpData.length) return undefined;
-
-    const gdpGrowth: Record<string, { value: number }> = {};
-    for (const item of gdpData) {
-      gdpGrowth[item.id] = { value: item.value };
-    }
-
-    return { gdpGrowth };
-  }, [gdpData]);
 
   useEffect(() => {
     fetch('/data/gdp-growth.json')
@@ -54,14 +40,17 @@ export function ColorScaleStoryComponent(colorScaleOptions: ColorScaleOptions) {
     <div>
       <HyperGlobe
         {...StorybookConstant.props.HyperGlobe}
-        dataMap={dataMap}
+        dataMap={{
+          gdpGrowth: gdpData,
+        }}
         region={{
           dataKey: 'gdpGrowth',
-          idField: 'isoA2',
+          idField: 'isoA2', // region feature의 id 매핑용 필드
+          dataIdField: 'id', // data 항목의 id 필드
         }}
         colorscale={{
-          model: colorscale,
           dataKey: 'gdpGrowth',
+          model: colorscale,
         }}
         tooltip={{
           distance: 12,

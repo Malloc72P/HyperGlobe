@@ -1,1 +1,2 @@
-export * from './resolveNumber';
+export * from './resolve-number';
+export * from './find-by-id';
