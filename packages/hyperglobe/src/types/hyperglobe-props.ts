@@ -5,6 +5,7 @@ import type { FeatureStyle } from './feature';
 import type { SvgStyle } from './svg';
 import { MarkerData } from 'src/components/marker-feature/marker-interface';
 import type { FeatureTransitionConfig } from './transition';
+import { ColorScaleOptions } from 'src/hooks/use-colorscale';
 
 // ============================================================================
 // 캔버스/컨테이너 설정
@@ -372,20 +373,15 @@ export interface MarkerConfig {
  *
  * - 외부에서 useColorScale 훅으로 생성한 ColorScaleModel을 전달합니다.
  */
-export interface ColorscaleConfig {
-  /**
-   * 컬러스케일 모델
-   *
-   * - useColorScale 훅으로 생성합니다.
-   */
-  model: ColorScaleModel;
-
+export interface ColorscaleConfig extends ColorScaleOptions {
   /**
    * dataMap에서 사용할 데이터 키
    *
    * - region.dataKey와 동일하게 설정하면 됩니다.
    */
   dataKey?: string;
+
+  colorscaleBar?: ColorscaleBarConfig | boolean;
 }
 
 // ============================================================================
@@ -578,14 +574,6 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    * 컬러스케일 설정
    */
   colorscale?: ColorscaleConfig;
-
-  /**
-   * 컬러스케일 바 설정
-   *
-   * - 설정하면 컬러스케일 바를 표시합니다.
-   * - true를 전달하면 기본값으로 표시합니다.
-   */
-  colorscaleBar?: ColorscaleBarConfig | boolean;
 
   /**
    * 툴팁 설정

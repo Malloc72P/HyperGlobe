@@ -26,6 +26,7 @@ import { useCamera } from './use-camera';
 import { useColorScaleBarConfig, useGraticuleConfig, useTooltipConfig } from './use-feature-config';
 import { useHyperGlobeConfig } from './use-hyperglobe-config';
 import { useTooltipPosition } from './use-tooltip-position';
+import { useColorScale } from 'src/hooks/use-colorscale';
 export type { HyperGlobeProps } from '../../types/hyperglobe-props';
 
 /**
@@ -70,7 +71,6 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       routes,
       marker,
       colorscale,
-      colorscaleBar,
       tooltip,
       showFpsCounter = true,
       showLoadingUI = true,
@@ -93,11 +93,14 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       enablePan,
       globeStyle,
       wireframe,
-    } = useHyperGlobeConfig({ controls, globe, camera });
+      colorscaleOptions,
+      colorscaleBar,
+    } = useHyperGlobeConfig({ controls, globe, camera, colorscale });
 
     const [graticuleConfig] = useGraticuleConfig(graticule);
     const [tooltipConfig] = useTooltipConfig(tooltip);
     const [colorscaleBarConfig] = useColorScaleBarConfig(colorscaleBar);
+    const { colorscaleModel } = useColorScale(colorscaleOptions);
 
     /** Refs */
     const rootElementRef = useRef<HTMLDivElement>(null);
@@ -263,7 +266,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
                 hoverStyle={region?.hoverStyle}
                 idField={region?.idField}
                 dataIdField={region?.dataIdField}
-                colorscale={colorscale?.model}
+                colorscale={colorscaleModel}
                 extrusion={region?.extrusion}
                 transition={region?.transition}
               />
@@ -317,9 +320,9 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
         </Canvas>
 
         {/* ColorscaleBar (Canvas 외부, HTML) */}
-        {colorscaleBarConfig && colorscale?.model && (
+        {colorscaleBarConfig && colorscaleModel && (
           <ColorScaleBar
-            colorScale={colorscale.model}
+            colorScale={colorscaleModel}
             style={{
               ...colorscaleBarConfig.style,
             }}

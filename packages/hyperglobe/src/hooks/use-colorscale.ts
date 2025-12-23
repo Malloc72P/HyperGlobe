@@ -2,6 +2,8 @@ import type { HGMFeature, RegionModel } from '@hyperglobe/interfaces';
 import { isSafeNumber, resolveNumber } from '@hyperglobe/tools';
 import { useCallback, useMemo } from 'react';
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
+import { isEqual } from 'lodash-es';
+import { useCompare } from './use-compare';
 
 export interface ColorScaleStepOptions {
   /**
@@ -49,11 +51,17 @@ export interface ColorScaleOptions {
 /**
  * 컬러스케일 모델을 생성합니다.
  */
-export function useColorScale({ nullColor, steps: stepOptions }: ColorScaleOptions) {
+export function useColorScale(_option?: ColorScaleOptions) {
+  const option = useCompare(_option);
+
   /**
    * 컬러스케일 모델
    */
-  const colorscale = useMemo<ColorScaleModel>(() => {
+  const model = useMemo<ColorScaleModel | undefined>(() => {
+    if (!option) return;
+
+    const { nullColor, steps: stepOptions } = option;
+
     const stepModels = stepOptions.map((stepOption, index) => ({
       id: `cs-step-${index}`,
       stepTotal: stepOptions.length,
@@ -76,7 +84,7 @@ export function useColorScale({ nullColor, steps: stepOptions }: ColorScaleOptio
     };
 
     return colorScaleModel;
-  }, [nullColor, stepOptions]);
+  }, [option]);
 
   return {
     /**
@@ -86,7 +94,7 @@ export function useColorScale({ nullColor, steps: stepOptions }: ColorScaleOptio
      * - 적용되는 스타일은 컬러스케일 규칙을 따릅니다.
      * - 컬러스케일 규칙은 colorscale.steps에서 정의한 정보에 따라 결정됩니다.
      */
-    colorscale,
+    colorscaleModel: model,
   };
 }
 

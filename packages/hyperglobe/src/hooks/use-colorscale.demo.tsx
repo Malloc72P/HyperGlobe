@@ -18,17 +18,6 @@ interface GdpGrowth {
  */
 export function ColorScaleStoryComponent() {
   const [gdpData, setGdpData] = useState<any[]>([]);
-  const { colorscale } = useColorScale({
-    steps: [
-      { to: -10, color: '#ff5757' },
-      { from: -10, to: 0, color: '#ffc0c0' },
-      { from: 0, to: 1, color: '#f2f6fc' },
-      { from: 1, to: 3, color: '#c9dcf4' },
-      { from: 3, to: 5, color: '#a4c6ec' },
-      { from: 5, color: '#78a9e2' },
-    ],
-    nullColor: Colors.GRAY[3],
-  });
 
   useEffect(() => {
     fetch('/data/gdp-growth.json')
@@ -50,7 +39,15 @@ export function ColorScaleStoryComponent() {
         }}
         colorscale={{
           dataKey: 'gdpGrowth',
-          model: colorscale,
+          steps: [
+            { to: -10, color: '#ff5757' },
+            { from: -10, to: 0, color: '#ffc0c0' },
+            { from: 0, to: 1, color: '#f2f6fc' },
+            { from: 1, to: 3, color: '#c9dcf4' },
+            { from: 3, to: 5, color: '#a4c6ec' },
+            { from: 5, color: '#78a9e2' },
+          ],
+          nullColor: Colors.GRAY[3],
         }}
         tooltip={{
           distance: 12,

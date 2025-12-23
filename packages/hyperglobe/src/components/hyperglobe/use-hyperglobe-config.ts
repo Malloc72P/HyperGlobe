@@ -1,4 +1,5 @@
-import { ControlsConfig, HyperGlobeProps } from 'src/types';
+import { ColorScaleOptions } from 'src/hooks/use-colorscale';
+import { ColorscaleBarConfig, ColorscaleConfig, ControlsConfig, HyperGlobeProps } from 'src/types';
 
 export type UseHyperGlobeConfigProps = Pick<
   HyperGlobeProps,
@@ -27,7 +28,17 @@ export function useHyperGlobeConfig({
   const wireframe = globe?.wireframe ?? false;
 
   // === 컬러스케일 설정 ===
-  const { dataKey: colorscaleDataKey, ...colorscaleOptions } = colorscale ?? {};
+  let colorscaleDataKey: string | undefined = undefined;
+  let colorscaleBar: ColorscaleBarConfig | boolean | undefined = undefined;
+  let colorscaleOptions: ColorScaleOptions | undefined = undefined;
+
+  if (colorscale) {
+    const { colorscaleBar: csBarOp, dataKey: csKey, ...csOptions } = colorscale;
+
+    colorscaleDataKey = csKey;
+    colorscaleBar = typeof csBarOp === 'boolean' ? csBarOp : { show: true };
+    colorscaleOptions = csOptions;
+  }
 
   return {
     cameraFov,
@@ -40,6 +51,7 @@ export function useHyperGlobeConfig({
     globeStyle,
     wireframe,
     colorscaleDataKey,
+    colorscaleBar,
     colorscaleOptions,
   };
 }
