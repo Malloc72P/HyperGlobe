@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import type { RegionModel } from '@hyperglobe/interfaces';
+import { useEffect, useState } from 'react';
 import { HyperGlobe } from 'src/components';
 import { StorybookConstant } from 'src/constants';
-import { useColorScale, type ColorScaleOptions } from './use-colorscale';
-import type { RegionModel } from '@hyperglobe/interfaces';
 import { Colors } from 'src/lib/colors';
 
 interface GdpGrowth {

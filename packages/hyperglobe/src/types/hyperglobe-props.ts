@@ -373,7 +373,7 @@ export interface MarkerConfig {
  *
  * - 외부에서 useColorScale 훅으로 생성한 ColorScaleModel을 전달합니다.
  */
-export interface ColorscaleConfig extends ColorScaleOptions {
+export interface ColorscaleConfig extends Omit<ColorScaleOptions, 'data'> {
   /**
    * dataMap에서 사용할 데이터 키
    *
@@ -381,6 +381,9 @@ export interface ColorscaleConfig extends ColorScaleOptions {
    */
   dataKey?: string;
 
+  /**
+   * 컬러스케일 바 설정
+   */
   colorscaleBar?: ColorscaleBarConfig | boolean;
 }
 

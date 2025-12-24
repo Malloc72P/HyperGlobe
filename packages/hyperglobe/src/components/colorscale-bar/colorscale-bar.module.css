@@ -2,34 +2,28 @@
   /* Sizing */
   display: flex;
   position: relative;
-  padding: 0 24px;
+  margin: 0 24px;
   margin-top: 16px;
 
   /* Font */
   font-size: 0.9rem;
 
-  .markerContainer {
+  .marker {
     position: absolute;
-    left: 0;
-    width: 100%;
+    top: 0;
+    transition: 0.2s;
+    transform: translate(-50%, -100%);
+    border-top-width: 12px;
+    border-left-width: 8px;
+    border-right-width: 8px;
+    border-bottom-width: 0;
+    border-style: solid;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-top-color: #454545;
 
-    .marker {
-      position: absolute;
-      top: 0;
-      transition: 0.2s;
-      transform: translate(-50%, -100%);
-      border-top-width: 12px;
-      border-left-width: 8px;
-      border-right-width: 8px;
-      border-bottom-width: 0;
-      border-style: solid;
-      border-left-color: transparent;
-      border-right-color: transparent;
-      border-bottom-color: transparent;
-      border-top-color: #454545;
-
-      z-index: 2;
-    }
+    z-index: 2;
   }
 
   /* 스텝 루트(막대 + 레이블) */

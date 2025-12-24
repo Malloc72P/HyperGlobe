@@ -95,12 +95,19 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       wireframe,
       colorscaleOptions,
       colorscaleBar,
-    } = useHyperGlobeConfig({ controls, globe, camera, colorscale });
+    } = useHyperGlobeConfig({ controls, globe, camera, colorscale, dataMap });
 
     const [graticuleConfig] = useGraticuleConfig(graticule);
     const [tooltipConfig] = useTooltipConfig(tooltip);
     const [colorscaleBarConfig] = useColorScaleBarConfig(colorscaleBar);
-    const { colorscaleModel } = useColorScale(colorscaleOptions);
+    const { colorscaleModel } = useColorScale(
+      colorscaleOptions
+        ? {
+            ...colorscaleOptions,
+            data: region?.dataKey && dataMap ? dataMap[region.dataKey] || [] : [],
+          }
+        : undefined
+    );
 
     /** Refs */
     const rootElementRef = useRef<HTMLDivElement>(null);

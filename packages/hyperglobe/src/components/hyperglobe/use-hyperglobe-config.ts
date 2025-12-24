@@ -3,7 +3,7 @@ import { ColorscaleBarConfig, ColorscaleConfig, ControlsConfig, HyperGlobeProps 
 
 export type UseHyperGlobeConfigProps = Pick<
   HyperGlobeProps,
-  'controls' | 'globe' | 'camera' | 'colorscale'
+  'controls' | 'globe' | 'camera' | 'colorscale' | 'dataMap'
 >;
 
 export function useHyperGlobeConfig({
@@ -11,6 +11,7 @@ export function useHyperGlobeConfig({
   globe,
   camera,
   colorscale,
+  dataMap,
 }: UseHyperGlobeConfigProps) {
   // === 카메라 설정 ===
   const cameraFov = 25;
@@ -37,7 +38,10 @@ export function useHyperGlobeConfig({
 
     colorscaleDataKey = csKey;
     colorscaleBar = typeof csBarOp === 'boolean' ? csBarOp : { show: true };
-    colorscaleOptions = csOptions;
+    colorscaleOptions = {
+      ...csOptions,
+      data: csKey && dataMap ? dataMap[csKey] || [] : [],
+    };
   }
 
   return {

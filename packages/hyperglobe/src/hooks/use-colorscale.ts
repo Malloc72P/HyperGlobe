@@ -46,6 +46,14 @@ export interface ColorScaleOptions {
    * 컬러스케일 구간에 대한 옵션
    */
   steps: ColorScaleStepOptions[];
+  /**
+   * 컬러스케일에 적용할 데이터 배열
+   */
+  data: any[];
+  /**
+   * 값을 추출할 필드 이름
+   */
+  valueField?: string;
 }
 
 /**
@@ -60,7 +68,7 @@ export function useColorScale(_option?: ColorScaleOptions) {
   const model = useMemo<ColorScaleModel | undefined>(() => {
     if (!option) return;
 
-    const { nullColor, steps: stepOptions } = option;
+    const { nullColor, steps: stepOptions, data, valueField } = option;
 
     const stepModels = stepOptions.map((stepOption, index) => ({
       id: `cs-step-${index}`,
@@ -75,6 +83,17 @@ export function useColorScale(_option?: ColorScaleOptions) {
 
     let minValue = Infinity;
     let maxValue = -Infinity;
+
+    if (data && data.length > 0) {
+      for (const item of data) {
+        const value = valueField ? item[valueField] : item?.value;
+
+        if (isSafeNumber(value)) {
+          minValue = Math.min(minValue, value);
+          maxValue = Math.max(maxValue, value);
+        }
+      }
+    }
 
     const colorScaleModel = {
       nullColor,

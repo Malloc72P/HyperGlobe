@@ -37,13 +37,11 @@ export function ColorScaleBar({
   return (
     <div className={classes.root} style={style}>
       {/* 마커 & 마커 컨테이너 */}
-      <div className={classes.markerContainer}>
-        <div
-          className={classes.marker}
-          hidden={markerPosition === -1}
-          style={{ left: `${markerPosition}%` }}
-        ></div>
-      </div>
+      <div
+        className={classes.marker}
+        hidden={markerPosition === -1}
+        style={{ left: `${markerPosition}%` }}
+      />
 
       {/* 스텝 & 레이블 */}
       {colorScale.steps.map((step) => (
