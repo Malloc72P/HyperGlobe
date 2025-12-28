@@ -19,6 +19,7 @@ export async function shpToGeoJson(
   option?: shapefile.Options
 ): Promise<any> {
   const features: any[] = [];
+
   try {
     const source = await shapefile.open(filePath, dbfPath, option);
     let result = await source.read();

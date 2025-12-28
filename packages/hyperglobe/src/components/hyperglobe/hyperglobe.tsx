@@ -95,7 +95,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       wireframe,
       colorscaleOptions,
       colorscaleBar,
-    } = useHyperGlobeConfig({ controls, globe, camera, colorscale, dataMap });
+    } = useHyperGlobeConfig({ controls, globe, camera, colorscale, dataMap, region });
 
     const [graticuleConfig] = useGraticuleConfig(graticule);
     const [tooltipConfig] = useTooltipConfig(tooltip);

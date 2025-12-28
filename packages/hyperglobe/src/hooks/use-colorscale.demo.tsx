@@ -34,10 +34,9 @@ export function ColorScaleStoryComponent() {
         region={{
           dataKey: 'gdpGrowth',
           idField: 'isoA2', // region feature의 id 매핑용 필드
-          dataIdField: 'id', // data 항목의 id 필드
+          dataIdField: 'key', // data 항목의 id 필드
         }}
         colorscale={{
-          dataKey: 'gdpGrowth',
           steps: [
             { to: -10, color: '#ff5757' },
             { from: -10, to: 0, color: '#ffc0c0' },

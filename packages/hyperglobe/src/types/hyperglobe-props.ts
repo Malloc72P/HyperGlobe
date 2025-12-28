@@ -375,13 +375,6 @@ export interface MarkerConfig {
  */
 export interface ColorscaleConfig extends Omit<ColorScaleOptions, 'data'> {
   /**
-   * dataMap에서 사용할 데이터 키
-   *
-   * - region.dataKey와 동일하게 설정하면 됩니다.
-   */
-  dataKey?: string;
-
-  /**
    * 컬러스케일 바 설정
    */
   colorscaleBar?: ColorscaleBarConfig | boolean;

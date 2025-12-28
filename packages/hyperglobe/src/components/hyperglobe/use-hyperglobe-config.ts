@@ -3,7 +3,7 @@ import { ColorscaleBarConfig, ColorscaleConfig, ControlsConfig, HyperGlobeProps 
 
 export type UseHyperGlobeConfigProps = Pick<
   HyperGlobeProps,
-  'controls' | 'globe' | 'camera' | 'colorscale' | 'dataMap'
+  'controls' | 'globe' | 'camera' | 'colorscale' | 'dataMap' | 'region'
 >;
 
 export function useHyperGlobeConfig({
@@ -12,6 +12,7 @@ export function useHyperGlobeConfig({
   camera,
   colorscale,
   dataMap,
+  region,
 }: UseHyperGlobeConfigProps) {
   // === 카메라 설정 ===
   const cameraFov = 25;
@@ -29,18 +30,17 @@ export function useHyperGlobeConfig({
   const wireframe = globe?.wireframe ?? false;
 
   // === 컬러스케일 설정 ===
-  let colorscaleDataKey: string | undefined = undefined;
+  let regionDataKey: string | undefined = region?.dataKey;
   let colorscaleBar: ColorscaleBarConfig | boolean | undefined = undefined;
   let colorscaleOptions: ColorScaleOptions | undefined = undefined;
 
-  if (colorscale) {
-    const { colorscaleBar: csBarOp, dataKey: csKey, ...csOptions } = colorscale;
+  if (colorscale && regionDataKey && dataMap) {
+    const { colorscaleBar: csBarOp, ...csOptions } = colorscale;
 
-    colorscaleDataKey = csKey;
     colorscaleBar = typeof csBarOp === 'boolean' ? csBarOp : { show: true };
     colorscaleOptions = {
       ...csOptions,
-      data: csKey && dataMap ? dataMap[csKey] || [] : [],
+      data: dataMap[regionDataKey] || [],
     };
   }
 
@@ -54,7 +54,7 @@ export function useHyperGlobeConfig({
     enablePan,
     globeStyle,
     wireframe,
-    colorscaleDataKey,
+    regionDataKey,
     colorscaleBar,
     colorscaleOptions,
   };
