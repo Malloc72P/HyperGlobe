@@ -31,7 +31,7 @@ const { colorscale } = useColorScale({
 });
 
 <HyperGlobe
-  hgmUrl="/maps/nations-mid.hgm"
+  hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
   dataMap={{ gdp: { KOR: 1800000, JPN: 4900000 } }}
   region={{ dataKey: 'gdp', idField: 'ISO_A3' }}
   colorscale={{ model: colorscale }}
@@ -80,7 +80,7 @@ function GDPMap() {
 
   return (
     <HyperGlobe
-      hgmUrl="/maps/nations-mid.hgm"
+      hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
       dataMap={{ gdp: gdpData }}
       region={{ dataKey: 'gdp' }}
       colorscale={{ model: colorscale }}

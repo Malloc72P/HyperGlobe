@@ -1,0 +1,7 @@
+{
+    "name": "@malloc72p/hyperglobe-maps",
+    "version": "0.0.1",
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    }
+}

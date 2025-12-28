@@ -273,7 +273,7 @@ export const ComplexExample: Story = {
       source: {
         code: `
 <HyperGlobe
-  hgmUrl="/maps/world.hgm"
+  hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/world.hgm"
   region={{ style: { fillColor: 'blue' } }}
 />
 `,

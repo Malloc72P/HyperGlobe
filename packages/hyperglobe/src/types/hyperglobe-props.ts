@@ -489,7 +489,7 @@ export interface HyperGlobeProps extends HyperGlobeBaseProps {
    *
    * @example
    * ```tsx
-   * <HyperGlobe hgmUrl="/maps/world.hgm" ... />
+   * <HyperGlobe hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/world.hgm" ... />
    * ```
    */
   hgmUrl: string;

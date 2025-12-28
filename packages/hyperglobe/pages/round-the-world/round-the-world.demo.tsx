@@ -92,7 +92,7 @@ export function RoundTheWorld(routeProps: RoundTheWorldProps) {
   return (
     <HyperGlobe
       ref={hyperglobeRef}
-      hgmUrl="/maps/nations-mid.hgm"
+      hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
       id="hyperglobe-canvas"
       size="100%"
       maxSize={900}

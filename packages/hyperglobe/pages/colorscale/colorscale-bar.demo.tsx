@@ -87,7 +87,7 @@ export function ColorScaleBarDemo({
   return (
     <div>
       <HyperGlobe
-        hgmUrl="/maps/nations-mid.hgm"
+        hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
         id="colorscale-demo-globe"
         size="100%"
         maxSize={900}

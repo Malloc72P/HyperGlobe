@@ -1,6 +1,6 @@
 {
   "name": "@hyperglobe/maps",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "exports": {
@@ -10,8 +10,11 @@
     }
   },
   "scripts": {
+    "prebuild:map": "tsx ./scripts/prepare-build.js",
     "build:map": "tsx ./src/script.ts",
-    "test": "vitest run"
+    "postbuild:map": "tsx ./scripts/copy-bundle.js",
+    "test": "vitest run",
+    "release": "pnpm run build:map && cd ./publish/.npm && npm publish --access public"
   },
   "devDependencies": {
     "@hyperglobe/eslint-config": "workspace:*",
