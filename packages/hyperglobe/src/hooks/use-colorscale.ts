@@ -1,8 +1,6 @@
-import type { HGMFeature, RegionModel } from '@hyperglobe/interfaces';
 import { isSafeNumber, resolveNumber } from '@hyperglobe/tools';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { ColorScaleModel, ColorScaleStepModel } from 'src/types/colorscale';
-import { isEqual } from 'lodash-es';
 import { useCompare } from './use-compare';
 
 export interface ColorScaleStepOptions {
@@ -35,8 +33,12 @@ export interface ColorScaleStepOptions {
 }
 
 /**
- * 컨러스케일 옵션
+ * 컬러스케일 옵션
  */
+export interface ColorScaleWithDataOptions extends ColorScaleOptions {
+  data: any[];
+}
+
 export interface ColorScaleOptions {
   /**
    * 값이 null인 경우 적용될 색상
@@ -47,10 +49,6 @@ export interface ColorScaleOptions {
    */
   steps: ColorScaleStepOptions[];
   /**
-   * 컬러스케일에 적용할 데이터 배열
-   */
-  data: any[];
-  /**
    * 값을 추출할 필드 이름
    */
   valueField?: string;
@@ -59,7 +57,7 @@ export interface ColorScaleOptions {
 /**
  * 컬러스케일 모델을 생성합니다.
  */
-export function useColorScale(_option?: ColorScaleOptions) {
+export function useColorScale(_option?: ColorScaleWithDataOptions) {
   const option = useCompare(_option);
 
   /**

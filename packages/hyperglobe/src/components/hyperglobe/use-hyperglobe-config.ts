@@ -1,4 +1,4 @@
-import { ColorScaleOptions } from 'src/hooks/use-colorscale';
+import { ColorScaleWithDataOptions } from 'src/hooks/use-colorscale';
 import { ColorscaleBarConfig, ColorscaleConfig, ControlsConfig, HyperGlobeProps } from 'src/types';
 
 export type UseHyperGlobeConfigProps = Pick<
@@ -32,7 +32,7 @@ export function useHyperGlobeConfig({
   // === 컬러스케일 설정 ===
   let regionDataKey: string | undefined = region?.dataKey;
   let colorscaleBar: ColorscaleBarConfig | boolean | undefined = undefined;
-  let colorscaleOptions: ColorScaleOptions | undefined = undefined;
+  let colorscaleOptions: ColorScaleWithDataOptions | undefined = undefined;
 
   if (colorscale && regionDataKey && dataMap) {
     const { colorscaleBar: csBarOp, ...csOptions } = colorscale;

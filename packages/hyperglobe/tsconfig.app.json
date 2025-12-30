@@ -29,9 +29,5 @@
     }
   },
   "exclude": ["**/*.stories.tsx"],
-  "include": [
-    "src",
-    "declaration.d.ts",
-    "../hyperglobe-tools/src/polygon/is-point-in-polygon.spec.ts"
-  ]
+  "include": ["src", "declaration.d.ts", "pages"]
 }

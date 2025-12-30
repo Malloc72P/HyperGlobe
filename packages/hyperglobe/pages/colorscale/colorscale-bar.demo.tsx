@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { HyperGlobe, useColorScale } from '../../src';
+import { HyperGlobe } from '../../src';
 
 interface ColorScaleBarDemoProps {
-  /**
-   * 포맷 함수 타입
-   */
-  formatType: 'default' | 'locale' | 'fixed';
   /**
    * 컬러 테마
    */
@@ -18,10 +14,7 @@ interface ColorScaleBarDemoProps {
  * ColorScaleBar 컴포넌트를 실제 지도와 함께 사용하는 데모입니다.
  * 지역을 호버하면 해당 값의 위치에 마커가 표시됩니다.
  */
-export function ColorScaleBarDemo({
-  formatType = 'fixed',
-  theme = 'blue',
-}: ColorScaleBarDemoProps) {
+export function ColorScaleBarDemo({ theme = 'blue' }: ColorScaleBarDemoProps) {
   const [gdpData, setGdpData] = useState<any[]>([]);
 
   // 테마별 색상 설정 (더 옅은 톤)
@@ -52,31 +45,12 @@ export function ColorScaleBarDemo({
     ],
   };
 
-  const { colorscale } = useColorScale({
-    steps: colorSteps[theme],
-    nullColor: '#e5e7eb',
-    data: gdpData,
-    itemResolver: (feature, item) => feature.properties.isoA2 === item.id,
-  });
-
   // 포맷 함수 선택
   const formatters = {
     default: (value: number) => value.toFixed(0),
     locale: (value: number) => value.toLocaleString(),
     fixed: (value: number) => `${value.toFixed(2)}%`,
   };
-
-  // dataMap 형식으로 변환 (Record<string, number>)
-  const dataMap = useMemo(() => {
-    if (!gdpData.length) return undefined;
-
-    const gdpGrowth: Record<string, { value: number }> = {};
-    for (const item of gdpData) {
-      gdpGrowth[item.id] = { value: item.value };
-    }
-
-    return { gdpGrowth };
-  }, [gdpData]);
 
   useEffect(() => {
     fetch('/data/gdp-growth.json')
@@ -87,8 +61,8 @@ export function ColorScaleBarDemo({
   return (
     <div>
       <HyperGlobe
-        hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
         id="colorscale-demo-globe"
+        hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
         size="100%"
         maxSize={900}
         style={{ margin: '0 auto' }}
@@ -99,18 +73,20 @@ export function ColorScaleBarDemo({
             roughness: 0,
           },
         }}
-        dataMap={dataMap}
+        dataMap={{
+          gdpGrowth: gdpData,
+        }}
         region={{
           dataKey: 'gdpGrowth',
           idField: 'isoA2',
+          dataIdField: 'key',
         }}
         colorscale={{
-          model: colorscale,
-          dataKey: 'gdpGrowth',
-        }}
-        colorscaleBar={{
-          position: 'bottom-right',
-          formatLabel: formatters[formatType],
+          steps: colorSteps[theme],
+          nullColor: '#e5e7eb',
+          colorscaleBar: {
+            position: 'bottom-right',
+          },
         }}
         tooltip={{
           distance: 12,

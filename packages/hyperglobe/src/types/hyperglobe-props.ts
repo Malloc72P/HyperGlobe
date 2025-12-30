@@ -1,9 +1,8 @@
 import type { Coordinate, RegionModel } from '@hyperglobe/interfaces';
-import type { CSSProperties, ReactNode } from 'react';
-import type { ColorScaleModel } from './colorscale';
+import type { CSSProperties } from 'react';
+import { MarkerData } from 'src/components/marker-feature/marker-interface';
 import type { FeatureStyle } from './feature';
 import type { SvgStyle } from './svg';
-import { MarkerData } from 'src/components/marker-feature/marker-interface';
 import type { FeatureTransitionConfig } from './transition';
 import { ColorScaleOptions } from 'src/hooks/use-colorscale';
 
@@ -373,7 +372,7 @@ export interface MarkerConfig {
  *
  * - 외부에서 useColorScale 훅으로 생성한 ColorScaleModel을 전달합니다.
  */
-export interface ColorscaleConfig extends Omit<ColorScaleOptions, 'data'> {
+export interface ColorscaleConfig extends ColorScaleOptions {
   /**
    * 컬러스케일 바 설정
    */
