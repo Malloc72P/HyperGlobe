@@ -1,7 +1,7 @@
 {
   "name": "@hyperglobe/core",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "exports": {
     ".": {
@@ -48,6 +48,7 @@
     "@hyperglobe/eslint-config": "workspace:*",
     "@hyperglobe/interfaces": "workspace:*",
     "@hyperglobe/maps": "workspace:*",
+    "@malloc72p/hyperglobe-maps": "^0.0.5",
     "@hyperglobe/tools": "workspace:*",
     "@hyperglobe/typescript-config": "workspace:*",
     "@storybook/addon-docs": "^9.1.13",

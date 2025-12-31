@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Nations2Demo } from './nations2.demo';
-import { mapsInfo } from '@hyperglobe/maps';
+import { mapsInfo } from '@malloc72p/hyperglobe-maps';
+// import { mapsInfo } from '@hyperglobe/maps';
 import { DUMMY_CODE } from './nations2.demo.dummy';
 
 const DUMMY = true;

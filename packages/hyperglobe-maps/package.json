@@ -1,12 +1,12 @@
 {
   "name": "@hyperglobe/maps",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "private": true,
   "exports": {
     ".": {
-      "import": "./dist/index.ts",
-      "types": "./dist/index.ts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {

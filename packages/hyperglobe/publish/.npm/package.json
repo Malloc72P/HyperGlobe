@@ -1,6 +1,13 @@
 {
     "name": "@malloc72p/hyperglobe",
-    "version": "0.0.1",
+    "version": "0.0.2",
+    "exports": {
+        ".": {
+            "import": "./dist/hyperglobe.es.js",
+            "types": "./dist/hyperglobe.es.d.ts"
+        },
+        "./hyperglobe.css": "./dist/hyperglobe.css"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     }

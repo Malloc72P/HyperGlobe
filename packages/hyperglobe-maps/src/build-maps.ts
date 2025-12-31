@@ -57,8 +57,20 @@ export async function buildMaps() {
   }
 
   writeFileSync(
-    resolve(join(distPath, 'index.ts')),
-    `export const mapsInfo = ${JSON.stringify(mapInfos, null, 2)} as const;`,
+    resolve(join(distPath, 'index.js')),
+    `export const mapsInfo = ${JSON.stringify(mapInfos, null, 2)};`,
+    'utf-8'
+  );
+  writeFileSync(
+    resolve(join(distPath, 'index.d.ts')),
+    `export interface MapInfo {
+    name: string,
+    size: number,
+    mb: string
+}
+
+export const mapsInfo: MapInfo[];
+`,
     'utf-8'
   );
 
