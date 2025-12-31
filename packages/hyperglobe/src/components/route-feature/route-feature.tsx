@@ -10,9 +10,25 @@ import { useRouteGeometry } from './use-route-geometry';
 import { useRouteMarker } from './use-route-marker';
 import { SvgStyle } from 'src/types/svg';
 
+/**
+ * 경로의 시작 또는 끝 지점 정보
+ */
 export interface RoutePoint {
+  /**
+   * 경로 지점의 아이디
+   */
+  id: string;
+  /**
+   * 경로 지점의 좌표 (경도, 위도)
+   */
   coordinate: Coordinate;
+  /**
+   * 경로 지점의 라벨 텍스트
+   */
   label?: string;
+  /**
+   * 경로 지점의 스타일
+   */
   style?: SvgStyle;
 }
 

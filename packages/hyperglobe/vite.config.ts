@@ -6,6 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vite.dev/config/
 export default defineConfig({
+  publicDir: false,
   plugins: [
     // 모노레포의 다른 패키지를 vite가 제대로 처리하도록 설정(해당 모듈은 ts코드를 그대로 export하므로, vite가 빌드 시점에 변환 필요)
     tsconfigPaths(),

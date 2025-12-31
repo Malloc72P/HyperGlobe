@@ -5,6 +5,7 @@ import type { FeatureStyle } from './feature';
 import type { SvgStyle } from './svg';
 import type { FeatureTransitionConfig } from './transition';
 import { ColorScaleOptions } from 'src/hooks/use-colorscale';
+import { RoutePoint } from 'src/components/route-feature';
 
 // ============================================================================
 // 캔버스/컨테이너 설정
@@ -250,22 +251,7 @@ export interface GraticuleConfig {
 /**
  * 라우트의 시작/끝 지점 정보
  */
-export interface RoutePointConfig {
-  /**
-   * 좌표 (경도, 위도)
-   */
-  coordinate: Coordinate;
-
-  /**
-   * 라벨 텍스트 (설정하면 마커가 표시됨)
-   */
-  label?: string;
-
-  /**
-   * 마커 스타일
-   */
-  style?: SvgStyle;
-}
+export interface RoutePointConfig extends RoutePoint {}
 
 /**
  * 개별 라우트 설정

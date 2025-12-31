@@ -11,16 +11,24 @@
     "./hyperglobe.css": "./dist/hyperglobe.css"
   },
   "scripts": {
+    "DEV": "---------------------------------------------------------------------------",
     "predev": "pnpm run prepare:storybook",
-    "prebuild": "pnpm run prepare:storybook",
     "dev": "storybook dev -p 6006",
+    "BUILD": "-------------------------------------------------------------------------",
+    "prebuild": "tsx ./scripts/prepare-build.js",
     "build": "tsc && vite build",
+    "postbuild": "tsx ./scripts/copy-bundle.js",
+    "BUILD:DOCS": "--------------------------------------------------------------------",
+    "prepare:build:docs": "pnpm build",
     "build:docs": "storybook build",
-    "lint": "eslint .",
+    "TEST": "--------------------------------------------------------------------------",
     "test": "pnpm test:unit",
     "test:unit": "vitest run",
     "check-types": "tsc --noEmit",
-    "prepare:storybook": "tsx ./scripts/prepare-storybook.js"
+    "ETC": "---------------------------------------------------------------------------",
+    "lint": "eslint .",
+    "RELEASE": "-----------------------------------------------------------------------",
+    "release": "pnpm run build:map && cd ./publish/.npm && npm publish --access public"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",

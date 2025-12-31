@@ -11,6 +11,7 @@ const markerStyle: SvgStyle = {
 
 // 서울 인천국제공항
 const seoul: RoutePointConfig = {
+  id: 'seoul',
   coordinate: [126.4506, 37.4639],
   label: '서울(인천국제공항)',
   style: markerStyle,
@@ -18,6 +19,7 @@ const seoul: RoutePointConfig = {
 
 // 인도 뭄바이 차트라파티 시바지 마하라지 국제공항
 const mumbai: RoutePointConfig = {
+  id: 'mumbai',
   coordinate: [72.8777, 19.0896],
   label: '뭄바이(차트라파티 시바지공항)',
   style: markerStyle,
@@ -25,6 +27,7 @@ const mumbai: RoutePointConfig = {
 
 // 남아프리카공화국 요하네스버그 O.R. 탐보 국제공항
 const johannesburg: RoutePointConfig = {
+  id: 'johannesburg',
   coordinate: [28.2461, -26.1367],
   label: '요하네스버그(O.R.탐보공항)',
   style: markerStyle,
@@ -32,6 +35,7 @@ const johannesburg: RoutePointConfig = {
 
 // 영국 런던 히드로 공항
 const london: RoutePointConfig = {
+  id: 'london',
   coordinate: [-0.4543, 51.47],
   label: '런던(히드로공항)',
   style: markerStyle,
@@ -39,6 +43,7 @@ const london: RoutePointConfig = {
 
 // 캐나다 토론토 피어슨 국제공항
 const toronto: RoutePointConfig = {
+  id: 'toronto',
   coordinate: [-79.6248, 43.6777],
   label: '토론토(피어슨국제공항)',
   style: markerStyle,
@@ -46,6 +51,7 @@ const toronto: RoutePointConfig = {
 
 // 미국 샌프란시스코 국제공항
 const sanFrancisco: RoutePointConfig = {
+  id: 'sanFrancisco',
   coordinate: [-122.3789, 37.6213],
   label: '샌프란시스코(국제공항)',
   style: markerStyle,
@@ -53,6 +59,7 @@ const sanFrancisco: RoutePointConfig = {
 
 // 남미 브라질 상파울루 구아룰류스 국제공항
 const saoPaulo: RoutePointConfig = {
+  id: 'saoPaulo',
   coordinate: [-46.4731, -23.4356],
   label: '상파울루(구아룰류스공항)',
   style: markerStyle,
