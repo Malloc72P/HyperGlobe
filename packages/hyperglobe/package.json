@@ -19,7 +19,7 @@
     "build": "tsc && vite build",
     "postbuild": "tsx ./scripts/copy-bundle.js",
     "BUILD:DOCS": "--------------------------------------------------------------------",
-    "prepare:build:docs": "pnpm build",
+    "prebuild:docs": "pnpm build",
     "build:docs": "storybook build",
     "TEST": "--------------------------------------------------------------------------",
     "test": "pnpm test:unit",
