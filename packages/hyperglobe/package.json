@@ -1,7 +1,7 @@
 {
   "name": "@hyperglobe/core",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "exports": {
     ".": {
@@ -28,7 +28,7 @@
     "ETC": "---------------------------------------------------------------------------",
     "lint": "eslint .",
     "RELEASE": "-----------------------------------------------------------------------",
-    "release": "pnpm run build:map && cd ./publish/.npm && npm publish --access public"
+    "release": "pnpm run build && cd ./publish/.npm && npm publish --access public"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
