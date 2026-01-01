@@ -72,7 +72,7 @@ const HyperGlobeInner = forwardRef<HyperglobeRef, HyperGlobeProps>(
       marker,
       colorscale,
       tooltip,
-      showFpsCounter = true,
+      showFpsCounter = false,
       showLoadingUI = true,
       lazyLoad = true,
       lazyLoadThreshold = 0.1,

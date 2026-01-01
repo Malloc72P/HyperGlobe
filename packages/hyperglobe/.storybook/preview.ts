@@ -1,5 +1,4 @@
 import type { Preview } from '@storybook/react-vite';
-import { Canvas, Controls } from '@storybook/blocks';
 
 const preview: Preview = {
   parameters: {

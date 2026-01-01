@@ -1,5 +1,8 @@
 import { addons, type State } from 'storybook/manager-api';
 import { create } from 'storybook/theming/create';
+import { inject } from '@vercel/analytics';
+
+inject({ mode: 'production' });
 
 addons.setConfig({
   theme: create({

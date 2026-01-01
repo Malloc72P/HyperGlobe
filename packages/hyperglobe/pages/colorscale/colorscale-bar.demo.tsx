@@ -66,6 +66,7 @@ export function ColorScaleBarDemo({ theme = 'blue' }: ColorScaleBarDemoProps) {
         size="100%"
         maxSize={900}
         style={{ margin: '0 auto' }}
+        graticule
         globe={{
           style: {
             color: '#f6f6f6',
@@ -94,10 +95,6 @@ export function ColorScaleBarDemo({ theme = 'blue' }: ColorScaleBarDemoProps) {
             const value = region.data?.value;
             return `${region.name}(${value == null ? 'No Data' : value?.toFixed(2) + '%'})`;
           },
-        }}
-        graticule
-        onReady={() => {
-          console.log('ColorScaleBar 데모 렌더링 완료');
         }}
       />
     </div>
