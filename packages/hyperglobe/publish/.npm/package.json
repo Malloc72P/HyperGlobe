@@ -1,32 +1,32 @@
 {
-  "name": "@malloc72p/hyperglobe",
-  "description": "A globe chart library for data visualization.",
-  "version": "0.0.2",
-  "exports": {
-    ".": {
-      "import": "./dist/hyperglobe.es.js",
-      "types": "./dist/hyperglobe.es.d.ts"
+    "name": "@malloc72p/hyperglobe",
+    "description": "A globe chart library for data visualization.",
+    "version": "0.0.4",
+    "exports": {
+        ".": {
+            "import": "./dist/hyperglobe.es.js",
+            "types": "./dist/hyperglobe.es.d.ts"
+        },
+        "./hyperglobe.css": "./dist/hyperglobe.css"
     },
-    "./hyperglobe.css": "./dist/hyperglobe.css"
-  },
-  "homepage": "https://hyperglobe.malloc72p.com/",
-  "author": {
-    "name": "Malloc72P",
-    "url": "https://blog.malloc72p.com",
-    "email": "scra1028@gmail.com"
-  },
-  "license": "MIT",
-  "keywords": [
-    "malloc72p",
-    "Malloc72P",
-    "chart",
-    "map",
-    "visualization",
-    "dataviz",
-    "data",
-    "charts"
-  ],
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
+    "homepage": "https://hyperglobe.malloc72p.com/",
+    "author": {
+        "name": "Malloc72P",
+        "url": "https://blog.malloc72p.com",
+        "email": "scra1028@gmail.com"
+    },
+    "license": "MIT",
+    "keywords": [
+        "malloc72p",
+        "Malloc72P",
+        "chart",
+        "map",
+        "visualization",
+        "dataviz",
+        "data",
+        "charts"
+    ],
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    }
 }
