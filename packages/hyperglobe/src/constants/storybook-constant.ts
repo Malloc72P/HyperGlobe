@@ -3,7 +3,7 @@ import { HyperGlobeProps } from 'src/types';
 
 const defaultHyperglobeProps: HyperGlobeProps = {
   id: 'hyperglobe-canvas',
-  hgmUrl: '/maps/nations-mid.hgm',
+  hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
   size: '100%',
   maxSize: 900,
   style: { margin: '0 auto', maxWidth: 400 },

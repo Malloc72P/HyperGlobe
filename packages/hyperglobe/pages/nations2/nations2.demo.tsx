@@ -98,7 +98,7 @@ export function Nations2Demo({ theme = 'blue', map = 'nations-high' }: NationsDe
 
   const hgmUrl = useMemo(() => {
     const mapName = map.split('(')[0];
-    return `/maps/${mapName}.hgm`;
+    return `https://unpkg.com/@malloc72p/hyperglobe-maps/dist/${mapName}.hgm`;
   }, [map]);
 
   return (

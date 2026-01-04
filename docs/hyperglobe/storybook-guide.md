@@ -39,7 +39,7 @@ type Story = StoryObj<typeof meta>;
 export const Intro: Story = {
   name: '기본 사용법',
   args: {
-    hgmUrl: '/maps/nations-mid.hgm',
+    hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
     globe: { style: { color: '#1a1a2e' } },
   },
 };
@@ -48,7 +48,7 @@ export const Intro: Story = {
 export const Globe: Story = {
   name: '지구본 스타일',
   args: {
-    hgmUrl: '/maps/nations-mid.hgm',
+    hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
     globe: {
       style: { color: '#2d3748', roughness: 0.8, metalness: 0.2 },
       wireframe: false,
@@ -60,7 +60,7 @@ export const Globe: Story = {
 export const Camera: Story = {
   name: '카메라 설정',
   args: {
-    hgmUrl: '/maps/nations-mid.hgm',
+    hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
     camera: {
       initialPosition: [126.978, 37.5665], // 서울
       minDistance: 2,

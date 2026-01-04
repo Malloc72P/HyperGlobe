@@ -8,7 +8,7 @@ const meta: Meta<typeof HyperGlobe> = {
     layout: 'centered',
   },
   args: {
-    hgmUrl: '/maps/nations-mid.hgm',
+    hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
   },
 };
 
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof HyperGlobe>;
 
 export const Intro: Story = {
   args: {
-    hgmUrl: '/maps/nations-mid.hgm',
+    hgmUrl: 'https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm',
     tooltip: true,
     graticule: true,
     style: { maxWidth: 400 },
