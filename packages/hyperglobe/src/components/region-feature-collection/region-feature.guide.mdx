@@ -1,0 +1,101 @@
+import { Meta, Title, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as RegionFeatureExamples from './region-feature.stories';
+
+<Meta title="Components/RegionFeature" of={RegionFeatureExamples} />
+
+<Title>RegionFeature</Title>
+
+### 개요
+
+`RegionFeature`는 지구본 위에 국가, 행정구역 등의 지역 데이터를 시각화하는 기능입니다.
+HGM 파일에 포함된 피처 데이터를 3D 구체 표면에 렌더링하며, 다양한 스타일 옵션을 제공합니다.
+
+주로 `HyperGlobe` 컴포넌트의 `region` prop을 통해 설정합니다.
+`hgmUrl`을 지정하면 자동으로 지역이 렌더링되며, `region` 객체로 상세 설정이 가능합니다.
+
+### 기본 사용법
+
+`hgmUrl`만 지정하면 기본 스타일로 지역이 렌더링됩니다.
+
+<Canvas of={RegionFeatureExamples.Basic} />
+
+<Controls of={RegionFeatureExamples.Basic} />
+
+### 스타일 커스터마이징
+
+`region.style` 속성을 통해 지역의 색상과 외곽선을 설정할 수 있습니다.
+
+| 속성 | 설명 | 기본값 |
+|------|------|--------|
+| `fillColor` | 면 색상 | `#a4c6ec` |
+| `fillOpacity` | 면 투명도 (0~1) | `1` |
+| `color` | 외곽선 색상 | `#354c98` |
+| `lineWidth` | 외곽선 두께 | `1` |
+
+<Canvas of={RegionFeatureExamples.CustomStyle} />
+
+<Controls of={RegionFeatureExamples.CustomStyle} />
+
+### 호버 효과
+
+`region.hoverStyle` 속성을 통해 마우스를 올렸을 때의 스타일을 설정할 수 있습니다.
+호버 스타일은 기본 스타일 위에 덮어씌워지며, 지정하지 않은 속성은 기본 스타일을 따릅니다.
+
+<Canvas of={RegionFeatureExamples.HoverStyle} />
+
+<Controls of={RegionFeatureExamples.HoverStyle} />
+
+### 측면(Extrusion) 설정
+
+`region.extrusion` 속성을 통해 지역의 측면 색상을 설정할 수 있습니다.
+측면은 지역에 입체감을 부여하며, 기본적으로 활성화되어 있습니다.
+
+<Canvas of={RegionFeatureExamples.Extrusion} />
+
+<Controls of={RegionFeatureExamples.Extrusion} />
+
+### 페이드 인 트랜지션
+
+`region.transition` 속성을 통해 지역이 로드될 때 서서히 나타나는 효과를 적용할 수 있습니다.
+
+| 속성 | 설명 | 기본값 |
+|------|------|--------|
+| `enabled` | 트랜지션 활성화 여부 | `true` |
+| `duration` | 트랜지션 지속 시간 (ms) | `500` |
+| `easing` | 이징 함수 | `'ease-out'` |
+
+<Canvas of={RegionFeatureExamples.WithTransition} />
+
+<Controls of={RegionFeatureExamples.WithTransition} />
+
+### 코드 예시
+
+```tsx
+import { HyperGlobe } from '@malloc72p/hyperglobe';
+
+function MyMap() {
+  return (
+    <HyperGlobe
+      hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
+      region={{
+        style: {
+          fillColor: '#3b82f6',
+          fillOpacity: 1,
+          color: '#1e40af',
+          lineWidth: 1,
+        },
+        hoverStyle: {
+          fillColor: '#60a5fa',
+          lineWidth: 2,
+        },
+        extrusion: {
+          color: '#1e3a8a',
+        },
+        transition: {
+          duration: 1000,
+        },
+      }}
+    />
+  );
+}
+```
