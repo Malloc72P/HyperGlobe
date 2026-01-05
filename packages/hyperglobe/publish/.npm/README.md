@@ -2,7 +2,7 @@
 
 ## 소개
 
-- Hyperglobe는 Three.js 기반 3D 맵차트 라이브러리 입니다.
+- Hyperglobe는 React와 Three.js 기반 3D 맵차트 라이브러리 입니다.
 - 웹 환경에서 인터랙티브한 3D 지구본과 지리 데이터를 시각화하는 데 최적화되어 있습니다.
 - [데모 보러가기](https://hyperglobe.malloc72p.com)
 
