@@ -1,7 +1,7 @@
 {
     "name": "@malloc72p/hyperglobe",
     "description": "A globe chart library for data visualization.",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "exports": {
         ".": {
             "import": "./dist/hyperglobe.es.js",
@@ -26,6 +26,13 @@
         "data",
         "charts"
     ],
+    "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "three": "^0.180.0",
+        "@react-three/fiber": "^9.4.0",
+        "@react-three/drei": "^10.7.6"
+    },
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     }

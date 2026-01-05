@@ -15,6 +15,27 @@
 - **라우트 시각화**: 경로 데이터를 시각적으로 표현하는 기능 제공
 - **애니메이션**: 지구본과 데이터에 다양한 애니메이션 효과 적용 가능
 
+## 설치
+
+```bash
+# npm
+npm install @malloc72p/hyperglobe
+
+# pnpm
+pnpm add @malloc72p/hyperglobe
+
+# yarn
+yarn add @malloc72p/hyperglobe
+```
+
+### Peer Dependencies
+
+이 라이브러리는 다음 패키지들을 peer dependency로 요구합니다. 프로젝트에 설치되어 있지 않다면 함께 설치해주세요:
+
+```bash
+npm install react react-dom three @react-three/fiber @react-three/drei
+```
+
 ## 만든이
 
 - [개발자 블로그](https://blog.malloc72p.com)
