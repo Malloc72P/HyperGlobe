@@ -36,6 +36,26 @@ yarn add @malloc72p/hyperglobe
 npm install react react-dom three @react-three/fiber @react-three/drei
 ```
 
+### 코드 예시
+
+```tsx
+'use client';
+
+import { HyperGlobe } from '@malloc72p/hyperglobe';
+import '@malloc72p/hyperglobe/hyperglobe.css';
+
+export default function Page() {
+  return (
+    <div>
+      <HyperGlobe
+        hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
+        maxSize={600}
+      />
+    </div>
+  );
+}
+```
+
 ## 만든이
 
 - [개발자 블로그](https://blog.malloc72p.com)
