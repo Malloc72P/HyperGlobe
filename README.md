@@ -59,6 +59,7 @@ export default function Page() {
 ### 기여자를 위한 정보
 
 | 이름 | 버전 | 
+| ---- | ---- |
 | pnpm | 10.11.0 |
 | node | 22.20.0 | 
 | turbo | 2.5.4 |
