@@ -1,39 +1,44 @@
 {
-    "name": "@malloc72p/hyperglobe",
-    "description": "A globe chart library for data visualization.",
-    "version": "1.0.0",
-    "exports": {
-        ".": {
-            "import": "./dist/hyperglobe.es.js",
-            "types": "./dist/hyperglobe.es.d.ts"
-        },
-        "./hyperglobe.css": "./dist/hyperglobe.css"
+  "name": "@malloc72p/hyperglobe",
+  "description": "A globe chart library for data visualization.",
+  "version": "1.0.0",
+  "exports": {
+    ".": {
+      "import": "./dist/hyperglobe.es.js",
+      "types": "./dist/hyperglobe.es.d.ts"
     },
-    "homepage": "https://hyperglobe.malloc72p.com/",
-    "author": {
-        "name": "Malloc72P",
-        "url": "https://blog.malloc72p.com",
-        "email": "scra1028@gmail.com"
-    },
-    "license": "MIT",
-    "keywords": [
-        "malloc72p",
-        "Malloc72P",
-        "chart",
-        "map",
-        "visualization",
-        "dataviz",
-        "data",
-        "charts"
-    ],
-    "peerDependencies": {
-        "react": "^18.0.0",
-        "react-dom": "^18.0.0",
-        "three": "^0.180.0",
-        "@react-three/fiber": "^9.4.0",
-        "@react-three/drei": "^10.7.6"
-    },
-    "publishConfig": {
-        "registry": "https://registry.npmjs.org/"
-    }
+    "./hyperglobe.css": "./dist/hyperglobe.css"
+  },
+  "homepage": "https://hyperglobe.malloc72p.com/",
+  "author": {
+    "name": "Malloc72P",
+    "url": "https://blog.malloc72p.com",
+    "email": "scra1028@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "malloc72p",
+    "Malloc72P",
+    "chart",
+    "map",
+    "visualization",
+    "dataviz",
+    "data",
+    "charts"
+  ],
+  "repository": {
+    "url": "https://github.com/Malloc72P/HyperGlobe.git",
+    "type": "git",
+    "directory": "packages/hyperglobe"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "three": "^0.180.0",
+    "@react-three/fiber": "^9.4.0",
+    "@react-three/drei": "^10.7.6"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
