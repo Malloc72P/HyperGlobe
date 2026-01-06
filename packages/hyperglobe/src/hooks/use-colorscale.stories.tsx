@@ -5,7 +5,7 @@ import { DUMMY_CODE } from './use-colorscale.demo.dummy';
 const DUMMY = true;
 
 const meta = {
-  title: 'Hooks/useColorScale',
+  title: 'Components/ColorScale',
   component: ColorScaleStoryComponent,
 };
 

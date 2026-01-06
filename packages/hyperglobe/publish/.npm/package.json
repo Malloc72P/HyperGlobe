@@ -1,7 +1,7 @@
 {
     "name": "@malloc72p/hyperglobe",
     "description": "A globe chart library for data visualization.",
-    "version": "0.0.6",
+    "version": "1.0.0",
     "exports": {
         ".": {
             "import": "./dist/hyperglobe.es.js",
