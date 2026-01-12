@@ -1,4 +1,4 @@
-# StudyMate — AI 코딩 에이전트 가이드
+# HyperGlobe — AI 코딩 에이전트 가이드
 
 ### 답변 기본 규칙
 
