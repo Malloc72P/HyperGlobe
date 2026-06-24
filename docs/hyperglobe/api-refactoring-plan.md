@@ -65,13 +65,11 @@ HyperGlobe가 모든 데이터를 알고 있다면 내부에서 지오메트리�
 ## 최종 API 형태
 
 ```tsx
-const hgmBlob = await fetch('/maps/world.hgm').then(r => r.blob());
-const [hgm] = useHGM({ rawHgmBlob: hgmBlob });
 const gdpData = await fetchGdpData();
 
 <HyperGlobe
-  // 필수
-  hgm={hgm}
+  // 필수 (HyperGlobe 내부에서 useHGM이 직접 fetch)
+  hgmUrl="/maps/world.hgm"
 
   // 데이터
   dataMap={{ gdp: gdpData }}
@@ -108,17 +106,17 @@ const gdpData = await fetchGdpData();
   }}
   graticule={{ step: 15 }}
   routes={[...]}
-  markers={[...]}
+  marker={{ items: [...] }}
 
-  // UI
+  // UI (colorscaleBar는 colorscale 내부의 중첩 속성)
   colorscale={{
     dataKey: 'gdp',
     domain: [0, 1000000],
     range: ['#ffe5e5', '#ff0000'],
-  }}
-  colorscaleBar={{
-    position: 'bottom-right',
-    title: 'GDP (USD)',
+    colorscaleBar: {
+      position: 'bottom-right',
+      title: 'GDP (USD)',
+    },
   }}
   tooltip={{ distance: 10 }}
   showFpsCounter={false}
@@ -126,7 +124,8 @@ const gdpData = await fetchGdpData();
 
   // 이벤트
   onReady={() => console.log('렌더링 완료')}
-  onHoverChanged={(region) => console.log(region)}
+  // onHoverChanged: prop 타입은 정의되어 있으나 현재 내부 배선 미구현
+  onHoverChanged={({ hoveredRegion }) => console.log(hoveredRegion)}
 />
 ```
 
@@ -136,21 +135,22 @@ const gdpData = await fetchGdpData();
 
 | 상태 | 동작 |
 |------|------|
-| `hgm === null` | 로딩 상태, `showLoadingUI`가 true면 내장 로딩 UI 표시 |
-| `hgm !== null` | 렌더링 시작 |
+| 내부 `loading` state | `showLoadingUI`가 true면 내장 로딩 UI 표시 (`<LoadingUI loading={loading}/>`) |
+| HGM 로드 완료 | 렌더링 시작 |
 | 렌더링 완료 | `onReady()` 호출 (최초 1회) |
 | `dataMap`에 없는 키 참조 | 런타임 경고 메시지 출력, graceful fallback |
 
 ### 데이터 로딩 규칙
 
-- HGM 로딩은 사용자가 담당 (어디서 어떻게 가져올지 모르므로)
-- `useHGM` 훅으로 Blob → HGM 객체 변환 기능 제공
-- `hgm`이 `null`이면 로딩 상태로 간주
+- HGM 로딩은 HyperGlobe 내부가 담당: `hgmUrl`을 받아 `useHGM`이 직접 fetch한다
+- `useHGM`은 외부 변환 훅이 아니라 hgmUrl fetch까지 처리하는 내부 훅 (`rawHgmBlob`은 인자가 아닌 내부 state)
+- 로딩 상태는 내부 `useMainStore`의 `loading` state로 관리 (`setLoading`)되며, 이 값으로 로딩 UI를 제어
+- `lazyLoad`(IntersectionObserver) 옵션으로 뷰포트 진입 시 로드하며 `lazyLoad`/`lazyLoadThreshold` prop을 제공
 - `dataMap`은 준비된 데이터만 전달, 없으면 해당 피처 props도 생략
 
 ```tsx
 <HyperGlobe 
-  hgm={hgm}
+  hgmUrl="/maps/world.hgm"
   dataMap={gdpData ? { gdp: gdpData } : undefined}
   region={gdpData ? { dataKey: 'gdp', ... } : undefined}
 />
@@ -209,8 +209,8 @@ const gdpData = await fetchGdpData();
 
 ## 유지 항목
 
-- `useHGM` 훅 (현재 그대로)
-- `useColorScale` 훅 (외부에서 colorscale 계산 후 전달 가능하도록)
+- `useHGM` 훅 (현재 내부 전용, public export 미노출 / 향후 공개 예정)
+- `useColorScale` 훅 (현재 내부 전용, HyperGlobe 내부에서 colorscaleOptions+data로 호출 / 외부 계산·전달 방식은 향후 공개 예정)
 - 기존 카메라 트랜지션 로직 (`ref`를 통한 명령형 API)
 
 ## 제거 항목

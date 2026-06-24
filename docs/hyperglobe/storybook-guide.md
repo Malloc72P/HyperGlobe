@@ -24,7 +24,7 @@ src/components/hyperglobe/
 
 ```tsx
 // hyperglobe.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/react';
 import { HyperGlobe } from './hyperglobe';
 
 const meta = {
@@ -288,14 +288,20 @@ export const ComplexExample: Story = {
 ```
 Components/          ← 기본 컴포넌트
   HyperGlobe
-  
-Hooks/              ← 훅
-  useColorScale
-  useHGM
+  Tooltip
+  MarkerFeature
+  Graticule
+  RouteFeature
+  RegionFeature
+  ColorScale         ← useColorScale 훅 스토리
 
-Demo/               ← 복합 예제
-  Nations
-  Routes
+API/                 ← API
+  CameraTransition
+
+Demo/                ← 복합 예제
+  Nations2
+  RoundTheWorld
+  ColorScaleBar
 ```
 
 ## 주의사항
@@ -310,7 +316,7 @@ Demo/               ← 복합 예제
 
 - 코드를 작성한 후에는 반드시 타입 에러가 없는지 확인하세요.
 - 특히 `Colors` 객체 사용 시 자동완성이 되지 않는 속성은 존재하지 않는 것입니다.
-- `pnpm type-check` 명령어나 에디터의 오류 표시를 통해 검증해야 합니다.
+- `pnpm check-types` 명령어나 에디터의 오류 표시를 통해 검증해야 합니다.
 
 ### 3. autodocs 태그 사용 금지
 
@@ -339,10 +345,10 @@ Demo/               ← 복합 예제
 
 ```bash
 # Storybook 개발 서버 실행
-pnpm storybook
+pnpm dev
 
 # Storybook 빌드
-pnpm build-storybook
+pnpm build:docs
 ```
 
 ## 참고 예시
@@ -350,6 +356,13 @@ pnpm build-storybook
 현재 프로젝트에서 MDX 기반 문서화가 적용된 컴포넌트:
 
 - `src/components/hyperglobe/hyperglobe.guide.mdx`
+- `src/components/tooltip/tooltip.guide.mdx`
+- `src/components/marker-feature/marker-feature.guide.mdx`
+- `src/components/graticule/graticule.guide.mdx`
+- `src/components/route-feature/route-feature.guide.mdx`
+- `src/components/camera-transition-controller/camera-transition-controller.guide.mdx`
+- `src/components/region-feature-collection/region-feature.guide.mdx`
+- `src/hooks/use-colorscale.guide.mdx`
 
 ## 참고 자료
 

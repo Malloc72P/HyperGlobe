@@ -25,7 +25,7 @@ HyperGlobe 프로젝트의 수학/지오메트리 유틸리티 패키지입니�
 - `CoordinateConverter.convert`: 경위도 → 3D 직교좌표
 - `CoordinateConverter.converts`: 다중 좌표 변환
 
-**지오메트리 (geometry/)**:
+**좌표 변환 (coordinate/)**:
 
 #### CoordinateConverter.convert(coordinate, radius)
 경위도 좌표를 3D 직교좌표계로 변환합니다.
@@ -39,7 +39,7 @@ CoordinateConverter.convert([0, 0]);
 
 // 경도 90도, 위도 0도
 CoordinateConverter.convert([90, 0]);
-// → [0, 0, 1]
+// → [0, 0, -1] (코드가 경도에 -1을 곱하므로 z가 음수가 됨)
 
 // 북극점
 CoordinateConverter.convert([0, 90]);
@@ -54,7 +54,7 @@ z = cos(φ) * sin(λ) * radius
 
 여기서:
   φ (phi): 위도 (라디안)
-  λ (lambda): 경도 (라디안)
+  λ (lambda): 경도에 -1을 곱한 값 (라디안) — 코드가 경도에 -1을 곱한 뒤 사용
 ```
 
 **사용처:**
@@ -101,30 +101,30 @@ const polygon = [
 ];
 
 const result = delaunayTriangulate({
-  outerRing: polygon,
-  holes: [],  // 홀(구멍) 배열 (선택사항)
+  coordinates: polygon,  // 폴리곤 좌표 배열 (경위도)
+  radius: 1.005,         // 구의 반지름
+  gridSpacing: 2,        // 내부 격자점 간격 (도 단위)
+  densifyBoundary: true, // 경계선 보간 활성화 (선택사항)
 });
 // {
-//   vertices: Float32Array,  // 3D 좌표 [x,y,z,x,y,z,...]
-//   indices: Uint32Array     // 삼각형 인덱스
+//   vertices: VectorCoordinate[],  // 3D 좌표 배열 (구면 위의 점들)
+//   indices: number[]              // 삼각형 인덱스 배열
 // }
 ```
 
 **특징:**
 - 2D 폴리곤을 3D 구면으로 투영
-- 홀(hole) 처리 지원
 - 최적화된 삼각분할
 
 **사용처:**
 - RegionFeature의 메시 생성
 - 복잡한 폴리곤 렌더링
 
-#### triangulatePolygon(polygon)
-일반적인 폴리곤 삼각분할을 수행합니다.
+#### triangulatePolygon({ coordinates, radius, gridSpacing?, densifyBoundary? })
+일반적인 폴리곤 삼각분할을 수행합니다. 내부적으로 `delaunayTriangulate`를 호출하여 항상 Delaunay 삼각분할을 사용합니다.
 
 **사용처:**
 - 단순 폴리곤 처리
-- Delaunay가 필요 없는 경우
 
 #### isPointInPolygon(point, polygon)
 점이 폴리곤 내부에 있는지 판정합니다. Ray-casting 알고리즘을 사용합니다.
@@ -152,14 +152,17 @@ isPointInPolygon(point, polygon);  // true
 - 마우스 호버 감지
 - 지역 찾기
 
-#### findRegionByVector(vector, regions)
+#### findRegionByVector({ rotation, vector, rTree })
 3D 벡터(마우스 피킹 결과)에 해당하는 지역을 찾습니다.
 
 ```typescript
 import { findRegionByVector } from '@hyperglobe/tools';
 
-const vector = [0.5, 0.5, 0.7];
-const region = findRegionByVector(vector, allRegions);
+const region = findRegionByVector({
+  rotation: [0, 0, 0],              // 지구본 회전값 [x, y, z]
+  vector: { x: 0.5, y: 0.5, z: 0.7 }, // 3D 벡터 { x, y, z }
+  rTree,                            // RBush<RegionModel> 공간 인덱스
+});
 ```
 
 **사용처:**
@@ -168,23 +171,29 @@ const region = findRegionByVector(vector, allRegions);
 
 ### 지오메트리 유틸리티 (geo/)
 
-#### getBoundingBox(coordinates)
-좌표 배열에서 경계 상자(Bounding Box)를 계산합니다.
+#### getBoundingBox(feature)
+GeoJSON Feature에서 경계 상자(Bounding Box)를 계산합니다. 내부적으로 `@turf/bbox`를 사용합니다.
 
 ```typescript
 import { getBoundingBox } from '@hyperglobe/tools';
 
-const coords = [
-  [127.0, 37.0],
-  [128.0, 37.5],
-  [127.5, 38.0]
-];
+const feature = {
+  type: 'Feature',
+  properties: {},
+  geometry: {
+    type: 'Polygon',
+    coordinates: [[
+      [127.0, 37.0],
+      [128.0, 37.0],
+      [128.0, 38.0],
+      [127.0, 38.0],
+      [127.0, 37.0]
+    ]]
+  }
+};
 
-getBoundingBox(coords);
-// {
-//   min: { x: 127.0, y: 37.0 },
-//   max: { x: 128.0, y: 38.0 }
-// }
+getBoundingBox(feature);
+// { minX: 127.0, minY: 37.0, maxX: 128.0, maxY: 38.0 }
 ```
 
 **사용처:**
@@ -192,8 +201,8 @@ getBoundingBox(coords);
 - 충돌 감지 최적화
 - 가시성 판정
 
-#### toRegionBBox(region)
-지역 객체에서 경계 상자를 추출합니다.
+#### toRegionBBox({ region, bbox })
+전달된 경계 상자(bbox)에 지역(region)을 결합하여 RegionBBox를 만듭니다.
 
 **사용처:**
 - 지역 단위 경계 계산

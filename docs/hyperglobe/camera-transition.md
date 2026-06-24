@@ -78,14 +78,13 @@ Canvas 내부에서 카메라 트랜지션을 제어하는 컴포넌트입니다
 ## 테스트
 
 ### Storybook
-**파일**: `packages/hyperglobe/pages/camera-transition/camera-transition.stories.tsx`
+**파일**: `packages/hyperglobe/src/components/camera-transition-controller/camera-transition-controller.stories.tsx`
 
 - 기본 카메라 트랜지션 데모
-- 다양한 이징 함수 비교
 - 경로 취소 기능 시연
 
 ### E2E 테스트
-**파일**: `apps/e2e/src/camera-transition/*.spec.ts`
+**예정 경로**: `apps/e2e/src/camera-transition/*.spec.ts`
 
 - [ ] 경로 이동 완료 확인
 - [ ] 취소 기능 동작 확인  

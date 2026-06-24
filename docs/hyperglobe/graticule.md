@@ -49,8 +49,8 @@
 - 경선: 180도만 생성하면 전체 구 표현 가능
 
 **선 렌더링**
-- `GraticuleLine` 컴포넌트 사용
-- `@react-three/drei`의 `Line` 컴포넌트를 활용한 효율적인 렌더링
+- 모든 경위선 좌표를 `useMergedGraticuleGeometry` 훅으로 하나의 배열로 병합
+- `@react-three/drei`의 단일 `Line` 컴포넌트(segments 모드)로 렌더링하여 드로우콜을 1회로 최소화 (기존 54개 Line → 1개 Line)
 
 **극점 처리**
 - 위도가 ±90도(극점)인 경우 격자선을 그리지 않음 (점으로 수렴하므로 불필요)

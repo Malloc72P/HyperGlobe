@@ -19,25 +19,23 @@
 ## 기본 사용법
 
 ```tsx
-import { HyperGlobe, useColorScale } from 'hyperglobe';
-
-const { colorscale } = useColorScale({
-  steps: [
-    { to: 1000000, color: '#eff6ff', hoverColor: '#dbeafe' },
-    { from: 1000000, to: 10000000, color: '#3b82f6', hoverColor: '#60a5fa' },
-    { from: 10000000, color: '#1e40af', hoverColor: '#3b82f6' },
-  ],
-  nullColor: '#e5e7eb',
-});
+import { HyperGlobe } from '@hyperglobe/core';
 
 <HyperGlobe
   hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
   dataMap={{ gdp: { KOR: 1800000, JPN: 4900000 } }}
   region={{ dataKey: 'gdp', idField: 'ISO_A3' }}
-  colorscale={{ model: colorscale }}
-  colorscaleBar={{
-    position: 'bottom-right',
-    formatLabel: (value) => `${(value / 1000000).toFixed(1)}M`,
+  colorscale={{
+    steps: [
+      { to: 1000000, color: '#eff6ff', hoverColor: '#dbeafe' },
+      { from: 1000000, to: 10000000, color: '#3b82f6', hoverColor: '#60a5fa' },
+      { from: 10000000, color: '#1e40af', hoverColor: '#3b82f6' },
+    ],
+    nullColor: '#e5e7eb',
+    colorscaleBar: {
+      position: 'bottom-right',
+      formatLabel: (value) => `${(value / 1000000).toFixed(1)}M`,
+    },
   }}
 />
 ```
@@ -60,18 +58,9 @@ const { colorscale } = useColorScale({
 ### 기본 사용
 
 ```tsx
-import { HyperGlobe, useColorScale } from 'hyperglobe';
+import { HyperGlobe } from '@hyperglobe/core';
 
 function GDPMap() {
-  const { colorscale } = useColorScale({
-    steps: [
-      { to: 20000, color: '#fee5d9' },
-      { from: 20000, to: 40000, color: '#fcae91' },
-      { from: 40000, to: 60000, color: '#fb6a4a' },
-      { from: 60000, color: '#cb181d' },
-    ],
-  });
-
   const gdpData = {
     KOR: 50000,
     USA: 70000,
@@ -83,7 +72,14 @@ function GDPMap() {
       hgmUrl="https://unpkg.com/@malloc72p/hyperglobe-maps/dist/nations-mid.hgm"
       dataMap={{ gdp: gdpData }}
       region={{ dataKey: 'gdp' }}
-      colorscale={{ model: colorscale }}
+      colorscale={{
+        steps: [
+          { to: 20000, color: '#fee5d9' },
+          { from: 20000, to: 40000, color: '#fcae91' },
+          { from: 40000, to: 60000, color: '#fb6a4a' },
+          { from: 60000, color: '#cb181d' },
+        ],
+      }}
     />
   );
 }
@@ -92,16 +88,16 @@ function GDPMap() {
 ### null 값 처리
 
 ```tsx
-const { colorscale } = useColorScale({
+colorscale={{
   steps: [...],
   nullColor: '#e0e0e0',  // 데이터가 없는 국가는 회색
-});
+}}
 ```
 
 ### 호버 색상 설정
 
 ```tsx
-const { colorscale } = useColorScale({
+colorscale={{
   steps: [
     { 
       to: 1000000, 
@@ -114,7 +110,7 @@ const { colorscale } = useColorScale({
       hoverColor: '#60a5fa',
     },
   ],
-});
+}}
 ```
 
 ## ColorscaleBar 설정
@@ -124,12 +120,21 @@ const { colorscale } = useColorScale({
 HyperGlobe의 `colorscale` prop에 전달하는 설정:
 
 ```typescript
-interface ColorscaleConfig {
-  /** 커러스케일 모델 (useColorScale으로 생성) */
-  model: ColorScaleModel;
+interface ColorscaleConfig extends ColorScaleOptions {
+  /** 컬러스케일 바 설정 */
+  colorscaleBar?: ColorscaleBarConfig | boolean;
+}
 
-  /** dataMap에서 사용할 데이터 키 (region.dataKey와 동일하게 설정) */
-  dataKey?: string;
+// ColorScaleOptions
+interface ColorScaleOptions {
+  /** 컬러스케일 구간 옵션 */
+  steps: ColorScaleStepOptions[];
+
+  /** 값이 null인 경우 적용될 색상 */
+  nullColor?: string;
+
+  /** 값을 추출할 필드 이름 */
+  valueField?: string;
 }
 ```
 

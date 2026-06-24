@@ -6,7 +6,7 @@
 
 **파일**: `packages/hyperglobe/src/components/region-feature-collection/region-feature-collection.tsx`
 
-**사용 예시**: Storybook의 `RegionFeatureCollection` 스토리 참조
+**사용 예시**: Storybook의 `RegionFeature` 스토리(Components/RegionFeature) 참조
 
 **성능**: 개별 메시 방식 대비 드로우콜 ~100배 감소 (200개 국가 기준: ~600 → ~6)
 
@@ -21,7 +21,7 @@
 
 ## Props
 
-**타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts` (`RegionConfig`)
+**타입 정의**: `region-feature-collection.tsx` (`RegionFeatureCollectionProps`). 참고로 `<HyperGlobe region>` API 설정 타입은 `packages/hyperglobe/src/types/hyperglobe-props.ts`의 `RegionConfig`이며, 해당 설정이 컴포넌트 props로 매핑된다.
 
 > **상세 Props**: 타입 정의 파일 또는 Storybook 참조
 

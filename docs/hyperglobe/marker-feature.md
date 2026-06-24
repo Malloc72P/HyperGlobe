@@ -17,9 +17,9 @@
 
 ## Props
 
-**타입 정의**: `packages/hyperglobe/src/types/hyperglobe-props.ts` (`MarkerConfig`, `SvgStyle`)
+**타입 정의**: 개별 마커 props는 `packages/hyperglobe/src/components/marker-feature/marker-interface.ts` (`MarkerData`), 스타일 타입은 `packages/hyperglobe/src/types/svg.ts` (`SvgStyle`), HyperGlobe 레벨 마커 집합 설정은 `packages/hyperglobe/src/types/hyperglobe-props.ts` (`MarkerConfig`)
 
-> **상세 Props**: `packages/hyperglobe/src/types/hyperglobe-props.ts` 참조
+> **상세 Props**: `packages/hyperglobe/src/components/marker-feature/marker-interface.ts` 및 `packages/hyperglobe/src/types/svg.ts` 참조
 
 ## 구현 원리
 

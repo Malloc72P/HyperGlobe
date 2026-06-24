@@ -21,7 +21,7 @@ HyperGlobe의 전역 상태를 관리하는 Zustand 기반 스토어입니다. �
 지도 데이터 로딩 상태 (`boolean`)
 
 ### tooltipRef
-툴팁 DOM 요소 참조 (`RefObject<HTMLDivElement | null>`)
+툴팁 DOM 요소 참조 (`RefObject<HTMLDivElement | null> | null`)
 
 ### tree
 R-Tree 공간 인덱스 (RBush 인스턴스)

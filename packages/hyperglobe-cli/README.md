@@ -140,23 +140,31 @@ CLI는 다음 단계를 거쳐 GeoJSON을 HGM으로 변환합니다:
 변환된 HGM 파일은 다음 구조를 가집니다:
 
 ```typescript
-interface HGMFile {
+// 런타임 타입: 메모리에서 다루는 HGM 구조
+interface HGM {
   features: HGMFeature[];  // 지역 피쳐 배열
-  metadata?: any;          // 메타데이터 (선택)
+  metadata?: {             // 메타데이터 (선택)
+    name?: string;
+    featureCount?: number;
+    triangleCount?: number;
+  };
 }
 
 interface HGMFeature {
   id: string;              // 지역 ID
-  properties: any;         // GeoJSON 속성
+  properties: Record<string, any>; // GeoJSON 속성
   geometries: Array<{
-    vertices: number[];    // 삼각분할된 정점 [x,y,z,x,y,z,...]
-    indices: number[];     // 삼각형 인덱스
+    vertices: Float32Array;  // 삼각분할된 정점 [x,y,z,x,y,z,...]
+    indices: Uint32Array;    // 삼각형 인덱스
   }>;
   borderLines: {
-    pointArrays: number[][]; // 외곽선 좌표
+    pointArrays: Float32Array[]; // 외곽선 좌표
   };
+  bbox: BoundingBox;       // 피쳐의 경계 박스
 }
 ```
+
+> 파일에 실제로 저장되는 형태는 `RawHGMFile`입니다. 각 피쳐는 `RawHGMFeature`로 키가 `p`(properties)/`g`(geometries)/`l`(borderLines)/`b`(bbox)로 축약되고, `vertices`·`indices`·`pointArrays`는 base64로 인코딩된 문자열(`v`, `i`, `p`)로 저장됩니다. 이 `RawHGMFile`을 gzip으로 압축한 뒤 파일로 기록합니다.
 
 ## GeoJSON 요구사항
 
