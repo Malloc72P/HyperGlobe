@@ -356,7 +356,7 @@ export interface MarkerConfig {
 /**
  * 컬러스케일 설정
  *
- * - 외부에서 useColorScale 훅으로 생성한 ColorScaleModel을 전달합니다.
+ * - 컬러스케일 구간(steps) 등 ColorScaleOptions를 직접 전달하면 내부에서 ColorScaleModel을 계산합니다.
  */
 export interface ColorscaleConfig extends ColorScaleOptions {
   /**

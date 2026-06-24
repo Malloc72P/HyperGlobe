@@ -16,7 +16,7 @@ export class CoordinateConverter {
    * convert([0, 0]); // [1, 0, 0]
    *
    * // 경도 90도, 위도 0도 (인도양)
-   * convert([90, 0]); // [0, 0, 1]
+   * convert([90, 0]); // [0, 0, -1]
    *
    * // 경도 0도, 위도 90도 (북극점)
    * convert([0, 90]); // [0, 1, 0]
@@ -33,7 +33,7 @@ export class CoordinateConverter {
     // 구면 좌표계를 직교 좌표계로 변환
     // x축: 경도 0도, 위도 0도 방향
     // y축: 북극 방향
-    // z축: 경도 90도, 위도 0도 방향
+    // z축: 경도 -90도(서경 90도), 위도 0도 방향 (경도에 -1을 곱하므로 동경 90도는 -z 방향)
     const x = radius * Math.cos(theta) * Math.cos(phi);
     const y = radius * Math.sin(theta);
     const z = radius * Math.cos(theta) * Math.sin(phi);
